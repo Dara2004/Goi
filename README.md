@@ -3,19 +3,21 @@
 ## Deck Creation DSL
 ### Example
 ```
-Create Deck French with Tags language, hard, midterm using Style mystyle:  
-(1) Front:Back
-(2) Front:Back
-(3) Front:Back
-
 Create Style mystyle:
 Color = Red
 Direction = Horizontal
 Align = Center
+
+Create Deck French with Tags language, hard, midterm using Style mystyle:  
+(1) Front:Back
+(2) Front:Back
+(3) Front:Back
 ```
 
 ### EBNF
 ```
+PROGRAM ::= CREATE_STYLE* CREATE_DECK*
+
 CREATE_DECK ::= “Create Deck” NAME (“with Tags“ TAGS | “using Style” STYLE)*”:” DECK
 DECK ::= CARD+
 CARD ::= “(”NUMBER”) ” STRING “:” STRING
