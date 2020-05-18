@@ -18,7 +18,8 @@ Create Deck French with Tags language, hard, midterm using Style mystyle:
 ```
 PROGRAM ::= CREATE_STYLE* CREATE_DECK*
 
-CREATE_DECK ::= “Create Deck” NAME (“with Tags“ TAGS | “using Style” STYLE)*”:” DECK
+CREATE_DECK ::= “Create Deck” NAME MODIFIERS”:” DECK
+MODIFIERS ::= (“with Tags” TAGS (“using Style” STYLE)?) | (“using Style” STYLE (“with Tags” TAGS)?)
 DECK ::= CARD+
 CARD ::= “(”NUMBER”) ” STRING “:” STRING
 TAGS ::= STRING”,”? TAGS
