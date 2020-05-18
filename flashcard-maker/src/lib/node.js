@@ -12,4 +12,12 @@ class Node {
         })
     }
     tokenizer = null; // = getTokenizer(); // TODO: uncomment this after tokenizer is merged
+
+    parse() {
+        throw new Error('Not implemented');
+    }
+
+    evaluate() {
+        throw new Error('Not implemented');
+    }
 }
