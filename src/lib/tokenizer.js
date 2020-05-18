@@ -12,40 +12,39 @@ class Tokenizer {
 
   tokenize() {
     let tokenizedProgram = this.program;
-    tokenizedProgram = tokenizedProgram.replace(/\n/g, '');
+    tokenizedProgram = tokenizedProgram.replace(/\n/g, "");
     console.log(this.program);
-    this.literals.forEach(
-        s => {
-          tokenizedProgram = tokenizedProgram.replace(s, `_${s}_`);
-          console.log(tokenizedProgram);
-        });
-    tokenizedProgram = tokenizedProgram.replace(/__/g, '_');
+    this.literals.forEach((s) => {
+      tokenizedProgram = tokenizedProgram.replace(s, `_${s}_`);
+      console.log(tokenizedProgram);
+    });
+    tokenizedProgram = tokenizedProgram.replace(/__/g, "_");
     console.log(tokenizedProgram);
-    const temparray = tokenizedProgram.split('_');
-    this.tokens = temparray.slice(1, temparray.length);
+    const temparray = tokenizedProgram.split("_");
+    this.tokens = temparray.slice(1);
     console.log(this.tokens);
   }
 
   checkNext() {
-    let token = '';
+    let token = "";
 
     if (this.currentToken < this.tokens.length) {
       token = this.tokens[this.currentToken];
     } else {
-      token = 'NO_MORE_TOKENS';
+      token = "NO_MORE_TOKENS";
     }
 
     return token;
   }
 
   getNext() {
-    let token = '';
+    let token = "";
 
     if (this.currentToken < this.tokens.length) {
       token = this.tokens[this.currentToken];
       this.currentToken++;
     } else {
-      token = 'NULLTOKEN';
+      token = "NULLTOKEN";
     }
 
     return token;
@@ -62,7 +61,8 @@ class Tokenizer {
 
     if (!s.match(regexp)) {
       throw Error(
-          `Unexpected next token for Parsing! Expected something matching: ${regexp} but got: ${s}`);
+        `Unexpected next token for Parsing! Expected something matching: ${regexp} but got: ${s}`
+      );
     }
     console.log(`matched: ${s}  to  ${regexp}`);
 
