@@ -1,4 +1,4 @@
-class Create extends Node {
+class Create extends LibNode {
 
 }
 

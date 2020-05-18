@@ -1,3 +1,3 @@
-class Limit extends Node {
+class Limit extends LibNode {
 
 }

@@ -1,3 +1,3 @@
-class Selector extends Node {
+class Selector extends LibNode {
 
 }

@@ -1,3 +1,3 @@
-class TimeLine extends Node {
+class TimeLine extends LibNode {
 
 }

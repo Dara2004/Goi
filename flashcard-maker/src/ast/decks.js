@@ -1,3 +1,3 @@
-class Decks extends Node {
+class Decks extends LibNode {
 
 }

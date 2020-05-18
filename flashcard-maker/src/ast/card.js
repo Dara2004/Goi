@@ -1,3 +1,3 @@
-class Card extends Node {
+class Card extends LibNode {
 
 }

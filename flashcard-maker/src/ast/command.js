@@ -1,3 +1,3 @@
-class Command extends Node {
+class Command extends LibNode {
 
 }

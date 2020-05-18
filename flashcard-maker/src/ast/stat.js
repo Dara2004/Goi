@@ -1,3 +1,3 @@
-class Stat extends Node {
+class Stat extends LibNode {
 
 }

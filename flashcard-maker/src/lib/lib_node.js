@@ -1,4 +1,4 @@
-class Node {
+class LibNode {
     fs = require('fs');
     writeDataFile(data) {
         fs.writeFile('DataFile.txt', data, (err) => {
@@ -21,3 +21,4 @@ class Node {
         throw new Error('Not implemented');
     }
 }
+
