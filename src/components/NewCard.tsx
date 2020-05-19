@@ -41,6 +41,8 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+type Props = { style: {} };
+
 export default function NewCard() {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
@@ -50,12 +52,14 @@ export default function NewCard() {
   };
 
   return (
-    <><Card className={classes.root}>
-      <CardHeader title="French" />
+    <><Card style={{ marginTop: "4em", width: "40em" }} className={classes.root}>
+      <CardHeader title="" />
       <CardContent>
-        <Typography paragraph>
-          Front
+        <div style={{ height: "6em" }}>
+          <Typography paragraph style={{}}>
+            Front
         </Typography>
+        </div>
       </CardContent>
       <CardActions disableSpacing>
         <IconButton
@@ -71,10 +75,11 @@ export default function NewCard() {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography paragraph></Typography>
-          <Typography paragraph>
-            Back
+          <div style={{ height: "6em", alignItems: "center" }}>
+            <Typography paragraph>
+              Back
           </Typography>
+          </div>
         </CardContent>
       </Collapse>
     </Card>

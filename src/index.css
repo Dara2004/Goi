@@ -24,9 +24,5 @@ code {
     monospace;
 }
 
-.navbar {
-  position: "fixed";
-  height: 5em;
-  background-color: white;
-  padding-left: 5em;
-}
+
+

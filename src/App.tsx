@@ -3,11 +3,8 @@ import './App.css';
 import NavBar from './components/NavBar';
 import CardView from './components/CardView';
 import { UnControlled as CodeMirror } from 'react-codemirror2'
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
-import 'codemirror/mode/xml/xml';
-
-
+import CodeEditor from './components/CardEditor';
+import CommandEditor from './components/CommandEditor';
 // import Session from './components/Session';
 // import Statistics from './components/Statistics';
 
@@ -15,19 +12,12 @@ export default function App() {
 
   return (
     <>
-      <div className="container">
+      <div className="navbar">
         <NavBar></NavBar>
-        <div>
-          <CodeMirror
-            value='<h1></h1>'
-            options={{
-              mode: 'xml',
-              theme: 'material',
-              lineNumbers: true
-            }}
-            onChange={(editor, data, value) => {
-            }}
-          /></div>
+      </div>
+      <div className="container">
+        <CodeEditor></CodeEditor>
+        <CommandEditor></CommandEditor>
         <CardView></CardView>
       </div>
     </>
