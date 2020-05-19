@@ -10,7 +10,7 @@ test('create deck parse should throw if the input doesnt start with Create Deck'
   expect(parse).toThrow(Error);
 });
 
-test("create desk parse should throw if name is missing", () => {
+test("create deck parse should throw if name is missing", () => {
   let cd = new CREATE_DECK();
   Tokenizer.theTokenizer = undefined;
   Tokenizer.makeTokenizer("Create Deck with Tags", ["Create Deck", "with Tags"]);
@@ -18,10 +18,11 @@ test("create desk parse should throw if name is missing", () => {
   expect(parse).toThrow(Error);
 });
 
-test("create desk parse should parse successfully", () => {
+test("create deck parse should parse if name is valid", () => {
   let cd = new CREATE_DECK();
   Tokenizer.theTokenizer = undefined;
-  Tokenizer.makeTokenizer("Create Deck French", ["Create Deck", "with Tags"]);
+  Tokenizer.makeTokenizer("Create Deck French with Tags language", ["Create Deck", "with Tags"]);
   cd.parse();
   expect(cd.name).toEqual("French");
+  expect(cd.tags).toEqual(["language"]);
 });

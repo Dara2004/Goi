@@ -3,7 +3,7 @@ import DECK from './DECK';
 import TAGS from './TAGS';
 import STYLE from './STYLE';
 
-const invalidNameTokens = ["with Tags: ", "using Style: ", "("];
+const invalidNameTokens = ["with Tags", "using Style", "("];
 
 export default class CREATE_DECK extends NODE {
     // style: STYLE;
@@ -13,7 +13,7 @@ export default class CREATE_DECK extends NODE {
     name: string = "";
 
     checkForAndParseTags(): boolean {
-        if (this.tokenizer.checkNext("with Tags: ")) {
+        if (this.tokenizer.checkToken("with Tags")) {
             this.tags = new TAGS();
             this.tags.parse();
             return true;
@@ -22,7 +22,7 @@ export default class CREATE_DECK extends NODE {
     }
 
     checkForAndParseStyle(): boolean {
-        if (this.tokenizer.checkNext("using Style: ")) {
+        if (this.tokenizer.checkToken("using Style")) {
             this.style = new STYLE();
             this.style.parse();
             return true;
