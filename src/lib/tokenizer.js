@@ -14,14 +14,17 @@ class Tokenizer {
     let tokenizedProgram = this.program;
     tokenizedProgram = tokenizedProgram.replace(/\n/g, "");
     console.log(this.program);
+
     this.literals.forEach((s) => {
-      tokenizedProgram = tokenizedProgram.replace(s, `_${s}_`);
+      const re = new RegExp(s, "g");
+      tokenizedProgram = tokenizedProgram.replace(re, `_${s}_`);
       console.log(tokenizedProgram);
     });
     tokenizedProgram = tokenizedProgram.replace(/__/g, "_");
     console.log(tokenizedProgram);
     const temparray = tokenizedProgram.split("_");
-    this.tokens = temparray.slice(1);
+    const slicedArray = temparray.slice(1);
+    this.tokens = slicedArray.map((t) => t.trim());
     console.log(this.tokens);
   }
 
@@ -53,7 +56,7 @@ class Tokenizer {
   checkToken(regexp) {
     const s = this.checkNext();
     console.log(`comparing: |${s}|  to  |${regexp}|`);
-    return s.match(regexp);
+    return !!s.match(regexp);
   }
 
   getAndCheckToken(regexp) {
