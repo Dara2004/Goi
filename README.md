@@ -16,13 +16,14 @@ Create Deck French with Tags language, hard, midterm using Style mystyle:
 
 ### EBNF
 ```
-PROGRAM ::= CREATE_STYLE* CREATE_DECK*
+PROGRAM ::= CREATE_STYLE* CREATE_DECK+
 
 CREATE_DECK ::= “Create Deck” NAME MODIFIERS”:” DECK
 MODIFIERS ::= (“with Tags” TAGS (“using Style” STYLE)?) | (“using Style” STYLE (“with Tags” TAGS)?)
 DECK ::= CARD+
 CARD ::= “(”NUMBER”) ” STRING “:” STRING
-TAGS ::= STRING”,”? TAGS
+TAGS ::= TAG (“, ” TAG)*
+TAG ::= [^,]+
 
 CREATE_STYLE ::= “Create Style” NAME “:” STYLE
 STYLE ::= ATTRIBUTE “=” STRING
@@ -47,16 +48,14 @@ Start Session from random cards from Decks: deck1, deck2
 
 ### EBNF
 ```
-COMMANDS ::= (ACTION SELECTOR? SUBJECT LIMIT? | HELP | (LIST LIMIT?)
-ACTION ::= “Show” | “Start Session from”
-
-SELECTOR ::= (STAT “time spent on”) | 
-             (BEST_WORST “scores for”) | 
-             (BEST_WORST | “random” “cards from ”) | 
-             OLDEST_NEWEST
-STAT ::= “minimum” | “maximum” | “average” 
-OLDEST_NEWEST::= “oldest” | “newest”
-BEST_WORST ::= “best” | “worst”
+COMMANDS ::= ((SHOW | START_SESSION) SUBJECT LIMIT?) | HELP | LIST
+SHOW ::= "Show" (STAT_TO_SHOW | SELECTED_CARDS)
+STAT_TO_SHOW ::= STAT STAT_ITEM
+STAT ::= "minimum" | "maximum" | "average"
+STAT_ITEM ::= "time spent on" | "scores for"
+SELECTED_CARDS::= CARD_FILTER "cards from"
+CARD_FILTER ::= "best" |  "worst" | "random" | "oldest" | "newest"
+START_SESSION ::= "Start Session from"  SELECTED_CARDS?
 
 SUBJECT ::= (“Decks: ” DECKS) | (“Tags: ” TAGS) | “Sessions”
 LIMIT ::=  “(limit: “ + INT +”)”
