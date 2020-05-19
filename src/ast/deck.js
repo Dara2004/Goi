@@ -1,0 +1,3 @@
+class Deck extends LibNode {
+
+}
