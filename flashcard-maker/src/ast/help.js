@@ -1,0 +1,3 @@
+class Help extends LibNode {
+
+}

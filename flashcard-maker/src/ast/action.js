@@ -1,0 +1,3 @@
+class Action extends LibNode {
+
+}

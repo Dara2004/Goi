@@ -1,0 +1,3 @@
+class Filter extends LibNode {
+
+}

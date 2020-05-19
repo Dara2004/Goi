@@ -1,0 +1,3 @@
+class Tags extends LibNode {
+
+}
