@@ -3,6 +3,7 @@ import NewCard from "./NewCard";
 
 // import React from 'react';
 import CenteredTabs from './CenteredTabs';
+import { Paper } from "material-ui";
 
 export default function CardView() {
     return (
@@ -13,6 +14,9 @@ export default function CardView() {
                         <CenteredTabs></CenteredTabs>
                     </div>
                     <NewCard></NewCard>
+                    <div className="deck-grid">
+                        <Paper />
+                    </div>
                 </div>
             </div>
         </>
