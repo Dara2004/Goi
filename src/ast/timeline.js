@@ -1,3 +1,0 @@
-class TimeLine extends LibNode {
-
-}

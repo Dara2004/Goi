@@ -1,3 +1,0 @@
-class Stat extends LibNode {
-
-}

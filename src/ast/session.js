@@ -1,3 +1,0 @@
-class Session extends LibNode {
-
-}
