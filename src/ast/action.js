@@ -1,3 +1,3 @@
-class Action extends LibNode {
+class Action extends NODE {
 
 }

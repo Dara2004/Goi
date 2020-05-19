@@ -1,3 +1,3 @@
-class Subject extends LibNode {
+class Subject extends NODE {
 
 }

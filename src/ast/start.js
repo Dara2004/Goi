@@ -1,3 +1,3 @@
-class Start extends LibNode {
+class Start extends NODE {
 
 }

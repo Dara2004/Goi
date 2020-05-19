@@ -1,3 +1,3 @@
-class Tags extends LibNode {
+class Tags extends NODE {
 
 }

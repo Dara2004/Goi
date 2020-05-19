@@ -1,3 +1,3 @@
-class Style extends LibNode {
+class Style extends NODE {
 
 }

@@ -1,4 +1,4 @@
-class LibNode {
+class NODE {
     // file stuff commented out for now: uncomment if needed
     // fs = require('fs');
     // writeDataFile(data) {

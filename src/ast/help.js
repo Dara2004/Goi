@@ -1,3 +1,3 @@
-class Help extends LibNode {
+class Help extends NODE {
 
 }

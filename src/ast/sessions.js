@@ -1,3 +1,3 @@
-class Sessions extends LibNode {
+class Sessions extends NODE {
 
 }

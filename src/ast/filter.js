@@ -1,3 +1,3 @@
-class Filter extends LibNode {
+class Filter extends NODE {
 
 }
