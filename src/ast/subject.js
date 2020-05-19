@@ -1,3 +1,0 @@
-class Subject extends LibNode {
-
-}

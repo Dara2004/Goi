@@ -1,3 +1,0 @@
-class Start extends LibNode {
-
-}

@@ -16,11 +16,11 @@ class Tokenizer {
     console.log(this.program);
 
     this.literals.forEach(
-        s => {
-          const re = new RegExp(s, 'g');
-          tokenizedProgram = tokenizedProgram.replace(re, `_${s}_`);
-          console.log(tokenizedProgram);
-        });
+      s => {
+        const re = new RegExp(s, 'g');
+        tokenizedProgram = tokenizedProgram.replace(re, `_${s}_`);
+        console.log(tokenizedProgram);
+      });
     tokenizedProgram = tokenizedProgram.replace(/__/g, '_');
     console.log(tokenizedProgram);
     const temparray = tokenizedProgram.split('_');
@@ -64,7 +64,7 @@ class Tokenizer {
 
     if (!s.match(regexp)) {
       throw Error(
-          `Unexpected next token for Parsing! Expected something matching: ${regexp} but got: ${s}`);
+        `Unexpected next token for Parsing! Expected something matching: ${regexp} but got: ${s}`);
     }
     console.log(`matched: ${s}  to  ${regexp}`);
 

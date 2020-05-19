@@ -1,3 +1,0 @@
-class Selector extends LibNode {
-
-}
