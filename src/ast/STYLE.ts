@@ -1,4 +1,4 @@
-class Tags extends Node {
+export default class Style extends Node {
     parse() {
         // stub
         throw new Error('Not implemented');
