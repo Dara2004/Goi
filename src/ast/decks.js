@@ -1,3 +1,0 @@
-class Decks extends LibNode {
-
-}

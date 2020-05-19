@@ -1,4 +1,0 @@
-class Create extends LibNode {
-
-}
-

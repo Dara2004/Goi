@@ -1,4 +1,6 @@
-export default class Style extends Node {
+import NODE from "../lib/NODE";
+
+export default class STYLE extends NODE {
     parse() {
         // stub
         throw new Error('Not implemented');
