@@ -142,9 +142,9 @@ test("Tokenizer::checkToken", () => {
   tokenizer.tokens = expectedTokens;
 
   expectedTokens.forEach((token) => {
-    expect(tokenizer.checkToken(token)).toBeTruthy();
-    expect(tokenizer.checkToken(" ")).toBeFalsy();
-    expect(tokenizer.checkToken("non-match")).toBeFalsy();
+    expect(tokenizer.checkToken(new RegExp(`^${token}$`))).toBeTruthy();
+    expect(!tokenizer.checkToken(new RegExp("$ ^")));
+    expect(!tokenizer.checkToken(new RegExp("$non-match^")));
     const _ = tokenizer.getNext();
   });
 });
