@@ -84,9 +84,7 @@ class Tokenizer {
   }
 
   static makeTokenizer(content: string, literals: Array<string>): void {
-    if (!this.theTokenizer) {
-      this.theTokenizer = new Tokenizer(content, literals);
-    }
+    this.theTokenizer = new Tokenizer(content, literals);
   }
 
   static getTokenizer(): Tokenizer {
