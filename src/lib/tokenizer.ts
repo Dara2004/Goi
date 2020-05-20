@@ -57,16 +57,18 @@ class Tokenizer {
     return token;
   }
 
-  checkToken(regexp: RegExp): boolean {
+  checkToken(regexp: string): boolean {
     const s = this.checkNext();
+    const re = new RegExp(regexp);
     console.log(`comparing: |${s}|  to  |${regexp}|`);
-    return !!s.match(regexp);
+    return !!s.match(re);
   }
 
-  getAndCheckToken(regexp: RegExp): string {
+  getAndCheckToken(regexp: string): string {
     const s = this.getNext();
+    const re = new RegExp(regexp);
 
-    if (!s.match(regexp)) {
+    if (!s.match(re)) {
       throw Error(
         `Unexpected next token for Parsing! Expected something matching: ${regexp} but got: ${s}`
       );
