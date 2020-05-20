@@ -27,8 +27,9 @@ class Tokenizer {
     tokenizedProgram = tokenizedProgram.replace(/__/g, "_");
     console.log(tokenizedProgram);
     const temparray = tokenizedProgram.split("_");
-    const slicedArray = temparray.slice(1);
-    this.tokens = slicedArray.map((t) => t.trim());
+    console.log(temparray);
+    let trimmedArray = temparray.map((t) => t.trim());
+    this.tokens = trimmedArray.filter(Boolean);
     console.log(this.tokens);
   }
 
