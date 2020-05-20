@@ -2,11 +2,17 @@ import NODE from "./NODE";
 import CARD from "./CARD";
 
 export default class DECK extends NODE {
-  name: string = "";
   cards: CARD[] = [];
   parse() {
-    // stub
-    throw new Error("Not implemented");
+    this.tokenizer.getAndCheckToken(":");
+    while (
+      this.tokenizer.moreTokens() &&
+      !this.tokenizer.checkToken("Creat Style")
+    ) {
+      let card = new CARD();
+      card.parse();
+      this.cards.push(card);
+    }
   }
 
   evaluate() {

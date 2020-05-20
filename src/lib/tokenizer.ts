@@ -16,7 +16,7 @@ class Tokenizer {
 
   tokenize(): void {
     let tokenizedProgram = Tokenizer.program;
-    tokenizedProgram = tokenizedProgram.replace(/\n/g, "");
+    tokenizedProgram = tokenizedProgram.replace(/\n/g, "_");
     console.log(Tokenizer.program);
 
     Tokenizer.literals.forEach((s) => {
@@ -28,7 +28,9 @@ class Tokenizer {
     console.log(tokenizedProgram);
     const temparray = tokenizedProgram.split("_");
     const slicedArray = temparray.slice(1);
-    this.tokens = slicedArray.map((t) => t.trim());
+    this.tokens = slicedArray
+      .map((t) => t.trim())
+      .filter((t) => t !== "," && t !== "");
     console.log(this.tokens);
   }
 
@@ -82,8 +84,8 @@ class Tokenizer {
     return this.currentToken < this.tokens.length;
   }
 
-  static makeTokenizer(content: string, literals: Array<string>): void {
-    if (!this.theTokenizer) {
+  static makeTokenizer(content: string, literals: Array<string>, makeNewTokenizer?: boolean): void {
+    if (!this.theTokenizer || makeNewTokenizer) {
       this.theTokenizer = new Tokenizer(content, literals);
     }
   }

@@ -5,8 +5,12 @@ export default class CARD extends NODE {
   front: string = "";
   back: string = "";
   parse() {
-    // stub
-    throw new Error("Not implemented");
+    this.tokenizer.getAndCheckToken("\\(");
+    this.id = parseInt(this.tokenizer.getNext());
+    this.tokenizer.getAndCheckToken("\\)");
+    this.front = this.tokenizer.getNext();
+    this.tokenizer.getAndCheckToken(":");
+    this.back = this.tokenizer.getNext();
   }
 
   evaluate() {
