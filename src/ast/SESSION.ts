@@ -1,6 +1,3 @@
-import NODE from "../lib/NODE";
+import NODE from "./NODE";
 
-
-export default class SESSION extends NODE {
-
-}
+export default class SESSION extends NODE {}

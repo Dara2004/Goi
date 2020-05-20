@@ -1,4 +1,4 @@
-import Tokenizer from "./tokenizer";
+import Tokenizer from "../lib/tokenizer";
 
 export default class NODE {
   fs = require("fs");
