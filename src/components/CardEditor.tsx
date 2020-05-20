@@ -1,6 +1,6 @@
 import React from "react";
 import "codemirror/lib/codemirror.css";
-import "codemirror/theme/lucario.css";
+import "codemirror/theme/material.css";
 import "codemirror/mode/xml/xml";
 import { UnControlled as CodeMirror } from "react-codemirror2";
 
@@ -26,7 +26,7 @@ Align = Center
 `}
           options={{
             mode: "xml",
-            theme: "lucario",
+            theme: "material",
             lineNumbers: true,
           }}
           onChange={(editor, data, value) => {

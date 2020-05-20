@@ -18,6 +18,7 @@ export default function CommandEditor(props: Props) {
             lineNumbers: true,
           }}
           onChange={(editor, data, value) => {
+            console.log(value === ">Start session");
             props.onChange(value); //trigger handleChange in parent component with the value user type in
           }}
         />

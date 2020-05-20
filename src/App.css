@@ -1,70 +1,72 @@
 html {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 body {
-    background-color: "#FAFAFA";
-    margin: 0;
-    padding: 0;
-    margin-top: 0;
-    margin-bottom: 0;
+  background-color: "#FAFAFA";
+  margin: 0;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .navbar {
   position: fixed;
   height: 5em;
   background-color: white;
   padding-left: 5em;
-  z-index: 2;
 }
 
-.card-editor{
-    margin-top: 5em;
-    height: 60vh;
-    width: 20vw;
-    grid-area: card-editor;
-    z-index: 1;
-
+.card-editor {
+  margin-top: 5em;
+  height: 60vh;
+  width: 40vw;
+  grid-area: card-editor;
 }
 
 .card-editor-codemirror {
-    height: 500px;
-    /* width: 100vw; */
-    /* display: flex; */
+  height: 500px;
+  /* width: 100vw; */
+  /* display: flex; */
 }
 
 .card-editor .CodeMirror {
-    height: 60vh !important;
+  height: 60vh !important;
 }
 .command-editor {
-    height: 30vh;
-    width: 20vw;
-    grid-area: command-editor;
-    z-index: 1;
+  height: 30vh;
+  width: 40vw;
+  grid-area: command-editor;
 }
-.card-view{
-    margin-left: 4em;
-    grid-area: card-view;
-    width: 80vw;
-    text-align: center;
+.card-view {
+  margin-left: 4em;
+  grid-area: card-view;
+  width: 60vw;
+  text-align: center;
 }
 
 .container {
-    display: grid;
-    height: 100vh;
-    min-width: 0;
-    grid-template-columns: 1fr 2fr;
-    grid-template-rows: 2fr 1fr;
-    grid-template-areas: "card-editor card-view"
-                        "command-editor card-view";
+  display: grid;
+  height: 100vh;
+  min-width: 0;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 2fr 1fr;
+  grid-template-areas:
+    "card-editor card-view"
+    "command-editor card-view";
 }
 
 .card-view {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 }
 .card-view-container {
-    text-align: center;
-    margin-top: 5em;
-    display: flex;
+  text-align: center;
+  margin-top: 5em;
+  display: flex;
+}
+
+.session-header,
+.statistics-header {
+  margin-top: 5em;
 }

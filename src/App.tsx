@@ -9,7 +9,6 @@ import Session from "./components/Session";
 import Statistics from "./components/Statistics";
 
 const updateViewReducer = (state, action) => {
-  console.log("hi");
   switch (action.type) {
     case "create cards": {
       return {
@@ -33,18 +32,17 @@ const initialState = {
   command: "",
 };
 export default function App() {
-  // const [cards, setCards] = useState([{ front: "Example", back: "Exemple" }]);
-  const [state, dispatch] = useReducer(updateViewReducer, initialState);
-  const { cards, command } = state;
+  const [{ cards, command }, dispatch] = useReducer(
+    updateViewReducer,
+    initialState
+  );
 
   const handleCardsChange = (value) => {
-    console.log("value =", value);
-    // setCards([{ front: value, back: value }]); //use actual front and back in AST to set cards
+    //use actual front and back in AST to set cards
     dispatch({ type: "create cards", value: value });
   };
 
   const handleCommandChange = (value) => {
-    console.log(value);
     dispatch({ type: "command", value: value });
   };
 
@@ -54,19 +52,16 @@ export default function App() {
         <NavBar></NavBar>
       </div>
       <div className="container">
-        {/* card editor causes cardview to change-> setcards */}
         <CardEditor onChange={handleCardsChange}></CardEditor>
         <CommandEditor onChange={handleCommandChange}></CommandEditor>
-        <CardView cards={state.cards}></CardView>
-        {command === "Start Session" ? (
+        {command === ">Start session" ? (
           <Session></Session>
-        ) : command === "Show" ? (
+        ) : command === ">Show" ? (
           <Statistics></Statistics>
         ) : (
-          <></>
+          <CardView cards={cards}></CardView>
         )}
       </div>
-      <Session></Session>
     </>
   );
 }
