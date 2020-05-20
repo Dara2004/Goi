@@ -1,13 +1,13 @@
-import NODE from '../lib/NODE';
+import NODE from "./NODE";
 
 export default class TAG extends NODE {
-    tagName: string = "";
-    parse() {
-        this.tagName = this.tokenizer.getNext();
-    }
+  tagName: string = "";
+  parse() {
+    this.tagName = this.tokenizer.getNext();
+  }
 
-    evaluate() {
-        // stub
-        throw new Error('Not implemented');
-    }
+  evaluate() {
+    // stub
+    throw new Error("Not implemented");
+  }
 }
