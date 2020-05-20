@@ -1,21 +1,25 @@
 class Tokenizer {
-  static theTokenizer;
+  private static program: string;
+  private static literals: Array<string>;
+  private tokens: Array<string>;
+  private currentToken: number;
+  private static theTokenizer: Tokenizer;
 
-  constructor(content, literalsList) {
-    this.program = content;
-    this.literals = literalsList;
+  private constructor(content: string, literalsList: Array<string>) {
+    Tokenizer.program = content;
+    Tokenizer.literals = literalsList;
     this.tokens = [];
     this.currentToken = 0;
 
     this.tokenize();
   }
 
-  tokenize() {
-    let tokenizedProgram = this.program;
+  tokenize(): void {
+    let tokenizedProgram = Tokenizer.program;
     tokenizedProgram = tokenizedProgram.replace(/\n/g, "");
-    console.log(this.program);
+    console.log(Tokenizer.program);
 
-    this.literals.forEach((s) => {
+    Tokenizer.literals.forEach((s) => {
       const re = new RegExp(s, "g");
       tokenizedProgram = tokenizedProgram.replace(re, `_${s}_`);
       console.log(tokenizedProgram);
@@ -28,7 +32,7 @@ class Tokenizer {
     console.log(this.tokens);
   }
 
-  checkNext() {
+  checkNext(): string {
     let token = "";
 
     if (this.currentToken < this.tokens.length) {
@@ -40,7 +44,7 @@ class Tokenizer {
     return token;
   }
 
-  getNext() {
+  getNext(): string {
     let token = "";
 
     if (this.currentToken < this.tokens.length) {
@@ -53,13 +57,13 @@ class Tokenizer {
     return token;
   }
 
-  checkToken(regexp) {
+  checkToken(regexp: RegExp): boolean {
     const s = this.checkNext();
     console.log(`comparing: |${s}|  to  |${regexp}|`);
     return !!s.match(regexp);
   }
 
-  getAndCheckToken(regexp) {
+  getAndCheckToken(regexp: RegExp): string {
     const s = this.getNext();
 
     if (!s.match(regexp)) {
@@ -72,17 +76,17 @@ class Tokenizer {
     return s;
   }
 
-  moreTokens() {
+  moreTokens(): boolean {
     return this.currentToken < this.tokens.length;
   }
 
-  static makeTokenizer(content, literals) {
+  static makeTokenizer(content: string, literals: Array<string>): void {
     if (!this.theTokenizer) {
       this.theTokenizer = new Tokenizer(content, literals);
     }
   }
 
-  static getTokenizer() {
+  static getTokenizer(): Tokenizer {
     return this.theTokenizer;
   }
 }
