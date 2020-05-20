@@ -7,12 +7,12 @@ class PROGRAM extends NODE {
   create_styles: CREATE_STYLE[] = [];
   parse() {
     while (this.tokenizer.moreTokens()) {
-      if (this.tokenizer.checkToken("Create Deck")) {
+      if (this.tokenizer.checkToken(new RegExp("Create Deck"))) {
         let create_deck = new CREATE_DECK();
         create_deck.parse();
         this.create_decks.push(create_deck);
       }
-      if (this.tokenizer.checkToken("Create Style")) {
+      if (this.tokenizer.checkToken(new RegExp("Create Style"))) {
         let create_style = new CREATE_STYLE();
         create_style.parse();
         this.create_styles.push(create_style);
