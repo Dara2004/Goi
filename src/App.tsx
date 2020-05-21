@@ -13,7 +13,12 @@ const updateViewReducer = (state, action) => {
     case "create cards": {
       return {
         ...state,
-        cards: [{ front: action.value, back: action.value }],
+        cards: [
+          {
+            front: action.value.substr(12, 6),
+            back: action.value.substr(12, 6),
+          },
+        ],
       };
     }
     case "command": {
@@ -54,9 +59,9 @@ export default function App() {
       <div className="container">
         <CardEditor onChange={handleCardsChange}></CardEditor>
         <CommandEditor onChange={handleCommandChange}></CommandEditor>
-        {command === ">Start session" ? (
+        {command === "> Start session" ? (
           <Session></Session>
-        ) : command === ">Show" ? (
+        ) : command === "> Show stats" ? (
           <Statistics></Statistics>
         ) : (
           <CardView cards={cards}></CardView>
