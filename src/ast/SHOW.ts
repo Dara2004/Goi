@@ -5,10 +5,15 @@ import * as constants from "../lib/constants";
 
 export default class SHOW extends NODE {
   subjectModifer: SELECTED_CARDS | STAT_TO_SHOW | null = null;
+  limit: number = NaN;
 
   parse() {
-    this.tokenizer.getAndCheckToken("Show");
-    const nextToken = this.tokenizer.checkNext();
+    this.tokenizer.getAndCheckToken("Show stats for");
+    let nextToken = this.tokenizer.checkNext();
+    if (!isNaN(Number(nextToken))) {
+      this.limit = Number(this.tokenizer.getNext());
+      nextToken = this.tokenizer.checkNext();
+    }
     if (constants.validCardFilter.includes(nextToken)) {
       this.subjectModifer = new SELECTED_CARDS();
     } else if (constants.validStat.includes(nextToken)) {
