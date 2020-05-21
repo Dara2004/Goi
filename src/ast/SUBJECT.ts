@@ -1,3 +1,22 @@
 import NODE from "./NODE";
+import TAGS from "./TAGS";
+import DECKS from "./DECKS";
+import SESSIONS from "./SESSIONS";
 
-export default class SUBJECT extends NODE {}
+export default class SUBJECT extends NODE {
+  subject: TAGS | DECKS | SESSIONS | null = null;
+
+  parse() {
+    const nextToken = this.tokenizer.checkNext();
+    if (nextToken === "Sessions") {
+      this.subject = new SESSIONS();
+      this.subject.parse();
+    } else if (nextToken === "Decks:") {
+      this.subject = new DECKS();
+      this.subject.parse();
+    } else if (nextToken === "Tags:") {
+      this.subject = new TAGS();
+      this.subject.parseInteractivePrompt();
+    }
+  }
+}

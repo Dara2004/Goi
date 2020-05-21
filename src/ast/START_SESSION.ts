@@ -10,7 +10,7 @@ export default class START_SESSION extends NODE {
     this.tokenizer.getAndCheckToken("Start Session from");
     const nextToken = this.tokenizer.checkNext();
     if (!isNaN(Number(nextToken))) {
-      this.limit = Number(this.tokenizer.getNext());
+      this.limit = Math.round(Number(this.tokenizer.getNext()));
     }
     if (constants.validCardFilter.includes(this.tokenizer.checkNext())) {
       this.selectedCards = new SELECTED_CARDS();

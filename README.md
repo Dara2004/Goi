@@ -48,14 +48,20 @@ Show stats for average time spent on Decks: deck2
 Start Session from Decks: deck1, deck2
 Start Session from Tags: hard, language
 Start Session from random cards from Decks: deck1, deck2
+Start Session from 10 worst cards from Decks: deck1, deck2
 ```
 
 ### EBNF
 
 ```
-COMMANDS ::= ((SHOW | START_SESSION) SUBJECT) | HELP | LIST
+COMMAND ::=  COMPLEX_COMMAND | HELP | LIST
 
-SHOW ::= "Show stats for" INT? (STAT_TO_SHOW | SELECTED_CARDS)
+COMPLEX_COMMAND ::= SUBJECT_MODIFIER SUBJECT
+SUBJECT_MODIFIER ::= SHOW | START_SESSION
+SUBJECT ::= (“Decks: ” DECKS) | (“Tags: ” TAGS) | “Sessions”
+
+SHOW ::= "Show stats for" INT? SHOW_SUBJECT
+SHOW_SUBJECT ::= STAT_TO_SHOW | SELECTED_CARDS
 STAT_TO_SHOW ::= STAT STAT_ITEM
 STAT ::= "minimum" | "maximum" | "average"
 STAT_ITEM ::= "time spent on" | "scores for"
@@ -64,7 +70,6 @@ CARD_FILTER ::= "best" |  "worst" | "random" | "oldest" | "newest"
 
 START_SESSION ::= "Start Session from" (“the” INT)? SELECTED_CARDS?
 
-SUBJECT ::= (“Decks: ” DECKS) | (“Tags: ” TAGS) | “Sessions”
 DECKS ::= DECK (“, ” DECK)*
 DECK ::= [^,]+
 TAGS ::= TAG (“, ” TAG)*

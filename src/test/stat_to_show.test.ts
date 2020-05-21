@@ -13,5 +13,5 @@ test("StatToShow parse should parse if syntax is valid", () => {
   let expectedStatToShow = new STAT_TO_SHOW();
   expectedStatToShow.stat = "minimum";
   expectedStatToShow.statItem = "time spent on";
-  expect(show.subjectModifer).toEqual(expectedStatToShow);
+  expect(show.showSubject).toEqual(expectedStatToShow);
 });

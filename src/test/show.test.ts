@@ -14,7 +14,7 @@ test("Show parse should parse STAT_TO_SHOW if syntax is valid", () => {
   let expectedStatToShow = new STAT_TO_SHOW();
   expectedStatToShow.stat = "minimum";
   expectedStatToShow.statItem = "time spent on";
-  expect(show.subjectModifer).toEqual(expectedStatToShow);
+  expect(show.showSubject).toEqual(expectedStatToShow);
 });
 
 test("Show parse should parse STAT_TO_SHOW with limit if syntax is valid", () => {
@@ -28,7 +28,7 @@ test("Show parse should parse STAT_TO_SHOW with limit if syntax is valid", () =>
   expectedStatToShow.stat = "minimum";
   expectedStatToShow.statItem = "time spent on";
   expect(show.limit).toEqual(10);
-  expect(show.subjectModifer).toEqual(expectedStatToShow);
+  expect(show.showSubject).toEqual(expectedStatToShow);
 });
 
 test("Show parse should parse SELECTED_CARDS if syntax is valid", () => {
@@ -40,5 +40,5 @@ test("Show parse should parse SELECTED_CARDS if syntax is valid", () => {
   show.parse();
   let expectedSelectedCards = new SELECTED_CARDS();
   expectedSelectedCards.cardFilter = "random";
-  expect(show.subjectModifer).toEqual(expectedSelectedCards);
+  expect(show.showSubject).toEqual(expectedSelectedCards);
 });
