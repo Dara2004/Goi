@@ -14,15 +14,29 @@ export default class ATTRIBUTE extends NODE {
     switch (currentAttribute) {
       case "add Alignment":
         this.attribute.attributeType = "alignment";
-        this.attribute.value = this.tokenizer.getNext();
+        if (this.tokenizer.checkToken("center|right|left")) {
+          this.attribute.value = this.tokenizer.getNext();
+        } else {
+          throw new Error("Alignment Attribute is not valid");
+        }
         break;
       case "add Direction":
         this.attribute.attributeType = "direction";
-        this.attribute.value = this.tokenizer.getNext();
+        if (this.tokenizer.checkToken("horizontal|vertical")) {
+          this.attribute.value = this.tokenizer.getNext();
+        } else {
+          throw new Error("Direction Attribute is not valid");
+        }
         break;
       case "add Color":
         this.attribute.attributeType = "color";
-        this.attribute.value = this.tokenizer.getNext();
+        if (
+          this.tokenizer.checkToken("red|blue|yellow|purple|green|grey|brown")
+        ) {
+          this.attribute.value = this.tokenizer.getNext();
+        } else {
+          throw new Error("Color Attribute is not valid");
+        }
         break;
       default:
         return;
