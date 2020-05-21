@@ -28,9 +28,7 @@ class Tokenizer {
     console.log(tokenizedProgram);
     const temparray = tokenizedProgram.split("_");
     const slicedArray = temparray.slice(1);
-    this.tokens = slicedArray
-      .map((t) => t.trim())
-      .filter((t) => t !== "," && t !== "");
+    this.tokens = slicedArray.map((t) => t.trim()).filter((t) => t !== "");
     console.log(this.tokens);
   }
 
@@ -84,7 +82,11 @@ class Tokenizer {
     return this.currentToken < this.tokens.length;
   }
 
-  static makeTokenizer(content: string, literals: Array<string>, makeNewTokenizer?: boolean): void {
+  static makeTokenizer(
+    content: string,
+    literals: Array<string>,
+    makeNewTokenizer?: boolean
+  ): void {
     if (!this.theTokenizer || makeNewTokenizer) {
       this.theTokenizer = new Tokenizer(content, literals);
     }
