@@ -3,52 +3,38 @@ html {
   padding: 0;
 }
 body {
-  background-color: "#FAFAFA";
   margin: 0;
   padding: 0;
   margin-top: 0;
   margin-bottom: 0;
+  font-family: "Roboto Mono", monospace;
 }
 .navbar {
-  position: fixed;
   height: 5em;
   background-color: white;
-  padding-left: 5em;
+  padding-left: 10em;
 }
 
 .card-editor {
-  margin-top: 5em;
-  height: 60vh;
-  width: 40vw;
   grid-area: card-editor;
 }
 
 .card-editor-codemirror {
   height: 500px;
-  /* width: 100vw; */
-  /* display: flex; */
 }
 
 .card-editor .CodeMirror {
   height: 60vh !important;
 }
 .command-editor {
-  height: 30vh;
-  width: 40vw;
   grid-area: command-editor;
-}
-.card-view {
-  margin-left: 4em;
-  grid-area: card-view;
-  width: 60vw;
-  text-align: center;
 }
 
 .container {
   display: grid;
-  height: 100vh;
+  /* height: 100vh; */
   min-width: 0;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 4fr 6fr;
   grid-template-rows: 2fr 1fr;
   grid-template-areas:
     "card-editor card-view"
@@ -59,14 +45,43 @@ body {
   align-items: center;
   display: flex;
   flex-direction: column;
-}
-.card-view-container {
   text-align: center;
-  margin-top: 5em;
-  display: flex;
 }
 
-.session-header,
 .statistics-header {
-  margin-top: 5em;
+  text-align: center;
+}
+
+.card-view-container {
+  grid-area: card-view;
+  overflow-y: auto;
+  height: 90vh;
+}
+
+.session-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.MuiLinearProgress-barColorPrimary {
+  background-color: #6fcf97 !important;
+}
+
+.MuiLinearProgress-colorPrimary {
+  background-color: white !important;
+}
+
+.MuiMobileStepper-root {
+  background: #fafafa !important;
+  justify-content: space-evenly !important;
+}
+
+.PrivateTabIndicator-colorPrimary-27 {
+  background-color: #6fcf97 !important;
+}
+
+.MuiTab-textColorPrimary.Mui-selected {
+  font-weight: bold !important;
+  color: #666666 !important;
 }

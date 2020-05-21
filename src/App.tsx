@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useReducer } from "react";
 import "./App.css";
 import NavBar from "./components/NavBar";
-import CardView from "./components/CardView";
+import DeckView from "./components/DeckView";
 import { UnControlled as CodeMirror } from "react-codemirror2";
 import CardEditor from "./components/CardEditor";
 import CommandEditor from "./components/CommandEditor";
@@ -13,7 +13,12 @@ const updateViewReducer = (state, action) => {
     case "create cards": {
       return {
         ...state,
-        cards: [{ front: action.value, back: action.value }],
+        cards: [
+          {
+            front: action.value.substr(12, 6),
+            back: action.value.substr(12, 6),
+          },
+        ],
       };
     }
     case "command": {
@@ -51,15 +56,17 @@ export default function App() {
       <div className="navbar">
         <NavBar></NavBar>
       </div>
-      <div className="container">
+      <div className="container" style={{ backgroundColor: "#FAFAFA" }}>
         <CardEditor onChange={handleCardsChange}></CardEditor>
         <CommandEditor onChange={handleCommandChange}></CommandEditor>
-        {command === ">Start session" ? (
+        {command === "> Start session" ? (
           <Session></Session>
-        ) : command === ">Show" ? (
+        ) : command === "> Show stats" ? (
           <Statistics></Statistics>
         ) : (
-          <CardView cards={cards}></CardView>
+          <>
+            <DeckView cards={cards}></DeckView>
+          </>
         )}
       </div>
     </>

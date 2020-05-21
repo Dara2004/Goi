@@ -19,7 +19,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      maxWidth: 345,
+      // maxWidth: 345,
     },
     media: {
       height: 0,
@@ -54,12 +54,17 @@ export default function NewCard(props: Props) {
   return (
     <>
       <Card
-        style={{ marginTop: "4em", width: "40em" }}
+        style={{
+          marginTop: "4em",
+          width: "25em",
+          display: "flex",
+          flexDirection: "column",
+        }}
         className={classes.root}
       >
         <CardHeader title="" />
         <CardContent>
-          <div style={{ height: "6em" }}>
+          <div style={{ height: "4em", marginTop: "4em" }}>
             <Typography paragraph style={{}}>
               {props.front}
             </Typography>
@@ -78,7 +83,11 @@ export default function NewCard(props: Props) {
           </IconButton>
         </CardActions>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
-          <CardContent>
+          <CardContent
+            style={{
+              marginTop: "4em",
+            }}
+          >
             <div style={{ height: "6em", alignItems: "center" }}>
               <Typography paragraph>{props.back}</Typography>
             </div>
