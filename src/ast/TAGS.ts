@@ -5,11 +5,14 @@ export default class TAGS extends NODE {
   tags: TAG[] = [];
 
   parse() {
-    this.tokenizer.getAndCheckToken("with Tags");
+    this.tokenizer.getAndCheckToken("add Tags");
+    this.tokenizer.getAndCheckToken(":");
     while (
       this.tokenizer.moreTokens() &&
-      this.tokenizer.checkNext() !== "using Style" &&
-      this.tokenizer.checkNext() !== ":"
+      this.tokenizer.checkNext() !== "add Color" &&
+      this.tokenizer.checkNext() !== "add Direction" &&
+      this.tokenizer.checkNext() !== "add Alignment" &&
+      this.tokenizer.checkNext() !== "\\("
     ) {
       let tag = new TAG();
       tag.parse();
@@ -17,8 +20,8 @@ export default class TAGS extends NODE {
     }
   }
 
-    evaluate() {
-        // stub
-        throw new Error('Not implemented');
-    }
+  evaluate() {
+    // stub
+    throw new Error("Not implemented");
+  }
 }

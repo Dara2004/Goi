@@ -1,33 +1,35 @@
 import NODE from "./NODE";
 import DECK from "./DECK";
 import TAGS from "./TAGS";
-import STYLE from "./STYLE";
+import ATTRIBUTES from "./ATTRIBUTES";
 
 const invalidNameTokens = ["with Tags", "using Style", "("];
 
 export default class CREATE_DECK extends NODE {
-  // style: STYLE;
   tags: TAGS | null = null;
-  style: STYLE | null = null;
+  attributes: ATTRIBUTES | null = null;
   deck: DECK | null = null;
   name: string = "";
 
-  checkForAndParseTags(): boolean {
-    if (this.tokenizer.checkToken("with Tags")) {
+  checkForAndParseTags() {
+    if (this.tokenizer.checkToken("add Tags")) {
       this.tags = new TAGS();
       this.tags.parse();
-      return true;
     }
-    return false;
   }
 
-  checkForAndParseStyle(): boolean {
-    if (this.tokenizer.checkToken("using Style")) {
-      this.style = new STYLE();
-      this.style.parse();
-      return true;
+  checkForAndParseAttributes() {
+    if (this.tokenizer.checkToken("add Color|add Alignment|add Direction")) {
+      this.attributes = new ATTRIBUTES();
+      this.attributes.parse();
     }
-    return false;
+  }
+
+  checkForAndParseDeck() {
+    if (this.tokenizer.checkToken("\\(")) {
+      this.deck = new DECK();
+      this.deck.parse();
+    }
   }
 
   parse() {
@@ -38,13 +40,15 @@ export default class CREATE_DECK extends NODE {
       throw new Error("invalid deck name");
     }
     this.name = name;
-    if (this.checkForAndParseTags()) {
-      this.checkForAndParseStyle();
-    } else if (this.checkForAndParseStyle()) {
+    this.tokenizer.getAndCheckToken(":");
+    while (this.tokenizer.moreTokens()) {
       this.checkForAndParseTags();
+      this.checkForAndParseAttributes();
+      this.checkForAndParseDeck();
     }
-    this.deck = new DECK();
-    this.deck.parse();
+
+    // this.deck = new DECK();
+    // this.deck.parse();
   }
 
   evaluate() {
