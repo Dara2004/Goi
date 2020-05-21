@@ -55,7 +55,7 @@ Start Session from random cards from Decks: deck1, deck2
 ```
 COMMANDS ::= ((SHOW | START_SESSION) SUBJECT) | HELP | LIST
 
-SHOW ::= "Show stats for" (“the” INT)? (STAT_TO_SHOW | SELECTED_CARDS)
+SHOW ::= "Show stats for" INT? (STAT_TO_SHOW | SELECTED_CARDS)
 STAT_TO_SHOW ::= STAT STAT_ITEM
 STAT ::= "minimum" | "maximum" | "average"
 STAT_ITEM ::= "time spent on" | "scores for"
