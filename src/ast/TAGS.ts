@@ -14,6 +14,9 @@ export default class TAGS extends NODE {
       !this.tokenizer.checkToken("add Alignment") &&
       !this.tokenizer.checkToken("\\(")
     ) {
+      if (this.tokenizer.checkNext() === ",") {
+        this.tokenizer.getNext();
+      }
       let tag = new TAG();
       tag.parse();
       this.tags.push(tag);
