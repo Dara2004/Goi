@@ -11,7 +11,8 @@ export default function CommandEditor(props: Props) {
     <>
       <div className="command-editor">
         <CodeMirror
-          value={"> "}
+          // value={"> "}
+          value={"> Start session"}
           options={{
             mode: "xml",
             theme: "yonce",
