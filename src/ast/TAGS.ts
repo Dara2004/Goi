@@ -9,19 +9,14 @@ export default class TAGS extends NODE {
     this.tokenizer.getAndCheckToken(":");
     while (
       this.tokenizer.moreTokens() &&
-      this.tokenizer.checkNext() !== "add Color" &&
-      this.tokenizer.checkNext() !== "add Direction" &&
-      this.tokenizer.checkNext() !== "add Alignment" &&
-      this.tokenizer.checkNext() !== "\\("
+      !this.tokenizer.checkToken("add Color") &&
+      !this.tokenizer.checkToken("add Direction") &&
+      !this.tokenizer.checkToken("add Alignment") &&
+      !this.tokenizer.checkToken("\\(")
     ) {
       let tag = new TAG();
       tag.parse();
       this.tags.push(tag);
     }
-  }
-
-  evaluate() {
-    // stub
-    throw new Error("Not implemented");
   }
 }

@@ -28,9 +28,4 @@ export default class ATTRIBUTE extends NODE {
         return;
     }
   }
-
-  evaluate() {
-    // stub
-    throw new Error("Not implemented");
-  }
 }

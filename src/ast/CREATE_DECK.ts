@@ -46,13 +46,5 @@ export default class CREATE_DECK extends NODE {
       this.checkForAndParseAttributes();
       this.checkForAndParseDeck();
     }
-
-    // this.deck = new DECK();
-    // this.deck.parse();
-  }
-
-  evaluate() {
-    // stub
-    throw new Error("Not implemented");
   }
 }

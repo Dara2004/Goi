@@ -17,9 +17,4 @@ export default class CARD extends NODE {
       throw new Error("Card number incorrect in Card");
     }
   }
-
-  evaluate() {
-    // stub
-    throw new Error("Not implemented");
-  }
 }

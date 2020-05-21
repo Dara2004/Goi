@@ -16,9 +16,4 @@ export default class DECK extends NODE {
       this.cards.push(card);
     }
   }
-
-  evaluate() {
-    // stub
-    throw new Error("Not implemented");
-  }
 }
