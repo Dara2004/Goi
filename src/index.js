@@ -6,6 +6,7 @@ import * as serviceWorker from "./serviceWorker";
 
 import { Database } from "@nozbe/watermelondb";
 import LokiJSAdapter from "@nozbe/watermelondb/adapters/lokijs";
+import DatabaseProvider from "@nozbe/watermelondb/DatabaseProvider";
 import schema from "./model/schema";
 import Card from "./model/Card";
 import Deck from "./model/Deck";
@@ -31,7 +32,9 @@ export const initialCodeEditorStr = localStorage.getItem(cardEditorStrKey);
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <DatabaseProvider database={database}>
+      <App />
+    </DatabaseProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
