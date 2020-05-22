@@ -4,6 +4,18 @@ import TAG from "./TAG";
 export default class TAGS extends NODE {
   tags: TAG[] = [];
 
+  parseInteractivePrompt() {
+    this.tokenizer.getAndCheckToken("Tags:");
+    while (this.tokenizer.moreTokens()) {
+      let tag = new TAG();
+      tag.parse();
+      this.tags.push(tag);
+      if (this.tokenizer.checkNext() === ",") {
+        this.tokenizer.getNext();
+      }
+    }
+  }
+
   parse() {
     this.tokenizer.getAndCheckToken("add Tags");
     this.tokenizer.getAndCheckToken(":");

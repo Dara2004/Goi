@@ -7,8 +7,7 @@ test("deck parse should parse if syntax valid", () => {
       "(2) Front:Back\n" +
       "(3) Speak:Parler\n" +
       "(4) Hello:Bonjour",
-    ["\\(", "\\)", ":"],
-    true
+    ["\\(", "\\)", ":"]
   );
   let deck = new DECK();
   deck.parse();

@@ -2,11 +2,11 @@ import Tokenizer from "../lib/tokenizer";
 import CARD from "../ast/CARD";
 
 test("card parse should parse if syntax valid", () => {
-  Tokenizer.makeTokenizer(
-    "(1) Front of the card:Back of the card",
-    ["\\(", "\\)", ":"],
-    true
-  );
+  Tokenizer.makeTokenizer("(1) Front of the card:Back of the card", [
+    "\\(",
+    "\\)",
+    ":",
+  ]);
   let card = new CARD();
   card.parse();
   expect(card.cardNumber).toEqual(1);

@@ -68,8 +68,7 @@ test("create deck parse should parse if name is valid, Tag: Attribute, Cards ord
       "\\(",
       "\\)",
       ":",
-    ],
-    true
+    ]
   );
   let cd = new CREATE_DECK();
   cd.parse();
@@ -107,8 +106,7 @@ test("create deck parse should parse if name is valid: Attribute, Tags, Cards or
       "\\(",
       "\\)",
       ":",
-    ],
-    true
+    ]
   );
   let cd = new CREATE_DECK();
   cd.parse();
@@ -152,8 +150,7 @@ test("create deck parse should parse if name is valid: Attribute, Cards, Tags or
       "\\(",
       "\\)",
       ":",
-    ],
-    true
+    ]
   );
   let cd = new CREATE_DECK();
   cd.parse();
@@ -197,8 +194,7 @@ test("create deck parse should parse if name is valid: Cards, Attributes, Tags o
       "\\(",
       "\\)",
       ":",
-    ],
-    true
+    ]
   );
   let cd = new CREATE_DECK();
   cd.parse();
@@ -240,8 +236,7 @@ test("create deck parse should parse if name is valid: No Attributes or Tags", (
       "\\(",
       "\\)",
       ":",
-    ],
-    true
+    ]
   );
   let cd = new CREATE_DECK();
   cd.parse();

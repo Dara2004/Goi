@@ -82,14 +82,8 @@ class Tokenizer {
     return this.currentToken < this.tokens.length;
   }
 
-  static makeTokenizer(
-    content: string,
-    literals: Array<string>,
-    makeNewTokenizer?: boolean
-  ): void {
-    if (!this.theTokenizer || makeNewTokenizer) {
-      this.theTokenizer = new Tokenizer(content, literals);
-    }
+  static makeTokenizer(content: string, literals: Array<string>): void {
+    this.theTokenizer = new Tokenizer(content, literals);
   }
 
   static getTokenizer(): Tokenizer {
