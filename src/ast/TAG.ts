@@ -5,9 +5,4 @@ export default class TAG extends NODE {
   parse() {
     this.tagName = this.tokenizer.getNext();
   }
-
-  evaluate() {
-    // stub
-    throw new Error("Not implemented");
-  }
 }
