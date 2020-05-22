@@ -1,0 +1,21 @@
+/*for Statistics*/
+h1.statistics {
+  font-weight: normal;
+}
+
+/*for StatsOverview*/
+table.overViewTable,
+th.overViewTable,
+td.overViewTable {
+  border-collapse: collapse;
+  padding: 5px;
+}
+table.overViewTable {
+  margin-top: 60px;
+  margin-bottom: 60px;
+  width: 90%;
+}
+th.overViewTable {
+  text-align: center;
+  font-size: 20px;
+}
