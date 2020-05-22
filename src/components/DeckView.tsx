@@ -11,12 +11,13 @@ import DECK from "../ast/DECK";
 export default function DeckView({ program }: { program: PROGRAM }) {
   const decks: DECK[] = program?.create_decks?.map((cd) => cd.deck);
   if (!decks || decks.length === 0) {
-    return <h1>No decks lol</h1>;
+    return (
+      <div style={{ textAlign: "center" }}>
+        <h2>You have no deck! 🙀 Enter something in the editor!</h2>
+      </div>
+    );
   }
   const lastDeck = decks[decks.length - 1];
-  if (!lastDeck) {
-    return <h1>Last deck is null but apparently we have a deck??</h1>;
-  }
   const { front, back } = lastDeck.cards[lastDeck.cards.length - 1];
 
   return (

@@ -8,7 +8,28 @@ import Tokenizer from "../lib/tokenizer";
 import { deckCreationLiterals } from "../lib/constants";
 
 type Props = { dispatch };
+
 export default function CardEditor(props: Props) {
+  const handleChange = (editor, data, value) => {
+    // Parse it
+    try {
+      Tokenizer.makeTokenizer(value, deckCreationLiterals);
+      const program = new PROGRAM();
+      program.parse();
+      // Check if the last deck in the program is null
+      if (
+        program.create_decks.length !== 0 &&
+        program.create_decks[program.create_decks.length - 1].deck === null
+      ) {
+        console.log("last deck is null, not sending dispatch");
+      } else {
+        props.dispatch({ type: "card editor parse success", program });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       <div className="card-editor">
@@ -25,25 +46,7 @@ export default function CardEditor(props: Props) {
             theme: "material",
             lineNumbers: true,
           }}
-          onChange={(editor, data, value) => {
-            // Parse it
-            try {
-              Tokenizer.makeTokenizer(value, deckCreationLiterals);
-              const program = new PROGRAM();
-              program.parse();
-              // Check if the last deck in the program is null
-              if (
-                program.create_decks[program.create_decks.length - 1].deck ===
-                null
-              ) {
-                console.log("last deck is null, not sending dispatch");
-              } else {
-                props.dispatch({ type: "card editor parse success", program });
-              }
-            } catch (err) {
-              console.log(err);
-            }
-          }}
+          onChange={handleChange}
           className="card-editor-codemirror"
         />
       </div>
