@@ -1,5 +1,5 @@
 import { Model } from "@nozbe/watermelondb";
-import { date, field } from "@nozbe/watermelondb/decorators";
+import { children, date, field } from "@nozbe/watermelondb/decorators";
 import { Associations } from "@nozbe/watermelondb/Model";
 import { TableName } from "./constants";
 
@@ -11,4 +11,5 @@ export default class Deck extends Model {
 
   @field("name") name;
   @date("created_at") created_at;
+  @children(TableName.CARDS) cards;
 }
