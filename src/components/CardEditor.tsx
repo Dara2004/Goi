@@ -3,26 +3,22 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/mode/xml/xml";
 import { UnControlled as CodeMirror } from "react-codemirror2";
+import PROGRAM from "../ast/PROGRAM";
+import Tokenizer from "../lib/tokenizer";
+import { deckCreationLiterals } from "../lib/constants";
 
-type Props = { onChange };
+type Props = { dispatch };
 export default function CardEditor(props: Props) {
   return (
     <>
       <div className="card-editor">
         <CodeMirror
-          value={`Create Deck French with Tags language using style mystyle
-(1) Hello : Bonjour
-(2) Bye : Au revoir
-
-Create Deck Japanese with Tags language
-(1) Hello : Konnichiwa
-(2) Goodbye : Sayoonara
-
-Create Style mystyle:
-Color = Red
-Direction = Horizontal
-Align = Center
-
+          value={`Create Deck Practice Final:
+(1) Foo : Bar
+(2) Bill : Gates
+(3) Steve : Jobs
+(4) Justin : Trudeau 
+(5) Evan : You
 `}
           options={{
             mode: "xml",
@@ -30,7 +26,23 @@ Align = Center
             lineNumbers: true,
           }}
           onChange={(editor, data, value) => {
-            props.onChange(value); //trigger handleChange in parent component with the value user type in
+            // Parse it
+            try {
+              Tokenizer.makeTokenizer(value, deckCreationLiterals);
+              const program = new PROGRAM();
+              program.parse();
+              // Check if the last deck in the program is null
+              if (
+                program.create_decks[program.create_decks.length - 1].deck ===
+                null
+              ) {
+                console.log("last deck is null, not sending dispatch");
+              } else {
+                props.dispatch({ type: "card editor parse success", program });
+              }
+            } catch (err) {
+              console.log(err);
+            }
           }}
           className="card-editor-codemirror"
         />

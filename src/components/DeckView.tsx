@@ -5,11 +5,20 @@ import NewCard from "./NewCard";
 import CenteredTabs from "./CenteredTabs";
 import { Paper } from "@material-ui/core";
 import ListView from "./ListView";
+import PROGRAM from "../ast/PROGRAM";
+import DECK from "../ast/DECK";
 
-export default function CardView({ cards }) {
-  const deckNames = ["Japanese", "Chinese", "French", "Spanish"];
+export default function DeckView({ program }: { program: PROGRAM }) {
+  const decks: DECK[] = program?.create_decks?.map((cd) => cd.deck);
+  if (!decks || decks.length === 0) {
+    return <h1>No decks lol</h1>;
+  }
+  const lastDeck = decks[decks.length - 1];
+  if (!lastDeck) {
+    return <h1>Last deck is null but apparently we have a deck??</h1>;
+  }
+  const { front, back } = lastDeck.cards[lastDeck.cards.length - 1];
 
-  const { front, back } = cards[0];
   return (
     <>
       <div className="card-view-container">
@@ -25,7 +34,9 @@ export default function CardView({ cards }) {
             <CenteredTabs></CenteredTabs>
           </div>
           <NewCard front={front} back={back}></NewCard>
-          <ListView deckNames={deckNames}></ListView>
+          <ListView
+            deckNames={program.create_decks.map((cd) => cd.name)}
+          ></ListView>
         </div>
       </div>
     </>

@@ -3,7 +3,7 @@ import DECK from "./DECK";
 import TAGS from "./TAGS";
 import ATTRIBUTES from "./ATTRIBUTES";
 
-const invalidNameTokens = ["with Tags", "using Style", "("];
+const invalidNameTokens = [":", "(", ")", ",", "NULLTOKEN"];
 
 export default class CREATE_DECK extends NODE {
   tags: TAGS | null = null;
@@ -45,6 +45,7 @@ export default class CREATE_DECK extends NODE {
       this.checkForAndParseTags();
       this.checkForAndParseAttributes();
       this.checkForAndParseDeck();
+      break;
     }
   }
 }

@@ -7,18 +7,19 @@ import CardEditor from "./components/CardEditor";
 import CommandEditor from "./components/CommandEditor";
 import Session from "./components/Session";
 import Statistics from "./components/Statistics";
+import Deck from "./model/Deck";
+import PostSessionSummary from "./components/PostSessionSummary";
+import ListView from "./components/ListView";
+import PROGRAM from "./ast/PROGRAM";
 
 const updateViewReducer = (state, action) => {
   switch (action.type) {
-    case "create cards": {
+    case "card editor parse success": {
+      console.log("received action: parse success");
       return {
         ...state,
-        cards: [
-          {
-            front: action.value.substr(12, 6),
-            back: action.value.substr(12, 6),
-          },
-        ],
+        program: { ...action.program },
+        view: View.DECK,
       };
     }
     case "command": {
@@ -32,23 +33,63 @@ const updateViewReducer = (state, action) => {
   }
   return state;
 };
+
+export enum View {
+  DECK,
+  STATS,
+  SESSION,
+  POST_SESSION,
+  LIST,
+}
+
+const initialProgram = {
+  create_decks: [
+    {
+      name: "Practice Final",
+      deck: {
+        cards: [
+          { front: "Foo", back: "Bar" },
+          { front: "Evan", back: "You" },
+        ],
+      },
+    },
+  ],
+};
+
 const initialState = {
-  cards: [{ front: "Example", back: "Exemple" }],
+  view: View.DECK,
+  program: initialProgram as PROGRAM,
   command: "",
 };
+
 export default function App() {
-  const [{ cards, command }, dispatch] = useReducer(
+  const [{ view, program, command }, dispatch] = useReducer(
     updateViewReducer,
     initialState
   );
 
-  const handleCardsChange = (value) => {
-    //use actual front and back in AST to set cards
-    dispatch({ type: "create cards", value: value });
-  };
-
   const handleCommandChange = (value) => {
     dispatch({ type: "command", value: value });
+  };
+
+  const showView = (view: View) => {
+    switch (view) {
+      case View.DECK: {
+        return <DeckView program={program}></DeckView>;
+      }
+      // case View.LIST: {
+      //   return <ListView></ListView>;
+      // }
+      case View.SESSION: {
+        return <Session></Session>;
+      }
+      case View.STATS: {
+        return <Statistics></Statistics>;
+      }
+      case View.POST_SESSION: {
+        return <PostSessionSummary></PostSessionSummary>;
+      }
+    }
   };
 
   return (
@@ -57,23 +98,9 @@ export default function App() {
         <NavBar></NavBar>
       </div>
       <div className="container" style={{ backgroundColor: "#FAFAFA" }}>
-        {/* <div
-          style={{ gridArea: "card-editor", backgroundColor: "green" }}
-        ></div>
-        <div
-          style={{ gridArea: "command-editor", backgroundColor: "black" }}
-        ></div> */}
-        <CardEditor onChange={handleCardsChange}></CardEditor>
+        <CardEditor dispatch={dispatch}></CardEditor>
         <CommandEditor onChange={handleCommandChange}></CommandEditor>
-        {command === "> Start session" ? (
-          <Session></Session>
-        ) : command === "> Show stats" ? (
-          <Statistics></Statistics>
-        ) : (
-          <>
-            <DeckView cards={cards}></DeckView>
-          </>
-        )}
+        {showView(view)}
       </div>
     </>
   );

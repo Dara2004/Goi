@@ -9,7 +9,8 @@ export default class DECK extends NODE {
       !this.tokenizer.checkToken("add Color") &&
       !this.tokenizer.checkToken("add Direction") &&
       !this.tokenizer.checkToken("add Alignment") &&
-      !this.tokenizer.checkToken("add Tags")
+      !this.tokenizer.checkToken("add Tags") &&
+      !this.tokenizer.checkToken("Create Deck")
     ) {
       let card = new CARD();
       card.parse();
