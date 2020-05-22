@@ -57,6 +57,12 @@ export default function App() {
         <NavBar></NavBar>
       </div>
       <div className="container" style={{ backgroundColor: "#FAFAFA" }}>
+        {/* <div
+          style={{ gridArea: "card-editor", backgroundColor: "green" }}
+        ></div>
+        <div
+          style={{ gridArea: "command-editor", backgroundColor: "black" }}
+        ></div> */}
         <CardEditor onChange={handleCardsChange}></CardEditor>
         <CommandEditor onChange={handleCommandChange}></CommandEditor>
         {command === "> Start session" ? (

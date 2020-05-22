@@ -14,7 +14,7 @@ body {
   font-family: "Roboto Mono", monospace;
 }
 .navbar {
-  height: 5em;
+  height: 8vh;
   background-color: white;
   padding-left: 10em;
 }
@@ -23,15 +23,15 @@ body {
   grid-area: card-editor;
 }
 
-.card-editor-codemirror {
-  height: 500px;
-}
-
 .card-editor .CodeMirror {
-  height: 60vh !important;
+  height: 64vh !important;
 }
 .command-editor {
   grid-area: command-editor;
+}
+
+.command-editor .CodeMirror {
+  height: 28vh;
 }
 
 .container {
@@ -39,7 +39,7 @@ body {
   /* height: 100vh; */
   min-width: 0;
   grid-template-columns: 4fr 6fr;
-  grid-template-rows: 2fr 1fr;
+  grid-template-rows: 64fr 28fr;
   grid-template-areas:
     "card-editor card-view"
     "command-editor card-view";
@@ -59,7 +59,7 @@ body {
 .card-view-container {
   grid-area: card-view;
   overflow-y: auto;
-  height: 90vh;
+  height: 88vh;
 }
 
 .session-container {
