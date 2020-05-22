@@ -9,6 +9,10 @@ body {
   margin-bottom: 0;
   font-family: "Roboto Mono", monospace;
 }
+.MuiTypography-body1,
+.MuiTab-root {
+  font-family: "Roboto Mono", monospace;
+}
 .navbar {
   height: 5em;
   background-color: white;
