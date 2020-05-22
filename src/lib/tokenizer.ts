@@ -20,7 +20,9 @@ class Tokenizer {
     console.log(Tokenizer.program);
 
     Tokenizer.literals.forEach((s) => {
+      console.log("string: ", s);
       const re = new RegExp(s, "g");
+      console.log("regexp: ", re);
       tokenizedProgram = tokenizedProgram.replace(re, `_${s}_`);
       console.log(tokenizedProgram);
     });

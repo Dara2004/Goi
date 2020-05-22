@@ -19,3 +19,5 @@ export const allTokens = [
   ...keywords,
   ...subjectKeywords,
 ];
+
+export const deckCreationLiterals = ["Create Deck", ":", "\\(", "\\)", ","];

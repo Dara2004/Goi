@@ -13,6 +13,7 @@ import Session from "./model/Session";
 import SessionCard from "./model/SessionCard";
 import Tag from "./model/Tag";
 import TagCard from "./model/TagCard";
+import { cardEditorStrKey } from "./App";
 
 const adapter = new LokiJSAdapter({
   schema,
@@ -26,13 +27,14 @@ const database = new Database({
   actionsEnabled: true,
 });
 
+export const initialCodeEditorStr = localStorage.getItem(cardEditorStrKey);
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
   document.getElementById("root")
 );
-
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

@@ -1,38 +1,91 @@
-.App {
+html {
+  margin: 0;
+  padding: 0;
+}
+body {
+  margin: 0;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: "Roboto Mono", monospace;
+}
+.MuiTypography-body1,
+.MuiTab-root {
+  font-family: "Roboto Mono", monospace;
+}
+.navbar {
+  height: 8vh;
+  background-color: white;
+  padding-left: 10em;
+}
+
+.card-editor {
+  grid-area: card-editor;
+}
+
+.card-editor .CodeMirror {
+  height: 64vh !important;
+}
+.command-editor {
+  grid-area: command-editor;
+}
+
+.command-editor .CodeMirror {
+  height: 28vh;
+}
+
+.container {
+  display: grid;
+  /* height: 100vh; */
+  min-width: 0;
+  grid-template-columns: 4fr 6fr;
+  grid-template-rows: 64fr 28fr;
+  grid-template-areas:
+    "card-editor card-view"
+    "command-editor card-view";
+}
+
+.card-view {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.statistics-header {
+  text-align: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.card-view-container {
+  grid-area: card-view;
+  overflow-y: auto;
+  height: 92vh;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.session-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.MuiLinearProgress-barColorPrimary {
+  background-color: #6fcf97 !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.MuiLinearProgress-colorPrimary {
+  background-color: white !important;
+}
+
+.MuiMobileStepper-root {
+  background: #fafafa !important;
+  justify-content: space-evenly !important;
+}
+
+.PrivateTabIndicator-colorPrimary-27 {
+  background-color: #6fcf97 !important;
+}
+
+.MuiTab-textColorPrimary.Mui-selected {
+  font-weight: bold !important;
+  color: #666666 !important;
 }
