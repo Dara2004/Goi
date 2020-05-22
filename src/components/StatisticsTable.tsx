@@ -14,60 +14,20 @@ const useStyles = makeStyles({
     width: "100%",
   },
   container: {
-    maxHeight: 450,
+    maxHeight: 520,
   },
 });
 
-function createData(
-  index: number,
-  front: string,
-  back: string,
-  correct: number,
-  incorrect: number,
-  deck: string,
-  tags: string[]
-) {
-  const score = correct.toString() + "/" + incorrect.toString();
-  const tagsString = tags.join(", ");
-  const indexString = index.toString() + ".)";
-  return { indexString, front, back, score, deck, tagsString };
-}
-
 const columns = [
-  { id: "indexString", label: "", minWidth: 100, align: "center" },
-  { id: "front", label: "Front", minWidth: 170, align: "center" },
-  { id: "back", label: "Back", minWidth: 170, align: "center" },
-  { id: "score", label: "Score", minWidth: 170, align: "center" },
-  { id: "deck", label: "Deck", minWidth: 170, align: "center" },
-  { id: "tagsString", label: "Tag", minWidth: 170, align: "center" },
+  { id: "indexString", label: "", minWidth: 20, align: "center" },
+  { id: "front", label: "Front", minWidth: 80, align: "center" },
+  { id: "back", label: "Back", minWidth: 80, align: "center" },
+  { id: "score", label: "Score", minWidth: 80, align: "center" },
+  { id: "deck", label: "Deck", minWidth: 80, align: "center" },
+  { id: "tagsString", label: "Tag", minWidth: 80, align: "center" },
 ];
 
-const rows = [
-  createData(1, "Bonjour", "Hello", 1, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-  createData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-];
-
-export default function StatisticsTable() {
+export default function StatisticsTable(stats) {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -101,7 +61,7 @@ export default function StatisticsTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
+            {stats.rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
@@ -123,7 +83,7 @@ export default function StatisticsTable() {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={rows.length}
+        count={stats.rows.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
@@ -132,36 +92,3 @@ export default function StatisticsTable() {
     </Paper>
   );
 }
-
-// export default function StatisticsTable() {
-//   const classes = useStyles();
-
-//   return (
-//     <TableContainer component={Paper}>
-//       <Table className={classes.table} aria-label="StatisticsTable">
-//         <TableHead>
-//           <TableRow>
-//             <TableCell align="center"></TableCell>
-//             <TableCell align="center">Front</TableCell>
-//             <TableCell align="center">Back</TableCell>
-//             <TableCell align="center">Score</TableCell>
-//             <TableCell align="center">Deck</TableCell>
-//             <TableCell align="center">Tag</TableCell>
-//           </TableRow>
-//         </TableHead>
-//         <TableBody>
-//           {rows.map((row) => (
-//             <TableRow key={row.front}>
-//               <TableCell align="right">{row.indexString}</TableCell>
-//               <TableCell align="center">{row.front}</TableCell>
-//               <TableCell align="center">{row.back}</TableCell>
-//               <TableCell align="center">{row.score}</TableCell>
-//               <TableCell align="center">{row.deck}</TableCell>
-//               <TableCell align="center">{row.tagsString}</TableCell>
-//             </TableRow>
-//           ))}
-//         </TableBody>
-//       </Table>
-//     </TableContainer>
-//   );
-// }
