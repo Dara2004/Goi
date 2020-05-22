@@ -1,5 +1,5 @@
-import { Model } from "@nozbe/watermelondb";
-import { field } from "@nozbe/watermelondb/decorators";
+import { Model, Q } from "@nozbe/watermelondb";
+import { field, lazy } from "@nozbe/watermelondb/decorators";
 import { Associations } from "@nozbe/watermelondb/Model";
 import { TableName } from "./constants";
 
@@ -10,4 +10,9 @@ export default class Tag extends Model {
   };
 
   @field("name") name;
+
+  @lazy cards = this.collections
+    .get(TableName.CARDS)
+    .query(Q.on(TableName.TAGS_CARDS, "tag_id", this.id))
+    .fetch();
 }
