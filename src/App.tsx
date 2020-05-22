@@ -15,11 +15,24 @@ import PROGRAM from "./ast/PROGRAM";
 const updateViewReducer = (state, action) => {
   switch (action.type) {
     case "card editor parse success": {
-      console.log("received action: parse success");
       return {
         ...state,
         program: { ...action.program },
         view: View.DECK,
+      };
+    }
+    case "start session": {
+      return {
+        ...state,
+        command: { ...action.command },
+        view: View.SESSION,
+      };
+    }
+    case "list": {
+      return {
+        ...state,
+        command: { ...action.command },
+        view: View.LIST,
       };
     }
     case "command": {
@@ -77,9 +90,15 @@ export default function App() {
       case View.DECK: {
         return <DeckView program={program}></DeckView>;
       }
-      // case View.LIST: {
-      //   return <ListView></ListView>;
-      // }
+      case View.LIST: {
+        return (
+          <ListView
+            deckNames={program.create_decks.map((deck) => {
+              return deck.name;
+            })}
+          ></ListView>
+        );
+      }
       case View.SESSION: {
         return <Session></Session>;
       }
@@ -98,8 +117,9 @@ export default function App() {
         <NavBar></NavBar>
       </div>
       <div className="container" style={{ backgroundColor: "#FAFAFA" }}>
-        <CardEditor dispatch={dispatch}></CardEditor>
-        <CommandEditor onChange={handleCommandChange}></CommandEditor>
+        {/*gives CardEditor the ability to change Deck view */}
+        <CardEditor dispatch={dispatch}></CardEditor>{" "}
+        <CommandEditor dispatch={dispatch}></CommandEditor>
         {showView(view)}
       </div>
     </>

@@ -24,16 +24,9 @@ export default function DeckView({ program }: { program: PROGRAM }) {
     <>
       <div className="card-view-container">
         <div className="card-view">
-          <div
-            style={{
-              width: "70%",
-              textAlign: "center",
-              marginTop: "3em",
-              borderBottom: "1px solid #DDDDDD",
-            }}
-          >
-            <CenteredTabs></CenteredTabs>
-          </div>
+          <h2 style={{ color: "#333333" }}>
+            Deck: {program.create_decks[program.create_decks.length - 1].name}
+          </h2>
           <NewCard front={front} back={back}></NewCard>
           <ListView
             deckNames={program.create_decks.map((cd) => cd.name)}

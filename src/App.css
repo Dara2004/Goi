@@ -59,7 +59,7 @@ body {
 .card-view-container {
   grid-area: card-view;
   overflow-y: auto;
-  height: 88vh;
+  height: 92vh;
 }
 
 .session-container {

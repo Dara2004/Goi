@@ -55,8 +55,8 @@ export default function NewCard(props: Props) {
     <>
       <Card
         style={{
-          marginTop: "4em",
-          width: "25em",
+          marginTop: "2em",
+          width: "23em",
           display: "flex",
           flexDirection: "column",
         }}
@@ -64,7 +64,7 @@ export default function NewCard(props: Props) {
       >
         <CardHeader title="" />
         <CardContent>
-          <div style={{ height: "4em", marginTop: "4em" }}>
+          <div style={{ height: "3em", marginTop: "3em" }}>
             <Typography paragraph style={{}}>
               {props.front}
             </Typography>
@@ -88,7 +88,7 @@ export default function NewCard(props: Props) {
               marginTop: "4em",
             }}
           >
-            <div style={{ height: "6em", alignItems: "center" }}>
+            <div style={{ height: "5em", alignItems: "center" }}>
               <Typography paragraph>{props.back}</Typography>
             </div>
           </CardContent>
