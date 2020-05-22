@@ -5,7 +5,7 @@
 ### Example
 
 ```
-Create Deck: Practice Final
+Create Deck Practice Final:
 add Tags: example, tag2, tag3
 add Color: red
 add Alignment: center
@@ -23,7 +23,7 @@ add Alignment: center
 PROGRAM ::= CREATE_DECK+
 CREATE_DECK ::= “Create Deck” NAME”:” MODIFIERS? DECK
 MODIFIERS ::= (“add” MODIFIER)*
-MODIFIER ::= TAGS | COLOR | ALIGNMENT | DIRECTION
+MODIFIER ::= "Tags: " TAGS | "Color: " COLOR | "Alignment: " ALIGNMENT | "Direction: " DIRECTION
 ALIGNMENT ::= “center” | “right” | “left”
 COLOR ::= ‘red’ | ‘blue’ | ‘green’ | ‘purple’
 DIRECTION ::= ‘horizontal’ | ‘vertical’
