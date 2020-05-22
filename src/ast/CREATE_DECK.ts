@@ -34,7 +34,7 @@ export default class CREATE_DECK extends NODE {
 
   parse() {
     //parse deck
-    this.tokenizer.getAndCheckToken(new RegExp("Create Deck"));
+    this.tokenizer.getAndCheckToken("Create Deck");
     const name = this.tokenizer.getNext();
     if (invalidNameTokens.includes(name)) {
       throw new Error("invalid deck name");
