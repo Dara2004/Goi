@@ -1,4 +1,6 @@
 import React from "react";
+// TODO
+// https://github.com/Dara2004/Goi/issues/49
 
 export default function Statistics() {
   return (
