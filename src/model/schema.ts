@@ -4,6 +4,7 @@ import {
   ColumnType,
   ColumnSchema,
 } from "@nozbe/watermelondb";
+import { TableName } from "./constants";
 
 function columnSchema(
   name: string,
@@ -27,20 +28,19 @@ export default appSchema({
   version: 1,
   tables: [
     tableSchema({
-      name: "decks",
+      name: TableName.DECKS,
       columns: [
-        // Just use automatic id string column for deck name?
-        // columnSchema("name", "string", true),
+        columnSchema("name", "string"),
         columnSchema("created_at", "number"), // automatic https://nozbe.github.io/WatermelonDB/Advanced/CreateUpdateTracking.html
       ],
     }),
     tableSchema({
-      name: "cards",
+      name: TableName.CARDS,
       columns: [
         columnSchema("created_at", "number"), // automatic
         columnSchema("updated_at", "number"), // automatic
         columnSchema("last_tested_at", "number"),
-        columnSchema("deck_name", "string", true), // hook up to decks->id in Model
+        columnSchema("deck_id", "string", true),
         columnSchema("front", "string", true),
         columnSchema("back", "string", true),
         columnSchema("wrong", "number"),
@@ -48,14 +48,14 @@ export default appSchema({
       ],
     }),
     tableSchema({
-      name: "sessions",
+      name: TableName.SESSIONS,
       columns: [
         columnSchema("created_at", "number"), // automatic
         columnSchema("ended_at", "number"), // must manually update (with Unix timestamp integer Date::valueOf)
       ],
     }),
     tableSchema({
-      name: "sessions_cards",
+      name: TableName.SESSIONS_CARDS,
       columns: [
         columnSchema("session_id", "string", true),
         columnSchema("card_id", "string", true),
@@ -65,11 +65,11 @@ export default appSchema({
 
     // To have card tags we need to change EBNF, however it would be a huge improvement over deck tags
     tableSchema({
-      name: "tags",
+      name: TableName.TAGS,
       columns: [columnSchema("name", "string", true)],
     }),
     tableSchema({
-      name: "tags_cards",
+      name: TableName.TAGS_CARDS,
       columns: [
         columnSchema("tag_id", "string", true),
         columnSchema("card_id", "string", true),
