@@ -7,8 +7,12 @@ import * as serviceWorker from "./serviceWorker";
 import { Database } from "@nozbe/watermelondb";
 import LokiJSAdapter from "@nozbe/watermelondb/adapters/lokijs";
 import schema from "./model/schema";
-
+import Card from "./model/Card";
 import Deck from "./model/Deck";
+import Session from "./model/Session";
+import SessionCard from "./model/SessionCard";
+import Tag from "./model/Tag";
+import TagCard from "./model/TagCard";
 
 const adapter = new LokiJSAdapter({
   schema,
@@ -18,7 +22,7 @@ const adapter = new LokiJSAdapter({
 
 const database = new Database({
   adapter,
-  modelClasses: [Deck],
+  modelClasses: [Card, Deck, Session, SessionCard, Tag, TagCard],
   actionsEnabled: true,
 });
 
