@@ -6,11 +6,14 @@ import { UnControlled as CodeMirror } from "react-codemirror2";
 import PROGRAM from "../ast/PROGRAM";
 import Tokenizer from "../lib/tokenizer";
 import { deckCreationLiterals } from "../lib/constants";
+import { cardEditorStrKey } from "../App";
+import { initialCodeEditorStr } from "../";
 
 type Props = { dispatch };
 
 export default function CardEditor(props: Props) {
   const handleChange = (editor, data, value) => {
+    localStorage.setItem(cardEditorStrKey, value);
     // Parse it
     try {
       Tokenizer.makeTokenizer(value, deckCreationLiterals);
@@ -23,6 +26,7 @@ export default function CardEditor(props: Props) {
       ) {
         console.log("last deck is null, not sending dispatch");
       } else {
+        localStorage.setItem("programAST", JSON.stringify(program));
         props.dispatch({ type: "card editor parse success", program });
       }
     } catch (err) {
@@ -34,13 +38,16 @@ export default function CardEditor(props: Props) {
     <>
       <div className="card-editor">
         <CodeMirror
-          value={`Create Deck Practice Final:
+          value={
+            initialCodeEditorStr ||
+            `Create Deck Practice Final:
 (1) Foo : Bar
 (2) Bill : Gates
 (3) Steve : Jobs
 (4) Justin : Trudeau 
 (5) Evan : You
-`}
+`
+          }
           options={{
             mode: "xml",
             theme: "material",

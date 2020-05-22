@@ -13,6 +13,7 @@ import Session from "./model/Session";
 import SessionCard from "./model/SessionCard";
 import Tag from "./model/Tag";
 import TagCard from "./model/TagCard";
+import { cardEditorStrKey } from "./App";
 
 const adapter = new LokiJSAdapter({
   schema,
@@ -25,6 +26,8 @@ const database = new Database({
   modelClasses: [Card, Deck, Session, SessionCard, Tag, TagCard],
   actionsEnabled: true,
 });
+
+export const initialCodeEditorStr = localStorage.getItem(cardEditorStrKey);
 
 ReactDOM.render(
   <React.StrictMode>

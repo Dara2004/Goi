@@ -12,6 +12,7 @@ import PostSessionSummary from "./components/PostSessionSummary";
 import ListView from "./components/ListView";
 import PROGRAM from "./ast/PROGRAM";
 
+export const cardEditorStrKey = "cardEditorStrKey";
 const updateViewReducer = (state, action) => {
   switch (action.type) {
     case "card editor parse success": {
@@ -71,11 +72,16 @@ const initialProgram = {
 
 const initialState = {
   view: View.DECK,
-  program: initialProgram as PROGRAM,
+  program:
+    JSON.parse(localStorage.getItem("programAST")) ||
+    (initialProgram as PROGRAM),
   command: "",
 };
 
 export default function App() {
+  // useEffect(() => {
+  //   const cardEditorStrValue = localStorage.getItem(cardEditorStrKey);
+  // }, []); //only run useEffect on didMount, not every update
   const [{ view, program, command }, dispatch] = useReducer(
     updateViewReducer,
     initialState
