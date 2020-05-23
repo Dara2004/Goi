@@ -9,6 +9,10 @@ body {
   margin-bottom: 0;
   font-family: "Roboto Mono", monospace;
 }
+.app-header {
+  position: fixed;
+}
+
 .MuiTypography-body1,
 .MuiTab-root {
   font-family: "Roboto Mono", monospace;
@@ -35,14 +39,19 @@ body {
 }
 
 .container {
-  display: grid;
-  /* height: 100vh; */
-  min-width: 0;
-  grid-template-columns: 4fr 6fr;
-  grid-template-rows: 64fr 28fr;
-  grid-template-areas:
-    "card-editor card-view"
-    "command-editor card-view";
+  display: flex;
+}
+.left-container {
+  display: flex;
+  flex-direction: column;
+  width: 33vw;
+  position: fixed;
+}
+.right-container {
+  margin-left: 33vw;
+  width: 100%;
+  padding-left: 100px;
+  padding-right: 100px;
 }
 
 .card-view {
