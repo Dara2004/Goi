@@ -45,18 +45,17 @@ body {
     "command-editor card-view";
 }
 
-.card-view {
+.card-view,
+.right-side-container {
+  grid-area: card-view;
   align-items: center;
   display: flex;
   flex-direction: column;
   text-align: center;
 }
 
-.statistics-header {
-  text-align: center;
-}
-
-.card-view-container {
+.card-view-container,
+.right-side-container {
   grid-area: card-view;
   overflow-y: auto;
   height: 92vh;
