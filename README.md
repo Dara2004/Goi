@@ -75,7 +75,7 @@ TAGS ::= TAG (“, ” TAG)*
 TAG ::= [^,]+
 
 HELP ::= “Help”
-LIST ::= “List“ (“Tags” | “Decks”)
+LIST ::= “List“ (“tags” | “decks”)
 ```
 
 ## Misc
