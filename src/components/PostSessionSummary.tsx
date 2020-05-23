@@ -122,17 +122,15 @@ export default function PostSessionSummary() {
   );
   return (
     <div className="right-side-container">
-      <h1 className="summary-header">Summary</h1>
+      <h1>Summary</h1>
       <br />
-      <h2 className="session-score">You got: {score} cards correct</h2>
+      <h2>You got: {score} cards correct</h2>
       {isAllCorrect && <h2>Good job!!</h2>}
       {isAllCorrect && (
         <img className="confetti" src={ConfettiEmoji} alt={"Confetti"} />
       )}
       <br />
-      <h3 className="session-score">
-        Time spent: {sessionCards.overview["total time"]}
-      </h3>
+      <h3>Time spent: {sessionCards.overview["total time"]}</h3>
       <br />
       <h3>Your results:</h3>
       <StatisticsTable rows={sessionCards.details} isForSummary={true} />
