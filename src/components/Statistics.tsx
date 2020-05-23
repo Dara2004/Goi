@@ -60,7 +60,7 @@ export default function Statistics() {
   const statsObject = getStatsObject();
   return (
     <>
-      <div className="card-view">
+      <div className="right-side-container">
         <h1> Statistics</h1>
         <StatisticsOverview overview={statsObject.overview} />
         <StatisticsTable rows={statsObject.details} />
