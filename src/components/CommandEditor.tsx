@@ -7,6 +7,8 @@ import Tokenizer from "../lib/tokenizer";
 import { deckCreationLiterals, allTokens } from "../lib/constants";
 import COMMAND from "../ast/COMMAND";
 import LIST from "../ast/LIST";
+import COMPLEX_COMMAND from "../ast/COMPLEX_COMMAND";
+import START_SESSION from "../ast/START_SESSION";
 
 type Props = { dispatch };
 
@@ -28,6 +30,11 @@ export default function CommandEditor(props: Props) {
           props.dispatch({ type: "list", command: value.trim() });
           console.log(value);
         }
+        // else if (((command.command as COMPLEX_COMMAND).subjectModfier as START_SESSION).selectedCards) {
+
+        // } else if (){
+
+        // }
       } catch (err) {
         console.log(err);
       }

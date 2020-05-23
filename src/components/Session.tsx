@@ -4,6 +4,8 @@ import CardFlip from "./CardFlip";
 import WrongBtn from "../assets/wrongBtn.svg";
 import CorrectBtn from "../assets/correctBtn.svg";
 
+// type Props = { dispatch; deckNames; tagNames };
+
 export default function Session() {
   return (
     <>

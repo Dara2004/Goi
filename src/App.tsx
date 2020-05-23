@@ -36,12 +36,19 @@ const updateViewReducer = (state, action) => {
         view: View.LIST,
       };
     }
-    case "command": {
+    case "start session": {
       return {
         ...state,
-        command: action.value,
+        command: { ...action.command },
+        view: View.SESSION,
       };
     }
+    // case "command": {
+    //   return {
+    //     ...state,
+    //     command: action.value,
+    //   };
+    // }
     default:
       break;
   }
@@ -94,7 +101,8 @@ export default function App() {
   const showView = (view: View) => {
     switch (view) {
       case View.DECK: {
-        return <DeckView program={program}></DeckView>;
+        // return <DeckView program={program}></DeckView>;
+        return <Statistics></Statistics>;
       }
       case View.LIST: {
         return (

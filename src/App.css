@@ -46,6 +46,7 @@ body {
 }
 
 .card-view {
+  grid-area: card-view;
   align-items: center;
   display: flex;
   flex-direction: column;
