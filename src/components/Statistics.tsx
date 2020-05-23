@@ -1,32 +1,32 @@
 import React from "react";
 import StatisticsTable from "./StatisticsTable";
 import StatisticsOverview from "./StatisticsOverview";
+import { createCardData } from "../lib/util";
 
 function getStatsObject() {
   // temp return object for testing:
   const rows = [
-    createStatsData(1, "Bonjour", "Hello", 1, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
-    createStatsData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(1, "Bonjour", "Hello", 1, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
+    createCardData(2, "Aurevoir", "Bye", 5, 10, "French", ["test1", "test2"]),
   ];
   return {
     overview: {
@@ -39,21 +39,6 @@ function getStatsObject() {
     },
     details: rows,
   };
-}
-
-function createStatsData(
-  index: number,
-  front: string,
-  back: string,
-  correct: number,
-  incorrect: number,
-  deck: string,
-  tags: string[]
-) {
-  const score = correct.toString() + "/" + incorrect.toString();
-  const tagsString = tags.join(", ");
-  const indexString = index.toString() + ".)";
-  return { indexString, front, back, score, deck, tagsString };
 }
 
 export default function Statistics() {

@@ -18,7 +18,7 @@ const useStyles = makeStyles({
   },
 });
 
-const columns = [
+const statsColumns = [
   { id: "indexString", label: "", minWidth: 20, align: "center" },
   { id: "front", label: "Front", minWidth: 80, align: "center" },
   { id: "back", label: "Back", minWidth: 80, align: "center" },
@@ -27,10 +27,18 @@ const columns = [
   { id: "tagsString", label: "Tag", minWidth: 80, align: "center" },
 ];
 
-export default function StatisticsTable(stats) {
+const summaryColumns = [
+  { id: "indexString", label: "", minWidth: 20, align: "center" },
+  { id: "front", label: "Front", minWidth: 80, align: "center" },
+  { id: "back", label: "Back", minWidth: 80, align: "center" },
+  { id: "score", label: "Score", minWidth: 80, align: "center" },
+];
+
+export default function StatisticsTable(stats, isForSummary) {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const columns = isForSummary ? summaryColumns : statsColumns;
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -65,7 +73,12 @@ export default function StatisticsTable(stats) {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.front}>
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={`${row.indexString}_${row.front}`}
+                  >
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (

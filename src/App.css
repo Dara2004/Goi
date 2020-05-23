@@ -5,8 +5,6 @@ html {
 body {
   margin: 0;
   padding: 0;
-  margin-top: 0;
-  margin-bottom: 0;
   font-family: "Roboto Mono", monospace;
 }
 .MuiTypography-body1,
@@ -67,6 +65,10 @@ body {
   align-items: center;
 }
 
+.summary-header {
+    text-align: center;
+}
+
 .MuiLinearProgress-barColorPrimary {
   background-color: #6fcf97 !important;
 }
@@ -93,4 +95,12 @@ body {
   color: #89c999;
   font-weight: bold;
   font-style: italic;
+}
+
+.session-score {
+    text-align: center;
+}
+
+.confetti {
+    width: 300px;
 }
