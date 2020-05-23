@@ -23,11 +23,12 @@ export default function CommandEditor(props: Props) {
       try {
         Tokenizer.makeTokenizer(value, allTokens);
         const command = new COMMAND();
-        command.parse(); //commands = COMPLEX_COMMAND | HELP | LIST
+        command.parse(); //commands = COMPLEX_COMMAND | HELP | LIST | EXPORT_DECK | LOAD_DECK
         if ((command.command as LIST).option) {
           props.dispatch({ type: "list", command: value.trim() });
           console.log(value);
         }
+        command.evaluate();
       } catch (err) {
         console.log(err);
       }
