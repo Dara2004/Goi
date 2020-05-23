@@ -8,12 +8,16 @@ export default class SUBJECT extends NODE {
 
   parse() {
     const nextToken = this.tokenizer.checkNext();
-    if (nextToken === "Sessions") {
+    if (nextToken === "Past Sessions") {
       this.subject = new SESSIONS();
     } else if (nextToken === "Decks:") {
       this.subject = new DECKS();
     } else if (nextToken === "Tags:") {
       this.subject = new TAGS();
+    } else {
+      throw new Error(
+        "Invalid Subject, must be 'Decks:', 'Tags:', or 'Past Sessions'"
+      );
     }
     this.subject.parseInteractivePrompt();
   }

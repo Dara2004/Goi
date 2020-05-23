@@ -21,7 +21,7 @@ test("command parse should parse list branch correctly", () => {
 
 test("command parse should parse complexCommand branch correctly", () => {
   Tokenizer.makeTokenizer(
-    "Show stats for minimum time spent on Tags: one tag, two tag",
+    "Show stats for 5 best Tags: one tag, two tag",
     constants.allTokens
   );
   let command = new COMMAND();
