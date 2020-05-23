@@ -88,3 +88,9 @@ body {
   font-weight: bold !important;
   color: #666666 !important;
 }
+
+.syntax-highlight {
+  color: #89c999;
+  font-weight: bold;
+  font-style: italic;
+}

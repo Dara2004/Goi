@@ -12,7 +12,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "@types/codemirror": "^0.0.93",
+    "@types/codemirror": "^0.0.95",
     "@types/jest": "^25.2.3",
     "@types/material-ui": "^0.21.7",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
