@@ -40,15 +40,17 @@ NAME ::= STRING
 ### Examples
 
 ```
-Show stats for 5 best scores for Decks: deck1, deck2
-Show stats for 10 best Sessions
-Show stats for 10 oldest Sessions
-Show stats for best scores for Decks: deck1
-Show stats for average time spent on Decks: deck2
+Show stats for 5 best cards from Decks: deck1, deck2
+Show stats for 2 best Decks: deck1, deck2, deck3 (Although weird syntax, would just show stats for the 2 best decks out of the 3)
+Show stats for random Decks: deck1, deck2, deck3, deck4, deck5, deck6 (We can have a default number of 5)
+Show stats for cards from Decks: deck1
+Show stats for Past Sessions (Default number of 5)
+Show stats for 5 oldest Past Sessions
+Show stats for random Tags: tag1, tag2
 Start Session from Decks: deck1, deck2
-Start Session from Tags: hard, language
-Start Session from random cards from Decks: deck1, deck2
-Start Session from 10 worst cards from Decks: deck1, deck2
+Start Session from 5 worst Decks: deck1, deck2, deck3, deck4, deck5, deck6 (Start session from all cards from 5 of the listed decks)
+Start Session from 10 worst cards from Decks: deck1, deck2 (Start session with 10 worst cards from the listed decks)
+Start Session from 2 Past Sessions
 ```
 
 ### EBNF
@@ -57,18 +59,15 @@ Start Session from 10 worst cards from Decks: deck1, deck2
 COMMAND ::=  COMPLEX_COMMAND | HELP | LIST
 
 COMPLEX_COMMAND ::= SUBJECT_MODIFIER SUBJECT
-SUBJECT_MODIFIER ::= SHOW | START_SESSION
-SUBJECT ::= (“Decks: ” DECKS) | (“Tags: ” TAGS) | “Sessions”
+SUBJECT_MODIFIER ::= (SHOW | START_SESSION) INT? FILTER? SELECTED_CARDS?
+SUBJECT ::= (“Decks: ” DECKS) | (“Tags: ” TAGS) | “Past Sessions”
 
-SHOW ::= "Show stats for" INT? SHOW_SUBJECT
-SHOW_SUBJECT ::= STAT_TO_SHOW | SELECTED_CARDS
-STAT_TO_SHOW ::= STAT STAT_ITEM
-STAT ::= "minimum" | "maximum" | "average"
-STAT_ITEM ::= "time spent on" | "scores for"
-SELECTED_CARDS::= CARD_FILTER "cards from"
-CARD_FILTER ::= "best" |  "worst" | "random" | "oldest" | "newest"
+SHOW ::= "Show stats for"
+START_SESSION ::= "Start Session from"
 
-START_SESSION ::= "Start Session from" (“the” INT)? SELECTED_CARDS?
+SELECTED_CARDS::= "cards from"
+FILTER ::= "best" |  "worst" | "random" | "oldest" | "newest"
+
 
 DECKS ::= DECK (“, ” DECK)*
 DECK ::= [^,]+
@@ -76,7 +75,6 @@ TAGS ::= TAG (“, ” TAG)*
 TAG ::= [^,]+
 
 HELP ::= “Help”
-
 LIST ::= “List: “ (“Tags” | “Decks”)
 ```
 
