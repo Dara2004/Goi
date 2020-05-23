@@ -46,7 +46,8 @@ body {
 }
 
 .card-view,
-.right-side-container {
+.right-side-container,
+.session-container {
   grid-area: card-view;
   align-items: center;
   display: flex;
@@ -55,7 +56,8 @@ body {
 }
 
 .card-view-container,
-.right-side-container {
+.right-side-container,
+.session-container {
   grid-area: card-view;
   overflow-y: auto;
   height: 92vh;

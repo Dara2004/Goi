@@ -86,7 +86,7 @@ const initialState = {
     JSON.parse(localStorage.getItem("programAST")) ||
     (initialProgram as PROGRAM),
   command: "",
-  deckToViewDetail: "some deck",
+  deckToViewDetail: "",
 };
 
 export default function App() {
@@ -95,14 +95,11 @@ export default function App() {
     initialState
   );
 
-  // const handleCommandChange = (value) => {
-  //   dispatch({ type: "command", value: value });
-  // };
-
   const showView = (view: View) => {
     switch (view) {
       case View.DECK: {
-        return <DeckView program={program} dispatch={dispatch}></DeckView>;
+        // return <DeckView program={program} dispatch={dispatch}></DeckView>;
+        return <Session></Session>;
       }
       case View.LIST: {
         return (

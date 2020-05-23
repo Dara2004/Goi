@@ -7,10 +7,10 @@ import CorrectBtn from "../assets/correctBtn.svg";
 export default function DeckViewDetails(props) {
   return (
     <>
-      <div className="card-view-container" style={{ textAlign: "center" }}>
+      <div className="session-container" style={{ textAlign: "center" }}>
         <h1>Deck: {props.name}</h1>
         {props.deck.deck.cards.map((c) => {
-          // TODO: fix align center
+          // TODO: fix text displayed on card
           return <CardFlip front={c.front} back={c.back}></CardFlip>;
         })}
       </div>

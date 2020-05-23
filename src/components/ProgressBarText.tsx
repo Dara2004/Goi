@@ -11,7 +11,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ProgressBar() {
+export default function ProgressBarText() {
   const classes = useStyles();
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -26,32 +26,32 @@ export default function ProgressBar() {
 
   return (
     <MobileStepper
-      variant="progress"
+      variant="text"
       steps={10}
       position="static"
       activeStep={activeStep}
       className={classes.root}
       nextButton={
-        // <Button size="small" onClick={handleNext} disabled={activeStep === 9}>
-        //   Next
-        //   {theme.direction === "rtl" ? (
-        //     <KeyboardArrowLeft />
-        //   ) : (
-        //     <KeyboardArrowRight />
-        //   )}
-        // </Button>
-        null
+        <Button size="small" onClick={handleNext} disabled={activeStep === 9}>
+          Next
+          {theme.direction === "rtl" ? (
+            <KeyboardArrowLeft />
+          ) : (
+            <KeyboardArrowRight />
+          )}
+        </Button>
+        // null
       }
       backButton={
-        // <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-        //   {theme.direction === "rtl" ? (
-        //     <KeyboardArrowRight />
-        //   ) : (
-        //     <KeyboardArrowLeft />
-        //   )}
-        //   Back
-        // </Button>
-        null
+        <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+          {theme.direction === "rtl" ? (
+            <KeyboardArrowRight />
+          ) : (
+            <KeyboardArrowLeft />
+          )}
+          Back
+        </Button>
+        // null
       }
     />
   );
