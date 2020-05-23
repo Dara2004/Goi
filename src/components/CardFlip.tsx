@@ -12,7 +12,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function CardFlip() {
+export default function CardFlip({ front, back }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const classes = useStyles();
   const handleClick = (e) => {
@@ -27,11 +27,11 @@ export default function CardFlip() {
       <div className={classes.root}>
         <ReactCardFlip isFlipped={isFlipped} flipDirection="vertical">
           <div onClick={handleClick}>
-            <SingleCard content="Front"></SingleCard>
+            <SingleCard content={front}></SingleCard>
           </div>
 
           <div onClick={handleClick}>
-            <SingleCard content="Back" onClick={handleClick}></SingleCard>
+            <SingleCard content={back} onClick={handleClick}></SingleCard>
           </div>
         </ReactCardFlip>
       </div>

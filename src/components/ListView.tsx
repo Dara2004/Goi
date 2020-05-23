@@ -2,7 +2,10 @@ import React from "react";
 import { Paper } from "@material-ui/core";
 import CenteredTabs from "./CenteredTabs";
 
-function Deck({ name }: { name: string }) {
+type DeckProps = { name: string; dispatch? };
+type ListProps = { deckNames: string[]; dispatch? };
+
+function Deck(props: DeckProps) {
   return (
     <Paper
       style={{
@@ -12,13 +15,17 @@ function Deck({ name }: { name: string }) {
         justifyItems: "center",
         display: "flex",
       }}
+      onClick={() => {
+        console.log(props.name);
+        props.dispatch({ type: "view deck detail", deckName: props.name });
+      }}
     >
-      <div style={{ margin: "auto" }}>{name}</div>
+      <div style={{ margin: "auto" }}>{props.name}</div>
     </Paper>
   );
 }
 
-export default function ListView({ deckNames }: { deckNames: string[] }) {
+export default function ListView(props: ListProps) {
   return (
     <>
       {/* <div
@@ -30,17 +37,9 @@ export default function ListView({ deckNames }: { deckNames: string[] }) {
         }}
       ></div>
       <CenteredTabs></CenteredTabs> */}
-      <div
-        style={{
-          marginTop: "2em",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-        }}
-      >
-        {deckNames.map((deckName) => (
-          <Deck name={deckName}></Deck>
-        ))}
-      </div>
+      {props.deckNames.map((deckName) => (
+        <Deck name={deckName} dispatch={props.dispatch}></Deck>
+      ))}
     </>
   );
 }

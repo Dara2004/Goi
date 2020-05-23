@@ -11,6 +11,7 @@ import Deck from "./model/Deck";
 import PostSessionSummary from "./components/PostSessionSummary";
 import ListView from "./components/ListView";
 import PROGRAM from "./ast/PROGRAM";
+import DeckViewDetails from "./components/DeckViewDetails";
 
 export const cardEditorStrKey = "cardEditorStrKey";
 const updateViewReducer = (state, action) => {
@@ -36,6 +37,14 @@ const updateViewReducer = (state, action) => {
         view: View.LIST,
       };
     }
+    case "view deck detail": {
+      console.log(action.deckName);
+      return {
+        ...state,
+        view: View.DECK_DETAIL,
+        deckToViewDetail: action.deckName,
+      };
+    }
     case "command": {
       return {
         ...state,
@@ -54,6 +63,7 @@ export enum View {
   SESSION,
   POST_SESSION,
   LIST,
+  DECK_DETAIL,
 }
 
 const initialProgram = {
@@ -76,33 +86,43 @@ const initialState = {
     JSON.parse(localStorage.getItem("programAST")) ||
     (initialProgram as PROGRAM),
   command: "",
+  deckToViewDetail: "some deck",
 };
 
 export default function App() {
-  // useEffect(() => {
-  //   const cardEditorStrValue = localStorage.getItem(cardEditorStrKey);
-  // }, []); //only run useEffect on didMount, not every update
-  const [{ view, program, command }, dispatch] = useReducer(
+  const [{ view, program, command, deckToViewDetail }, dispatch] = useReducer(
     updateViewReducer,
     initialState
   );
 
-  const handleCommandChange = (value) => {
-    dispatch({ type: "command", value: value });
-  };
+  // const handleCommandChange = (value) => {
+  //   dispatch({ type: "command", value: value });
+  // };
 
   const showView = (view: View) => {
     switch (view) {
       case View.DECK: {
-        return <DeckView program={program}></DeckView>;
+        return <DeckView program={program} dispatch={dispatch}></DeckView>;
       }
       case View.LIST: {
         return (
-          <ListView
-            deckNames={program.create_decks.map((deck) => {
-              return deck.name;
-            })}
-          ></ListView>
+          <>
+            <div
+              className="card-view-container"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                justifyItems: "center",
+              }}
+            >
+              <ListView
+                deckNames={program.create_decks.map((deck) => {
+                  return deck.name;
+                })}
+                dispatch={dispatch}
+              ></ListView>
+            </div>
+          </>
         );
       }
       case View.SESSION: {
@@ -113,6 +133,19 @@ export default function App() {
       }
       case View.POST_SESSION: {
         return <PostSessionSummary></PostSessionSummary>;
+      }
+      case View.DECK_DETAIL: {
+        console.log(deckToViewDetail);
+        return (
+          <DeckViewDetails
+            name={deckToViewDetail}
+            deck={
+              program.create_decks.filter((d) => {
+                return d.name === deckToViewDetail;
+              })[0]
+            }
+          ></DeckViewDetails>
+        );
       }
     }
   };

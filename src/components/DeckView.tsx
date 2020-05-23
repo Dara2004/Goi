@@ -8,7 +8,13 @@ import ListView from "./ListView";
 import PROGRAM from "../ast/PROGRAM";
 import DECK from "../ast/DECK";
 
-export default function DeckView({ program }: { program: PROGRAM }) {
+export default function DeckView({
+  program,
+  dispatch,
+}: {
+  program: PROGRAM;
+  dispatch: Function;
+}) {
   const decks: DECK[] = program?.create_decks?.map((cd) => cd.deck);
   if (!decks || decks.length === 0) {
     return (
@@ -28,9 +34,18 @@ export default function DeckView({ program }: { program: PROGRAM }) {
             Deck: {program.create_decks[program.create_decks.length - 1].name}
           </h2>
           <NewCard front={front} back={back}></NewCard>
-          <ListView
-            deckNames={program.create_decks.map((cd) => cd.name)}
-          ></ListView>
+          <div
+            style={{
+              marginTop: "2em",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+            }}
+          >
+            <ListView
+              deckNames={program.create_decks.map((cd) => cd.name)}
+              dispatch={dispatch}
+            ></ListView>
+          </div>
         </div>
       </div>
     </>

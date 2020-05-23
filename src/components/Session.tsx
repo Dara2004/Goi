@@ -11,7 +11,7 @@ export default function Session() {
         <h1>Session</h1>
         <h3>DURATION: </h3>
         <ProgressBar></ProgressBar>
-        <CardFlip></CardFlip>
+        <CardFlip front="Front" back="Back"></CardFlip>
         <div style={{ textAlign: "center", marginTop: "3em" }}>
           <img src={CorrectBtn} style={{ width: "3em", marginRight: "4em" }} />
           <img src={WrongBtn} style={{ width: "3em" }} />

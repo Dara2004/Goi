@@ -85,7 +85,7 @@ export default function CommandEditor(props: Props) {
       <div className="command-editor">
         <CodeMirror
           // value={"> "}
-          value={"> Help"}
+          value={"> List: Decks"}
           options={{
             mode: "xml",
             theme: "yonce",
