@@ -132,7 +132,6 @@ export default function PostSessionSummary() {
       <br />
       <h3>Time spent: {sessionCards.overview["total time"]}</h3>
       <br />
-      <h3>Your results:</h3>
       <StatisticsTable rows={sessionCards.details} isForSummary={true} />
     </div>
   );

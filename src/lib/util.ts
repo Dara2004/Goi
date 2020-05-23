@@ -8,13 +8,12 @@ export function createCardData(
   tags: string[],
   isForSummary?: boolean
 ) {
-  let score;
   if (isForSummary) {
-    score = correct ? "correct" : "incorrect";
+    const results = correct ? "correct" : "incorrect";
     const indexString = index.toString() + ".)";
-    return { indexString, front, back, score };
+    return { indexString, front, back, results };
   } else {
-    score = correct.toString() + "/" + (incorrect + correct).toString();
+    const score = correct.toString() + "/" + (incorrect + correct).toString();
     const tagsString = tags.join(", ");
     const indexString = index.toString() + ".)";
     return { indexString, front, back, score, deck, tagsString };

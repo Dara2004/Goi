@@ -31,10 +31,13 @@ const summaryColumns = [
   { id: "indexString", label: "", minWidth: 20, align: "center" },
   { id: "front", label: "Front", minWidth: 80, align: "center" },
   { id: "back", label: "Back", minWidth: 80, align: "center" },
-  { id: "score", label: "Score", minWidth: 80, align: "center" },
+  { id: "results", label: "Results", minWidth: 80, align: "center" },
 ];
 
-export default function StatisticsTable(stats, isForSummary) {
+type Props = { rows: any[]; isForSummary: boolean };
+
+export default function StatisticsTable(props: Props) {
+  const { rows, isForSummary } = props;
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -69,7 +72,7 @@ export default function StatisticsTable(stats, isForSummary) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {stats.rows
+            {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
@@ -96,7 +99,7 @@ export default function StatisticsTable(stats, isForSummary) {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={stats.rows.length}
+        count={rows.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
