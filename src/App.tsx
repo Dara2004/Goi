@@ -101,8 +101,7 @@ export default function App() {
   const showView = (view: View) => {
     switch (view) {
       case View.DECK: {
-        // return <DeckView program={program}></DeckView>;
-        return <Statistics></Statistics>;
+        return <DeckView program={program}></DeckView>;
       }
       case View.LIST: {
         return (
