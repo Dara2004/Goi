@@ -1,8 +1,8 @@
 import React from "react";
-import { createSummaryData } from "../lib/util";
 import StatisticsTable from "./StatisticsTable";
 import { ColumnType } from "./StatisticsTable";
 import ConfettiEmoji from "../assets/confettiEmoji.png";
+import { createSummaryData } from "../lib/utils";
 
 function getSessionCards() {
   // temp return object for testing:
