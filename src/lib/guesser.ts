@@ -9,7 +9,7 @@ export enum GuessType {
   UpdateCardFront = "update card front",
   UpdateCardBack = "update card back",
   CopyPasteMultiDecks = "copy paste multi decks",
-  CopyPasteSingleDeck = "copy paste single decks",
+  CopyPasteSingleDeck = "copy paste single deck",
   Delete = "deleted something",
   Nothing = "nothing",
 }
