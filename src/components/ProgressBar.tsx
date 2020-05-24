@@ -25,7 +25,6 @@ export default function ProgressBar({ cards, dispatch, setNextCard }) {
     }
   };
 
-  console.log(activeStep);
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };

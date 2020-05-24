@@ -134,7 +134,12 @@ const initialState = {
     JSON.parse(localStorage.getItem("programAST")) ||
     (initialProgram as PROGRAM),
   deckToViewDetail: "",
-  deckNames: [],
+  from: {
+    limit: 0,
+    filter: "",
+    selectedCards: false, // determines whether limit applies to cards or SUBJECT (decks/sessions)
+    deckNames: [], // if deckNames is null then it is from past sessions
+  },
 };
 
 export default function App() {
@@ -149,10 +154,10 @@ export default function App() {
   //   ).then((cards) => {});
   // });
 
-  const [
-    { view, program, deckToViewDetail, deckNames, from },
-    dispatch,
-  ] = useReducer(updateViewReducer, initialState);
+  const [{ view, program, deckToViewDetail, from }, dispatch] = useReducer(
+    updateViewReducer,
+    initialState
+  );
 
   const showView = (view: View) => {
     switch (view) {
@@ -191,7 +196,9 @@ export default function App() {
             selectedCards.push(card);
           }
         }
-        return <Session deckNames={deckNames} cards={selectedCards}></Session>;
+        return (
+          <Session deckNames={from.deckNames} cards={selectedCards}></Session>
+        );
       }
       case View.STATS: {
         return <Statistics></Statistics>;
