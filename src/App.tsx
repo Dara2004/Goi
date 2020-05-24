@@ -36,6 +36,12 @@ const updateViewReducer = (state, action) => {
         view: View.LIST,
       };
     }
+    case "load decks": {
+      return {
+        ...state,
+        createDSLValue: action.createDSLValue,
+      };
+    }
     case "command": {
       return {
         ...state,
@@ -82,7 +88,7 @@ export default function App() {
   // useEffect(() => {
   //   const cardEditorStrValue = localStorage.getItem(cardEditorStrKey);
   // }, []); //only run useEffect on didMount, not every update
-  const [{ view, program, command }, dispatch] = useReducer(
+  const [{ view, program, command, createDSLValue }, dispatch] = useReducer(
     updateViewReducer,
     initialState
   );
@@ -124,7 +130,10 @@ export default function App() {
       </div>
       <div className="container" style={{ backgroundColor: "#FAFAFA" }}>
         {/*gives CardEditor the ability to change Deck view */}
-        <CardEditor dispatch={dispatch}></CardEditor>{" "}
+        <CardEditor
+          dispatch={dispatch}
+          createDSLValue={createDSLValue}
+        ></CardEditor>{" "}
         <CommandEditor dispatch={dispatch}></CommandEditor>
         {showView(view)}
       </div>
