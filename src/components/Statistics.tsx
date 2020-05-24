@@ -2,7 +2,7 @@ import React from "react";
 import StatisticsTable from "./StatisticsTable";
 import StatisticsOverview from "./StatisticsOverview";
 import { ColumnType } from "./StatisticsTable";
-import { createCardData } from "../lib/util";
+import { createCardData } from "../lib/utils";
 
 function getStatsObject() {
   // temp return object for testing:
