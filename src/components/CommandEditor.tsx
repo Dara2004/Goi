@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/yonce.css";
 import "codemirror/mode/xml/xml";
@@ -7,6 +7,7 @@ import Tokenizer from "../lib/tokenizer";
 import { deckCreationLiterals, allTokens } from "../lib/constants";
 import COMMAND from "../ast/COMMAND";
 import LIST from "../ast/LIST";
+import LOAD_DECKS from "../ast/LOAD_DECKS";
 
 type Props = { dispatch };
 
@@ -27,6 +28,24 @@ export default function CommandEditor(props: Props) {
         if ((command.command as LIST).option) {
           props.dispatch({ type: "list", command: value.trim() });
           console.log(value);
+        } else if ((command.command as LOAD_DECKS).isLoadDecks) {
+          const fakeInput = document.createElement("input");
+          fakeInput.type = "file";
+
+          fakeInput.onchange = (e: any) => {
+            const file = e.target.files[0];
+            const fileReader = new FileReader();
+            fileReader.readAsText(file, "UTF-8");
+
+            fileReader.onload = (e) => {
+              const deckCreationDSL = e.target.result as string;
+              props.dispatch({
+                type: "load decks",
+                createDSLValue: deckCreationDSL,
+              });
+            };
+          };
+          fakeInput.click();
         }
         command.evaluate();
       } catch (err) {

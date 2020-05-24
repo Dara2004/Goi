@@ -56,7 +56,7 @@ Start Session from 2 Past Sessions
 ### EBNF
 
 ```
-COMMAND ::=  COMPLEX_COMMAND | HELP | LIST
+COMMAND ::=  COMPLEX_COMMAND | HELP | LIST | EXPORT_DECKS | LOAD_DECKS
 
 COMPLEX_COMMAND ::= SUBJECT_MODIFIER SUBJECT
 SUBJECT_MODIFIER ::= (SHOW | START_SESSION) INT? FILTER? SELECTED_CARDS?
@@ -76,6 +76,8 @@ TAG ::= [^,]+
 
 HELP ::= “Help”
 LIST ::= “List“ (“tags” | “decks”)
+EXPORT_DECKS ::= "Export decks"
+LOAD_DECKS ::= "Load decks"
 ```
 
 ## Misc
