@@ -13,7 +13,36 @@ import ListView from "./components/ListView";
 import PROGRAM from "./ast/PROGRAM";
 import DeckViewDetails from "./components/DeckViewDetails";
 import ErrorMessage from "./components/ErrorMessage";
+import { useDatabase } from "@nozbe/watermelondb/hooks";
+import {
+  getSelectedDecks,
+  deckFilter,
+  Filter,
+  getCardsFromSelectedDecks,
+} from "./model/query";
 
+const CustomListView = ({ program, dispatch }) => {
+  return (
+    <div className="card-view-container">
+      <div className="card-view">
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            justifyItems: "center",
+          }}
+        >
+          <ListView
+            deckNames={program.create_decks.map((deck) => {
+              return deck.name;
+            })}
+            dispatch={dispatch}
+          ></ListView>
+        </div>
+      </div>
+    </div>
+  );
+};
 export const cardEditorStrKey = "cardEditorStrKey";
 const updateViewReducer = (state, action) => {
   switch (action.type) {
@@ -24,18 +53,21 @@ const updateViewReducer = (state, action) => {
         view: View.DECK,
       };
     }
-    case "start session from decks": {
+    case "start session": {
       return {
         ...state,
-        command: { ...action.command },
         view: View.SESSION,
-        deckNames: action.deckNames,
+        from: {
+          limit: action.limit,
+          filter: action.filter,
+          selectedCards: action.selectedCards, // determines whether limit applies to cards or SUBJECT (decks/sessions)
+          deckNames: action.deckNames, // if deckNames is null then it is from past sessions
+        },
       };
     }
     case "list": {
       return {
         ...state,
-        command: { ...action.command },
         view: View.LIST,
       };
     }
@@ -50,8 +82,13 @@ const updateViewReducer = (state, action) => {
     case "show stats": {
       return {
         ...state,
-        command: { ...action.command },
         view: View.STATS,
+        from: {
+          limit: action.limit,
+          filter: action.filter,
+          selectedCards: action.selectedCards, // determines whether limit applies to cards or SUBJECT (decks/sessions)
+          deckNames: action.deckNames, // if deckNames is null then it is from past sessions
+        },
       };
     }
     case "command not found": {
@@ -96,16 +133,26 @@ const initialState = {
   program:
     JSON.parse(localStorage.getItem("programAST")) ||
     (initialProgram as PROGRAM),
-  command: "",
   deckToViewDetail: "",
   deckNames: [],
 };
 
 export default function App() {
-  const [{ view, program, deckToViewDetail, deckNames }, dispatch] = useReducer(
-    updateViewReducer,
-    initialState
-  );
+  const database = useDatabase();
+
+  // const decks = ["deck1", "deck2", "deck3", "deck4", "deck5", "deck6"];
+  // getSelectedDecks(database, decks).then((decks) => {
+  //   const worst5Decks = deckFilter(decks, Filter.WORST, 5);
+  //   getCardsFromSelectedDecks(
+  //     database,
+  //     worst5Decks.map((d) => d.name)
+  //   ).then((cards) => {});
+  // });
+
+  const [
+    { view, program, deckToViewDetail, deckNames, from },
+    dispatch,
+  ] = useReducer(updateViewReducer, initialState);
 
   const showView = (view: View) => {
     switch (view) {
@@ -115,28 +162,16 @@ export default function App() {
       case View.LIST: {
         return (
           <>
-            <div className="card-view-container">
-              <div className="card-view">
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    justifyItems: "center",
-                  }}
-                >
-                  <ListView
-                    deckNames={program.create_decks.map((deck) => {
-                      return deck.name;
-                    })}
-                    dispatch={dispatch}
-                  ></ListView>
-                </div>
-              </div>
-            </div>
+            <CustomListView
+              program={program}
+              dispatch={dispatch}
+            ></CustomListView>
           </>
         );
       }
       case View.SESSION: {
+        // `from` contains all the parameters needed to select the cards
+        // TODO
         let selectedCards = [];
         if (program.create_decks.length === 0) {
           return (
@@ -144,7 +179,7 @@ export default function App() {
           );
         }
         const selectedCreateDecks = program.create_decks.filter((cd) => {
-          return deckNames.includes(cd.name);
+          return from.deckNames?.includes(cd.name);
         });
         if (selectedCreateDecks.length === 0) {
           return (

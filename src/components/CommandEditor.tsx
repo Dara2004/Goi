@@ -37,6 +37,24 @@ const helpMsg = (
 
 type Props = { dispatch };
 
+let startSessionOrStats: string = "";
+function isStartSessionOrShowStats(command: COMMAND): boolean {
+  if (
+    ((command.command as COMPLEX_COMMAND).subjectModfier as SUBJECT_MODIFIER)
+      .type === "start session"
+  ) {
+    startSessionOrStats = "start session";
+    return true;
+  } else if (
+    ((command.command as COMPLEX_COMMAND).subjectModfier as SUBJECT_MODIFIER)
+      .type === "show stats"
+  ) {
+    startSessionOrStats = "show stats";
+    return true;
+  }
+  return false;
+}
+
 export default function CommandEditor(props: Props) {
   const [openHelp, setOpenHelp] = React.useState(false);
 
@@ -50,6 +68,7 @@ export default function CommandEditor(props: Props) {
 
     setOpenHelp(false);
   };
+
   const handleCommandChange = (editor, data, value) => {
     if (!value.startsWith("> ")) {
       //reset the cursor if user tries to delete
@@ -70,24 +89,22 @@ export default function CommandEditor(props: Props) {
           props.dispatch({ type: "list", command: value.trim() });
         } else if (command.type === "help") {
           isHelpCommand = true;
-        } else if (
-          ((command.command as COMPLEX_COMMAND)
-            .subjectModfier as SUBJECT_MODIFIER).type === "start session"
-        ) {
-          console.log("session");
-          props.dispatch({
-            type: "start session from decks",
-            deckNames: ((command.command as COMPLEX_COMMAND).subject
-              .subject as DECKS).decks,
-          });
-        } else if (
-          ((command.command as COMPLEX_COMMAND)
-            .subjectModfier as SUBJECT_MODIFIER).type === "show stats"
-        ) {
-          console.log("show stat true");
-          props.dispatch({
-            type: "show stats",
-          });
+        } else if (isStartSessionOrShowStats(command)) {
+          const modifier = (command.command as COMPLEX_COMMAND)
+            .subjectModfier as SUBJECT_MODIFIER;
+          if (modifier) {
+            props.dispatch({
+              type:
+                startSessionOrStats === "start session"
+                  ? "start session"
+                  : "show stats",
+              limit: modifier.limit,
+              filter: modifier.filter,
+              selectCards: modifier.selectCards,
+              deckNames: ((command.command as COMPLEX_COMMAND).subject
+                .subject as DECKS).decks,
+            });
+          }
         }
       } catch (err) {
         console.log(err);

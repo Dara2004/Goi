@@ -20,7 +20,7 @@ export default function ProgressBar({ cards, dispatch, setNextCard }) {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setNextCard(activeStep + 1);
-    if (activeStep == cards.length - 2) {
+    if (activeStep == cards.length - 1) {
       dispatch(true);
     }
   };
@@ -42,7 +42,7 @@ export default function ProgressBar({ cards, dispatch, setNextCard }) {
           <Button
             size="small"
             onClick={handleNext}
-            disabled={activeStep === cards.length - 1}
+            disabled={activeStep === cards.length}
           >
             Next
             {theme.direction === "rtl" ? (

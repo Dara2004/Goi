@@ -7,7 +7,7 @@ import Tag from "./Tag";
 import { shuffle } from "../lib/utils";
 import SessionCard from "./SessionCard";
 
-enum Filter {
+export enum Filter {
   BEST = "best",
   WORST = "worst",
   RANDOM = "random",
