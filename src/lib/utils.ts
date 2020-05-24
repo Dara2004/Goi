@@ -9,5 +9,8 @@ export function debugDB(...items: any): void {
 }
 
 function isDebugEnabled(): boolean {
-  return process.env.REACT_APP_DEBUG.toLowerCase() === "on";
+  return (
+    process.env.REACT_APP_DEBUG &&
+    process.env.REACT_APP_DEBUG.toLowerCase() === "on"
+  );
 }
