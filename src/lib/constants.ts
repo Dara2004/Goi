@@ -2,7 +2,7 @@ export const keywords = [
   "Show stats for",
   "Start Session from",
   "Help",
-  "List:",
+  "List",
   "Export decks",
   "Load decks",
   ",",
