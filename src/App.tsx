@@ -12,6 +12,7 @@ import PostSessionSummary from "./components/PostSessionSummary";
 import ListView from "./components/ListView";
 import PROGRAM from "./ast/PROGRAM";
 import DeckViewDetails from "./components/DeckViewDetails";
+import ErrorMessage from "./components/ErrorMessage";
 
 export const cardEditorStrKey = "cardEditorStrKey";
 const updateViewReducer = (state, action) => {
@@ -53,6 +54,13 @@ const updateViewReducer = (state, action) => {
         view: View.STATS,
       };
     }
+    case "command not found": {
+      console.log("command not found");
+      return {
+        ...state,
+        view: View.ERROR,
+      };
+    }
     default:
       break;
   }
@@ -66,6 +74,7 @@ export enum View {
   POST_SESSION,
   LIST,
   DECK_DETAIL,
+  ERROR,
 }
 
 const initialProgram = {
@@ -106,35 +115,47 @@ export default function App() {
       case View.LIST: {
         return (
           <>
-            <div
-              className="card-view-container"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                justifyItems: "center",
-              }}
-            >
-              <ListView
-                deckNames={program.create_decks.map((deck) => {
-                  return deck.name;
-                })}
-                dispatch={dispatch}
-              ></ListView>
+            <div className="card-view-container">
+              <div className="card-view">
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    justifyItems: "center",
+                  }}
+                >
+                  <ListView
+                    deckNames={program.create_decks.map((deck) => {
+                      return deck.name;
+                    })}
+                    dispatch={dispatch}
+                  ></ListView>
+                </div>
+              </div>
             </div>
           </>
         );
       }
       case View.SESSION: {
         let selectedCards = [];
+        if (program.create_decks.length === 0) {
+          return (
+            <ErrorMessage message="You haven't created any deck!"></ErrorMessage>
+          );
+        }
         const selectedCreateDecks = program.create_decks.filter((cd) => {
           return deckNames.includes(cd.name);
         });
+        if (selectedCreateDecks.length === 0) {
+          return (
+            <ErrorMessage message="Please select one of the decks on the card editor"></ErrorMessage>
+          );
+        }
         for (const cd of selectedCreateDecks) {
           for (const card of cd.deck.cards) {
             selectedCards.push(card);
           }
         }
-        console.log(selectedCards.length);
         return <Session deckNames={deckNames} cards={selectedCards}></Session>;
       }
       case View.STATS: {
@@ -151,6 +172,11 @@ export default function App() {
               })[0]
             }
           ></DeckViewDetails>
+        );
+      }
+      case View.ERROR: {
+        return (
+          <ErrorMessage message="Command not found. Type 'Help'"></ErrorMessage>
         );
       }
     }

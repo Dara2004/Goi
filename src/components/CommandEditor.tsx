@@ -91,6 +91,9 @@ export default function CommandEditor(props: Props) {
         }
       } catch (err) {
         console.log(err);
+        props.dispatch({
+          type: "command not found",
+        });
       }
       if (isHelpCommand) {
         setOpenHelp(true);
@@ -104,7 +107,7 @@ export default function CommandEditor(props: Props) {
     <>
       <div className="command-editor">
         <CodeMirror
-          value={"> Show stats for average time spent on Decks: deck2"}
+          value={"> Start Session from Decks: deck1, deck2"}
           options={{
             mode: "xml",
             theme: "yonce",

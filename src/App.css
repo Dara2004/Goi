@@ -133,3 +133,6 @@ body {
 .confetti {
   width: 300px;
 }
+.MuiAlert-filledError {
+  background-color: "#EB6A67" !important;
+}
