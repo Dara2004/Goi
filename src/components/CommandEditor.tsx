@@ -7,29 +7,96 @@ import Tokenizer from "../lib/tokenizer";
 import { deckCreationLiterals, allTokens } from "../lib/constants";
 import COMMAND from "../ast/COMMAND";
 import LIST from "../ast/LIST";
+import COMPLEX_COMMAND from "../ast/COMPLEX_COMMAND";
+import START_SESSION from "../ast/START_SESSION";
+import HELP from "../ast/HELP";
+import { Snackbar, IconButton } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
+import SUBJECT_MODIFIER from "../ast/SUBJECT_MODIFIER";
+import DECK from "../ast/DECK";
+import DECKS from "../ast/DECKS";
+
+const helpMsg = (
+  <div
+    style={{
+      fontSize: "14px",
+      lineHeight: "9px",
+    }}
+  >
+    <h4>To start a session from decks:</h4>
+    Start Session from [choose ‘random card’, ect ] from Decks: [choose 1 or
+    more deck names]
+    <h4>To start a session from tags:</h4>
+    Start Session from [choose ‘random card’, ect ] from Tags: [choose 1 or more
+    tag names]
+    <h4>To show stats:</h4> Show stats for [choose one or more ‘best scores
+    for’, ‘average time spent on’, ‘worst scores for’] Decks: [choose 1 or more
+    deck names]
+  </div>
+);
 
 type Props = { dispatch };
 
 export default function CommandEditor(props: Props) {
+  const [openHelp, setOpenHelp] = React.useState(false);
+
+  const handleCloseHelp = (
+    event: React.SyntheticEvent | React.MouseEvent,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenHelp(false);
+  };
   const handleCommandChange = (editor, data, value) => {
     if (!value.startsWith("> ")) {
       //reset the cursor if user tries to delete
       editor.getDoc().setValue("> ");
       editor.getDoc().setCursor(2);
     }
+
     if (value.includes("\n")) {
+      let isHelpCommand = false;
       //after user hits enter, reset the cursor
       // Parse the value
       try {
         Tokenizer.makeTokenizer(value, allTokens);
         const command = new COMMAND();
         command.parse(); //commands = COMPLEX_COMMAND | HELP | LIST
-        if ((command.command as LIST).option) {
+        console.log(command.command);
+        if (command.type === "list") {
           props.dispatch({ type: "list", command: value.trim() });
-          console.log(value);
+        } else if (command.type === "help") {
+          isHelpCommand = true;
+        } else if (
+          ((command.command as COMPLEX_COMMAND)
+            .subjectModfier as SUBJECT_MODIFIER).type === "start session"
+        ) {
+          console.log("session");
+          props.dispatch({
+            type: "start session from decks",
+            deckNames: ((command.command as COMPLEX_COMMAND).subject
+              .subject as DECKS).decks,
+          });
+        } else if (
+          ((command.command as COMPLEX_COMMAND)
+            .subjectModfier as SUBJECT_MODIFIER).type === "show stats"
+        ) {
+          console.log("show stat true");
+          props.dispatch({
+            type: "show stats",
+          });
         }
       } catch (err) {
         console.log(err);
+        props.dispatch({
+          type: "command not found",
+        });
+      }
+      if (isHelpCommand) {
+        setOpenHelp(true);
       }
       editor.getDoc().setValue("> ");
       editor.getDoc().setCursor(2);
@@ -40,8 +107,7 @@ export default function CommandEditor(props: Props) {
     <>
       <div className="command-editor">
         <CodeMirror
-          // value={"> "}
-          value={"> Start session"}
+          value={"> Start Session from Decks: deck1, deck2"}
           options={{
             mode: "xml",
             theme: "yonce",
@@ -50,6 +116,28 @@ export default function CommandEditor(props: Props) {
           onChange={handleCommandChange}
         />
       </div>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        open={openHelp}
+        autoHideDuration={180000}
+        onClose={handleCloseHelp}
+        message={helpMsg}
+        action={
+          <React.Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={handleCloseHelp}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </>
   );
 }

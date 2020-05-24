@@ -4,15 +4,19 @@ import HELP from "./HELP";
 import LIST from "./LIST";
 
 export default class COMMAND extends NODE {
+  type: string = "";
   command: COMPLEX_COMMAND | HELP | LIST | null = null;
   parse() {
     const nextToken = this.tokenizer.checkNext();
     if (nextToken === "Help") {
       this.command = new HELP();
-    } else if (nextToken === "List:") {
+      this.type = "help";
+    } else if (nextToken === "List") {
       this.command = new LIST();
+      this.type = "list";
     } else {
       this.command = new COMPLEX_COMMAND();
+      this.type = "complex command";
     }
     if (this.command === null) {
       throw new Error("Invalid command specified");

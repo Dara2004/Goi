@@ -11,6 +11,8 @@ import Deck from "./model/Deck";
 import PostSessionSummary from "./components/PostSessionSummary";
 import ListView from "./components/ListView";
 import PROGRAM from "./ast/PROGRAM";
+import DeckViewDetails from "./components/DeckViewDetails";
+import ErrorMessage from "./components/ErrorMessage";
 
 export const cardEditorStrKey = "cardEditorStrKey";
 const updateViewReducer = (state, action) => {
@@ -22,11 +24,12 @@ const updateViewReducer = (state, action) => {
         view: View.DECK,
       };
     }
-    case "start session": {
+    case "start session from decks": {
       return {
         ...state,
         command: { ...action.command },
         view: View.SESSION,
+        deckNames: action.deckNames,
       };
     }
     case "list": {
@@ -36,10 +39,26 @@ const updateViewReducer = (state, action) => {
         view: View.LIST,
       };
     }
-    case "command": {
+    case "view deck detail": {
+      console.log(action.deckName);
       return {
         ...state,
-        command: action.value,
+        view: View.DECK_DETAIL,
+        deckToViewDetail: action.deckName,
+      };
+    }
+    case "show stats": {
+      return {
+        ...state,
+        command: { ...action.command },
+        view: View.STATS,
+      };
+    }
+    case "command not found": {
+      console.log("command not found");
+      return {
+        ...state,
+        view: View.ERROR,
       };
     }
     default:
@@ -54,6 +73,8 @@ export enum View {
   SESSION,
   POST_SESSION,
   LIST,
+  DECK_DETAIL,
+  ERROR,
 }
 
 const initialProgram = {
@@ -76,43 +97,87 @@ const initialState = {
     JSON.parse(localStorage.getItem("programAST")) ||
     (initialProgram as PROGRAM),
   command: "",
+  deckToViewDetail: "",
+  deckNames: [],
 };
 
 export default function App() {
-  // useEffect(() => {
-  //   const cardEditorStrValue = localStorage.getItem(cardEditorStrKey);
-  // }, []); //only run useEffect on didMount, not every update
-  const [{ view, program, command }, dispatch] = useReducer(
+  const [{ view, program, deckToViewDetail, deckNames }, dispatch] = useReducer(
     updateViewReducer,
     initialState
   );
 
-  const handleCommandChange = (value) => {
-    dispatch({ type: "command", value: value });
-  };
-
   const showView = (view: View) => {
     switch (view) {
       case View.DECK: {
-        return <DeckView program={program}></DeckView>;
+        return <DeckView program={program} dispatch={dispatch}></DeckView>;
       }
       case View.LIST: {
         return (
-          <ListView
-            deckNames={program.create_decks.map((deck) => {
-              return deck.name;
-            })}
-          ></ListView>
+          <>
+            <div className="card-view-container">
+              <div className="card-view">
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    justifyItems: "center",
+                  }}
+                >
+                  <ListView
+                    deckNames={program.create_decks.map((deck) => {
+                      return deck.name;
+                    })}
+                    dispatch={dispatch}
+                  ></ListView>
+                </div>
+              </div>
+            </div>
+          </>
         );
       }
       case View.SESSION: {
-        return <Session></Session>;
+        let selectedCards = [];
+        if (program.create_decks.length === 0) {
+          return (
+            <ErrorMessage message="You haven't created any deck!"></ErrorMessage>
+          );
+        }
+        const selectedCreateDecks = program.create_decks.filter((cd) => {
+          return deckNames.includes(cd.name);
+        });
+        if (selectedCreateDecks.length === 0) {
+          return (
+            <ErrorMessage message="Please select one of the decks on the card editor"></ErrorMessage>
+          );
+        }
+        for (const cd of selectedCreateDecks) {
+          for (const card of cd.deck.cards) {
+            selectedCards.push(card);
+          }
+        }
+        return <Session deckNames={deckNames} cards={selectedCards}></Session>;
       }
       case View.STATS: {
         return <Statistics></Statistics>;
       }
-      case View.POST_SESSION: {
-        return <PostSessionSummary></PostSessionSummary>;
+      case View.DECK_DETAIL: {
+        console.log(deckToViewDetail);
+        return (
+          <DeckViewDetails
+            name={deckToViewDetail}
+            deck={
+              program.create_decks.filter((d) => {
+                return d.name === deckToViewDetail;
+              })[0]
+            }
+          ></DeckViewDetails>
+        );
+      }
+      case View.ERROR: {
+        return (
+          <ErrorMessage message="Command not found. Type 'Help'"></ErrorMessage>
+        );
       }
     }
   };
