@@ -124,7 +124,7 @@ export default function App() {
       </div>
       <div className="container" style={{ backgroundColor: "#FAFAFA" }}>
         {/*gives CardEditor the ability to change Deck view */}
-        <CardEditor dispatch={dispatch}></CardEditor>{" "}
+        <CardEditor dispatch={dispatch} program={program}></CardEditor>{" "}
         <CommandEditor dispatch={dispatch}></CommandEditor>
         {showView(view)}
       </div>
