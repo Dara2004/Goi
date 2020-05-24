@@ -16,9 +16,9 @@ export default class Deck extends Model {
 
   @action async addCard(front: string, back: string) {
     return await this.collections.get(TableName.CARDS).create((card: Card) => {
-      card.deck_id.set(this.id);
-      card.front.set(front);
-      card.back.set(back);
+      card.deck_id = this.id;
+      card.front = front;
+      card.back = back;
     });
   }
 }
