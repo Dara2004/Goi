@@ -18,7 +18,7 @@ const useStyles = makeStyles({
   },
 });
 
-const columns = [
+const statsColumns = [
   { id: "indexString", label: "", minWidth: 20, align: "center" },
   { id: "front", label: "Front", minWidth: 80, align: "center" },
   { id: "back", label: "Back", minWidth: 80, align: "center" },
@@ -27,10 +27,21 @@ const columns = [
   { id: "tagsString", label: "Tag", minWidth: 80, align: "center" },
 ];
 
-export default function StatisticsTable(stats) {
+const summaryColumns = [
+  { id: "indexString", label: "", minWidth: 20, align: "center" },
+  { id: "front", label: "Front", minWidth: 80, align: "center" },
+  { id: "back", label: "Back", minWidth: 80, align: "center" },
+  { id: "results", label: "Results", minWidth: 80, align: "center" },
+];
+
+type Props = { rows: any[]; isForSummary: boolean };
+
+export default function StatisticsTable(props: Props) {
+  const { rows, isForSummary } = props;
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const columns = isForSummary ? summaryColumns : statsColumns;
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -61,11 +72,16 @@ export default function StatisticsTable(stats) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {stats.rows
+            {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.front}>
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={`${row.indexString}_${row.front}`}
+                  >
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
@@ -83,7 +99,7 @@ export default function StatisticsTable(stats) {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={stats.rows.length}
+        count={rows.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}

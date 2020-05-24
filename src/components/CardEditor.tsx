@@ -8,11 +8,21 @@ import Tokenizer from "../lib/tokenizer";
 import { deckCreationLiterals } from "../lib/constants";
 import { cardEditorStrKey } from "../App";
 import { initialCodeEditorStr } from "../";
+import { getHighlights } from "../lib/highlighter";
 
 type Props = { dispatch };
 
 export default function CardEditor(props: Props) {
-  const handleChange = (editor, data, value) => {
+  const handleChange = (editor: CodeMirror.Editor, data, value) => {
+    const highlights = getHighlights(value, ["create deck", "(", ":", ")"]);
+    const doc = editor.getDoc();
+    highlights.forEach((highlight) => {
+      doc.markText(
+        { line: highlight.lineNumber, ch: highlight.charStart },
+        { line: highlight.lineNumber, ch: highlight.charEnd },
+        { className: "syntax-highlight" }
+      );
+    });
     localStorage.setItem(cardEditorStrKey, value);
     // Parse it
     try {
