@@ -11,7 +11,7 @@ import { initialCodeEditorStr } from "../";
 import { getHighlights } from "../lib/highlighter";
 import { useDatabase } from "@nozbe/watermelondb/hooks";
 import reconcile from "../lib/reconciler";
-import { debug } from "../lib/utils";
+import { debug, debugDB } from "../lib/utils";
 
 type Props = { dispatch; program };
 
@@ -39,17 +39,17 @@ export default function CardEditor(props: Props) {
         program.create_decks.length !== 0 &&
         program.create_decks[program.create_decks.length - 1].deck === null
       ) {
-        console.log("last deck is null, not sending dispatch");
+        debug("last deck is null, not sending dispatch");
       } else {
         localStorage.setItem("programAST", JSON.stringify(program));
         // Trigger background reconciliation with DB
         reconcile(props.program, program, db)
-          .then(() => debug("Background DB update complete!"))
-          .catch((err) => debug("Error during reconciliation!", err));
+          .then(() => debugDB("Background DB update complete!"))
+          .catch((err) => debugDB("Error during reconciliation!", err));
         props.dispatch({ type: "card editor parse success", program });
       }
     } catch (err) {
-      console.log(err);
+      debug(err);
     }
   };
 
