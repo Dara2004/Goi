@@ -9,8 +9,16 @@ body {
 }
 .MuiTypography-body1,
 .MuiTab-root {
-  font-family: "Roboto Mono", monospace;
+  font-family: "Roboto Mono", monospace !important;
+  font-size: 1.5em !important;
+  color: #333333 !important;
 }
+.MuiTypography-body1 {
+  font-size: 1.5em !important;
+  color: #333333 !important;
+  /* padding-top: 3.5em; */
+}
+
 .navbar {
   height: 8vh;
   background-color: white;
@@ -124,8 +132,4 @@ body {
 
 .confetti {
   width: 300px;
-}
-
-.makeStyles-root-176 {
-  width: 0 !important;
 }

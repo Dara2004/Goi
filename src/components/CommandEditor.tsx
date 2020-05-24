@@ -12,6 +12,9 @@ import START_SESSION from "../ast/START_SESSION";
 import HELP from "../ast/HELP";
 import { Snackbar, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
+import SUBJECT_MODIFIER from "../ast/SUBJECT_MODIFIER";
+import DECK from "../ast/DECK";
+import DECKS from "../ast/DECKS";
 
 const helpMsg = (
   <div
@@ -63,20 +66,37 @@ export default function CommandEditor(props: Props) {
         const command = new COMMAND();
         command.parse(); //commands = COMPLEX_COMMAND | HELP | LIST
         console.log(command.command);
-        if ((command.command as LIST).option) {
+        if (command.type === "list") {
           props.dispatch({ type: "list", command: value.trim() });
-        } else if ((command.command as HELP).type === "help") {
-          console.log(true);
+        } else if (command.type === "help") {
           isHelpCommand = true;
+        } else if (
+          ((command.command as COMPLEX_COMMAND)
+            .subjectModfier as SUBJECT_MODIFIER).type === "start session"
+        ) {
+          console.log("session");
+          props.dispatch({
+            type: "start session from decks",
+            deckNames: ((command.command as COMPLEX_COMMAND).subject
+              .subject as DECKS).decks,
+          });
+        } else if (
+          ((command.command as COMPLEX_COMMAND)
+            .subjectModfier as SUBJECT_MODIFIER).type === "show stats"
+        ) {
+          console.log("show stat true");
+          props.dispatch({
+            type: "show stats",
+          });
         }
       } catch (err) {
         console.log(err);
       }
       if (isHelpCommand) {
         setOpenHelp(true);
-        editor.getDoc().setValue("> ");
-        editor.getDoc().setCursor(2);
       }
+      editor.getDoc().setValue("> ");
+      editor.getDoc().setCursor(2);
     }
   };
 
@@ -84,8 +104,7 @@ export default function CommandEditor(props: Props) {
     <>
       <div className="command-editor">
         <CodeMirror
-          // value={"> "}
-          value={"> List: Decks"}
+          value={"> Show stats for average time spent on Decks: deck2"}
           options={{
             mode: "xml",
             theme: "yonce",

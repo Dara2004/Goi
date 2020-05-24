@@ -14,6 +14,7 @@ function Deck(props: DeckProps) {
         height: "12vw",
         justifyItems: "center",
         display: "flex",
+        fontSize: "1.5em",
       }}
       onClick={() => {
         console.log(props.name);
@@ -28,15 +29,6 @@ function Deck(props: DeckProps) {
 export default function ListView(props: ListProps) {
   return (
     <>
-      {/* <div
-        style={{
-          width: "70%",
-          textAlign: "center",
-          marginTop: "3em",
-          borderBottom: "1px solid #DDDDDD",
-        }}
-      ></div>
-      <CenteredTabs></CenteredTabs> */}
       {props.deckNames.map((deckName) => (
         <Deck name={deckName} dispatch={props.dispatch}></Deck>
       ))}

@@ -10,7 +10,6 @@ export default function DeckViewDetails(props) {
       <div className="session-container" style={{ textAlign: "center" }}>
         <h1>Deck: {props.name}</h1>
         {props.deck.deck.cards.map((c) => {
-          // TODO: fix text displayed on card
           return <CardFlip front={c.front} back={c.back}></CardFlip>;
         })}
       </div>
