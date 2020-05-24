@@ -16,14 +16,17 @@ const getInitialState = () => {
   const cardStr = localStorage.getItem(cardEditorStrKey);
   if (cardStr) {
     return cardStr;
-  }
-  return `Create Deck Practice Final:
+  } else {
+    const initialVal = `Create Deck Practice Final:
 (1) Foo : Bar
 (2) Bill : Gates
 (3) Steve : Jobs
 (4) Justin : Trudeau 
 (5) Evan : You
 `;
+    localStorage.setItem(cardEditorStrKey, initialVal);
+    return initialVal;
+  }
 };
 
 export default function CardEditor(props: Props) {
