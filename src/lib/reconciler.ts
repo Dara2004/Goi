@@ -5,6 +5,7 @@ import { TableName } from "../model/constants";
 import Deck from "../model/Deck";
 import { debugDB } from "./utils";
 import Card from "../model/Card";
+import CREATE_DECK from "../ast/CREATE_DECK";
 
 async function updateDeckName(oldName: string, newName: string, db: Database) {
   debugDB(`Attempting to update deck name ${oldName} -> ${newName}`);
@@ -141,7 +142,148 @@ async function createDeck(deckName: string, db: Database): Promise<void> {
   }
 }
 
-// Handles background CRUD as a result of card editor changes
+async function createOrUpdateEntireDeck(createDeck: CREATE_DECK, db: Database) {
+  const name = createDeck.name;
+  const cards = createDeck.deck?.cards;
+  debugDB(`Reconciling entire deck ${name} with DB...`);
+  try {
+    const decks = db.collections.get(TableName.DECKS);
+    await db.action(async () => {
+      const q = decks.query(Q.where("name", Q.eq(name)));
+      const foundDecks = (await decks.fetchQuery(q)) as Deck[];
+      if (foundDecks.length === 0) {
+        debugDB(`DB has no deck with this name. Creating...`);
+        const newDeck = (await decks.create((deck: Deck) => {
+          deck.name = name;
+        })) as Deck;
+        debugDB(`Created!`);
+        if (cards) {
+          for (const card of cards) {
+            await newDeck.addCard(card.front, card.back);
+          }
+          debugDB(`Finished adding its cards to the DB!`);
+        }
+        debugDB(`Done adding deck ${name} to the DB!`);
+        return;
+      }
+      if (foundDecks.length === 1) {
+        debugDB(
+          `Found 1 deck with this name already in the DB. Reconciling its cards now...`
+        );
+        const deck = foundDecks[0];
+        if (cards) {
+          for (const card of cards) {
+            // Look for an identical card in the deck
+            const cardsQ = decks.query(
+              Q.where("deck_id", Q.eq(deck.id)),
+              Q.where("front", Q.eq(card.front)),
+              Q.where("back", Q.eq(card.back))
+            );
+            const count = await cardsQ.fetchCount();
+            if (count === 1) {
+              debugDB(
+                `Card already exists in deck (Front: ${card.front}, Back: ${card.back})`
+              );
+              continue;
+            }
+            if (count > 1) {
+              debugDB(
+                `Unexpected: ${count} copies of card exists in deck (Front: ${card.front}, Back: ${card.back})`
+              );
+              continue;
+            }
+            // Look for a card in deck with the same front
+            const cardFrontQ = decks.query(
+              Q.where("deck_id", Q.eq(deck.id)),
+              Q.where("front", Q.eq(card.front))
+            );
+            const cardsWithSameFront = await cardFrontQ.fetch();
+            if (cardsWithSameFront.length === 0) {
+              // Look for a card in deck with the same back
+              const cardBackQ = decks.query(
+                Q.where("deck_id", Q.eq(deck.id)),
+                Q.where("back", Q.eq(card.back))
+              );
+              const cardsWithSameBack = await cardBackQ.fetch();
+              if (cardsWithSameBack.length === 0) {
+                // Create a new card
+                debugDB(
+                  `Creating new card (Front: ${card.front}, Back: ${card.back})`
+                );
+                await deck.addCard(card.front, card.back);
+                debugDB(`Done creating new card.`);
+                continue;
+              }
+              if (cardsWithSameBack.length === 1) {
+                // Update its front
+                const cardToUpdate = cardsWithSameBack[0];
+                debugDB(
+                  `Found a single card with matching back, so updating front.`
+                );
+                await cardToUpdate.update((c: Card) => {
+                  c.front = card.front;
+                });
+                debugDB(`Done updating front of card.`);
+                continue;
+              }
+              if (cardsWithSameBack.length > 1) {
+                debugDB(
+                  `Unexpected: found ${cardsWithSameBack.length} cards in deck have the same back (${card.back})`
+                );
+                continue;
+              }
+            }
+            if (cardsWithSameFront.length === 1) {
+              // Update its back
+              const cardToUpdate = cardsWithSameFront[0];
+              debugDB(
+                `Found a single card with matching front, so updating back.`
+              );
+              await cardToUpdate.update((c: Card) => {
+                c.back = card.back;
+              });
+              debugDB(`Done updating back of card.`);
+              continue;
+            }
+            if (cardsWithSameFront.length > 1) {
+              debugDB(
+                `Unexpected: found ${cardsWithSameFront.length} cards in deck have the same front (${card.front})`
+              );
+              continue;
+            }
+          }
+        }
+      } else {
+        throw new Error(`Found ${foundDecks.length} decks with the same name,`);
+      }
+    });
+  } catch (err) {
+    debugDB("createOrUpdateEntireDeck Error: ", err);
+  }
+}
+
+async function createOrUpdateAllDecks(program: PROGRAM, db: Database) {
+  debugDB("Beginning to process what is guessed to be a multi-deck copy paste");
+  try {
+    await Promise.all(
+      program.create_decks.map((cd) => createOrUpdateEntireDeck(cd, db))
+    );
+    debugDB(
+      "Finished processing what is guessed to be a multi-deck copy paste!"
+    );
+  } catch (err) {
+    debugDB("createOrUpdateAllDecks Error: ", err);
+  }
+}
+
+/** Reconciles the newly parsed AST with the DB
+ * - Takes the previous and current AST and issues background CRUD actions
+ * - Enables preservation of stats during minor card or deck modifications
+ *
+ * @param prev the old AST, which should already be in the DB
+ * @param curr the newly parsed AST
+ * @param db WatermelonDB instance
+ */
 export default async function reconcile(
   prev: PROGRAM,
   curr: PROGRAM,
@@ -166,8 +308,12 @@ export default async function reconcile(
       await createDeck(guessedAction.deckName, db);
       return;
     case GuessType.CopyPasteSingleDeck:
-    // TODO
+      const { deckName } = guessedAction;
+      const deck = curr.create_decks.find((cd) => cd.name === deckName);
+      await createOrUpdateEntireDeck(deck, db);
+      return;
     case GuessType.CopyPasteMultiDecks:
-    // TODO
+      await createOrUpdateAllDecks(curr, db);
+      return;
   }
 }
