@@ -12,8 +12,9 @@ async function updateDeckName(oldName: string, newName: string, db: Database) {
   try {
     const decks = db.collections.get(TableName.DECKS);
     await db.action(async () => {
-      const q = decks.query(Q.where("name", Q.eq(oldName)));
-      const foundDecks = (await decks.fetchQuery(q)) as Deck[];
+      const foundDecks = (await decks
+        .query(Q.where("name", Q.eq(oldName)))
+        .fetch()) as Deck[];
       if (foundDecks.length === 1) {
         const oldDeck = foundDecks[0];
         await oldDeck.update((deck) => {
@@ -46,8 +47,9 @@ async function createOrUpdateCard(guess: Guess, db: Database): Promise<void> {
     const decks = db.collections.get(TableName.DECKS);
 
     await db.action(async () => {
-      const decksQ = decks.query(Q.where("name", Q.eq(guess.deckName)));
-      const foundDecks = (await decks.fetchQuery(decksQ)) as Deck[];
+      const foundDecks = (await decks
+        .query(Q.where("name", Q.eq(guess.deckName)))
+        .fetch()) as Deck[];
       if (foundDecks.length === 1) {
         debugDB(`Corresponding deck found!`);
         const deck = foundDecks[0];
@@ -55,7 +57,8 @@ async function createOrUpdateCard(guess: Guess, db: Database): Promise<void> {
           debugDB(
             `Attempting to add new card. Front: ${guess.front} | Back: ${guess.back}`
           );
-          await deck.addCard(guess.front, guess.back);
+          // https://nozbe.github.io/WatermelonDB/Actions.html#calling-actions-from-actions
+          await deck.subAction(() => deck.addCard(guess.front, guess.back));
           debugDB(
             `Successfully added card! Front: ${guess.front} | Back: ${guess.back}`
           );
@@ -64,13 +67,14 @@ async function createOrUpdateCard(guess: Guess, db: Database): Promise<void> {
 
         // Update card front or back
         const cards = db.collections.get(TableName.CARDS);
+
         if (guess.type === GuessType.UpdateCardFront) {
           const cardsQ = cards.query(
             Q.where("back", Q.eq(guess.back)),
             Q.where("front", Q.eq(guess.oldFront)),
             Q.where("deck_id", Q.eq(deck.id))
           );
-          const foundCards = (await cards.fetchQuery(cardsQ)) as Card[];
+          const foundCards = (await cardsQ.fetch()) as Card[];
           if (foundCards.length === 1) {
             debugDB(`Corresponding card found!`);
             const card = foundCards[0];
@@ -89,7 +93,7 @@ async function createOrUpdateCard(guess: Guess, db: Database): Promise<void> {
             Q.where("front", Q.eq(guess.front)),
             Q.where("deck_id", Q.eq(deck.id))
           );
-          const foundCards = (await cards.fetchQuery(cardsQ)) as Card[];
+          const foundCards = (await cardsQ.fetch()) as Card[];
           if (foundCards.length === 1) {
             debugDB(`Corresponding card found!`);
             const card = foundCards[0];
@@ -114,6 +118,7 @@ async function createOrUpdateCard(guess: Guess, db: Database): Promise<void> {
   }
 }
 
+// Note: handling GuessType.CreateDeck with createOrUpdateDeck instead
 async function createDeck(deckName: string, db: Database): Promise<void> {
   debugDB(`Attempting to create new deck: ${deckName}`);
   debugDB(`Searching for existence of ${deckName}`);
@@ -121,8 +126,9 @@ async function createDeck(deckName: string, db: Database): Promise<void> {
   try {
     const decks = db.collections.get(TableName.DECKS);
     await db.action(async () => {
-      const q = decks.query(Q.where("name", Q.eq(deckName)));
-      const count = await decks.fetchCount(q);
+      const count = await decks
+        .query(Q.where("name", Q.eq(deckName)))
+        .fetchCount();
       if (count === 1) {
         debugDB(`DB already has this deck, so not going to add it`);
         return;
@@ -149,8 +155,9 @@ async function createOrUpdateEntireDeck(createDeck: CREATE_DECK, db: Database) {
   try {
     const decks = db.collections.get(TableName.DECKS);
     await db.action(async () => {
-      const q = decks.query(Q.where("name", Q.eq(name)));
-      const foundDecks = (await decks.fetchQuery(q)) as Deck[];
+      const foundDecks = (await decks
+        .query(Q.where("name", Q.eq(name)))
+        .fetch()) as Deck[];
       if (foundDecks.length === 0) {
         debugDB(`DB has no deck with this name. Creating...`);
         const newDeck = (await decks.create((deck: Deck) => {
@@ -159,7 +166,13 @@ async function createOrUpdateEntireDeck(createDeck: CREATE_DECK, db: Database) {
         debugDB(`Created!`);
         if (cards) {
           for (const card of cards) {
-            await newDeck.addCard(card.front, card.back);
+            debugDB(
+              `Creating new card (Front: ${card.front}, Back: ${card.back})`
+            );
+            // https://nozbe.github.io/WatermelonDB/Actions.html#calling-actions-from-actions
+            await newDeck.subAction(() =>
+              newDeck.addCard(card.front, card.back)
+            );
           }
           debugDB(`Finished adding its cards to the DB!`);
         }
@@ -172,9 +185,13 @@ async function createOrUpdateEntireDeck(createDeck: CREATE_DECK, db: Database) {
         );
         const deck = foundDecks[0];
         if (cards) {
+          const cardsCollection = db.collections.get(TableName.CARDS);
           for (const card of cards) {
             // Look for an identical card in the deck
-            const cardsQ = decks.query(
+            debugDB(
+              `Looking for card in deck (Front: ${card.front}, Back: ${card.back})`
+            );
+            const cardsQ = cardsCollection.query(
               Q.where("deck_id", Q.eq(deck.id)),
               Q.where("front", Q.eq(card.front)),
               Q.where("back", Q.eq(card.back))
@@ -193,14 +210,16 @@ async function createOrUpdateEntireDeck(createDeck: CREATE_DECK, db: Database) {
               continue;
             }
             // Look for a card in deck with the same front
-            const cardFrontQ = decks.query(
+            debugDB(`Not found. Looking for card with just same front...`);
+            const cardFrontQ = cardsCollection.query(
               Q.where("deck_id", Q.eq(deck.id)),
               Q.where("front", Q.eq(card.front))
             );
             const cardsWithSameFront = await cardFrontQ.fetch();
             if (cardsWithSameFront.length === 0) {
               // Look for a card in deck with the same back
-              const cardBackQ = decks.query(
+              debugDB(`Not found. Looking for card with same back...`);
+              const cardBackQ = cardsCollection.query(
                 Q.where("deck_id", Q.eq(deck.id)),
                 Q.where("back", Q.eq(card.back))
               );
@@ -210,7 +229,7 @@ async function createOrUpdateEntireDeck(createDeck: CREATE_DECK, db: Database) {
                 debugDB(
                   `Creating new card (Front: ${card.front}, Back: ${card.back})`
                 );
-                await deck.addCard(card.front, card.back);
+                await deck.subAction(() => deck.addCard(card.front, card.back));
                 debugDB(`Done creating new card.`);
                 continue;
               }
@@ -265,9 +284,9 @@ async function createOrUpdateEntireDeck(createDeck: CREATE_DECK, db: Database) {
 async function createOrUpdateAllDecks(program: PROGRAM, db: Database) {
   debugDB("Beginning to process what is guessed to be a multi-deck copy paste");
   try {
-    await Promise.all(
-      program.create_decks.map((cd) => createOrUpdateEntireDeck(cd, db))
-    );
+    for (const cd of program.create_decks) {
+      await createOrUpdateEntireDeck(cd, db);
+    }
     debugDB(
       "Finished processing what is guessed to be a multi-deck copy paste!"
     );
@@ -290,6 +309,7 @@ export default async function reconcile(
   db: Database
 ): Promise<void> {
   const guessedAction = guess(prev, curr);
+  debugDB("Guessed action:", guessedAction);
 
   switch (guessedAction.type) {
     case GuessType.Nothing:
@@ -304,10 +324,8 @@ export default async function reconcile(
     case GuessType.CreateCard:
       await createOrUpdateCard(guessedAction, db);
       return;
-    case GuessType.CreateDeck:
-      await createDeck(guessedAction.deckName, db);
-      return;
     case GuessType.CopyPasteSingleDeck:
+    case GuessType.CreateDeck:
       const { deckName } = guessedAction;
       const deck = curr.create_decks.find((cd) => cd.name === deckName);
       await createOrUpdateEntireDeck(deck, db);
