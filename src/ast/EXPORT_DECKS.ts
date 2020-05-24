@@ -6,11 +6,11 @@ export default class EXPORT_DECKS extends NODE {
   }
 
   evaluate() {
-    const dataString = window.localStorage.getItem("cardEditorStrKey");
+    const dataString = localStorage.getItem("cardEditorStrKey");
     let fakeAnchor = document.createElement("a");
     fakeAnchor.href =
       "data:text/plain;charset=utf-8," + encodeURIComponent(dataString);
-    fakeAnchor.download = new Date().toDateString();
+    fakeAnchor.download = `${new Date().toISOString()}.txt`;
     fakeAnchor.click();
   }
 }
