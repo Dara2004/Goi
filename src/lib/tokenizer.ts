@@ -1,3 +1,5 @@
+import { debug } from "./utils";
+
 class Tokenizer {
   private static program: string;
   private static literals: Array<string>;
@@ -17,21 +19,21 @@ class Tokenizer {
   tokenize(): void {
     let tokenizedProgram = Tokenizer.program;
     tokenizedProgram = tokenizedProgram.replace(/\n/g, "_");
-    console.log(Tokenizer.program);
+    debug(Tokenizer.program);
 
     Tokenizer.literals.forEach((s) => {
-      console.log("string: ", s);
+      debug("string: ", s);
       const re = new RegExp(s, "g");
-      console.log("regexp: ", re);
+      debug("regexp: ", re);
       tokenizedProgram = tokenizedProgram.replace(re, `_${s}_`);
-      console.log(tokenizedProgram);
+      debug(tokenizedProgram);
     });
     tokenizedProgram = tokenizedProgram.replace(/__/g, "_");
-    console.log(tokenizedProgram);
+    debug(tokenizedProgram);
     const temparray = tokenizedProgram.split("_");
     const slicedArray = temparray.slice(1);
     this.tokens = slicedArray.map((t) => t.trim()).filter((t) => t !== "");
-    console.log(this.tokens);
+    debug(this.tokens);
   }
 
   checkNext(): string {
@@ -62,7 +64,7 @@ class Tokenizer {
   checkToken(regexp: string): boolean {
     const s = this.checkNext();
     const re = new RegExp(regexp);
-    console.log(`comparing: |${s}|  to  |${regexp}|`);
+    debug(`comparing: |${s}|  to  |${regexp}|`);
     return !!s.match(re);
   }
 
@@ -75,8 +77,7 @@ class Tokenizer {
         `Unexpected next token for Parsing! Expected something matching: ${regexp} but got: ${s}`
       );
     }
-    console.log(`matched: ${s}  to  ${regexp}`);
-
+    debug(`matched: ${s}  to  ${regexp}`);
     return s;
   }
 
