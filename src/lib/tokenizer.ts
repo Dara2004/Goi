@@ -19,12 +19,11 @@ class Tokenizer {
   tokenize(): void {
     let tokenizedProgram = Tokenizer.program;
     tokenizedProgram = tokenizedProgram.replace(/\n/g, "_");
-    tokenizedProgram = tokenizedProgram.toLowerCase();
     debug(Tokenizer.program);
 
     Tokenizer.literals.forEach((s) => {
       debug("string: ", s);
-      const re = new RegExp(s, "g");
+      const re = new RegExp(s, "ig");
       debug("regexp: ", re);
       tokenizedProgram = tokenizedProgram.replace(re, `_${s}_`);
       debug(tokenizedProgram);
