@@ -90,23 +90,9 @@ export default function CommandEditor(props: Props) {
           props.dispatch({ type: "list", command: value.trim() });
         } else if (command.type === "help") {
           isHelpCommand = true;
-        } else if (isStartSessionOrShowStats(command)) {
-          const modifier = (command.command as COMPLEX_COMMAND)
-            .subjectModfier as SUBJECT_MODIFIER;
-          if (modifier) {
-            props.dispatch({
-              type:
-                startSessionOrStats === "start session"
-                  ? "start session"
-                  : "show stats",
-              limit: modifier.limit,
-              filter: modifier.filter,
-              selectCards: modifier.selectCards,
-              deckNames: ((command.command as COMPLEX_COMMAND).subject
-                .subject as DECKS).decks,
-            });
-          }
-        } else if ((command.command as LOAD_DECKS).isLoadDecks) {
+        } else if (command.type === "export decks") {
+          command.evaluate();
+        } else if (command.type === "load decks") {
           const fakeInput = document.createElement("input");
           fakeInput.type = "file";
 
@@ -124,8 +110,23 @@ export default function CommandEditor(props: Props) {
             };
           };
           fakeInput.click();
+        } else if (isStartSessionOrShowStats(command)) {
+          const modifier = (command.command as COMPLEX_COMMAND)
+            .subjectModfier as SUBJECT_MODIFIER;
+          if (modifier) {
+            props.dispatch({
+              type:
+                startSessionOrStats === "start session"
+                  ? "start session"
+                  : "show stats",
+              limit: modifier.limit,
+              filter: modifier.filter,
+              selectCards: modifier.selectCards,
+              deckNames: ((command.command as COMPLEX_COMMAND).subject
+                .subject as DECKS).decks,
+            });
+          }
         }
-        command.evaluate();
       } catch (err) {
         console.log(err);
         props.dispatch({

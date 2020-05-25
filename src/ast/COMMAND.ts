@@ -25,8 +25,10 @@ export default class COMMAND extends NODE {
       this.type = "list";
     } else if (nextToken === "Export decks") {
       this.command = new EXPORT_DECKS();
+      this.type = "export decks";
     } else if (nextToken === "Load decks") {
       this.command = new LOAD_DECKS();
+      this.type = "load decks";
     } else {
       this.command = new COMPLEX_COMMAND();
       this.type = "complex command";
