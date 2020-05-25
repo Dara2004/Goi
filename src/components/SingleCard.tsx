@@ -8,8 +8,8 @@ import Typography from "@material-ui/core/Typography";
 
 export default function SingleCard(props) {
   return (
-    <Card style={{ width: "28em", height: "17em" }}>
-      <CardContent>
+    <Card style={{ width: "25em", height: "15em" }}>
+      <CardContent style={{ paddingTop: "6.5em" }}>
         <Typography color="textSecondary" gutterBottom>
           {props.content}
         </Typography>

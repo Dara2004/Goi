@@ -6,6 +6,7 @@ import EXPORT_DECKS from "./EXPORT_DECKS";
 import LOAD_DECKS from "./LOAD_DECKS";
 
 export default class COMMAND extends NODE {
+  type: string = "";
   command:
     | COMPLEX_COMMAND
     | HELP
@@ -18,14 +19,17 @@ export default class COMMAND extends NODE {
     const nextToken = this.tokenizer.checkNext();
     if (nextToken === "Help") {
       this.command = new HELP();
-    } else if (nextToken === "List:") {
+      this.type = "help";
+    } else if (nextToken === "List") {
       this.command = new LIST();
+      this.type = "list";
     } else if (nextToken === "Export decks") {
       this.command = new EXPORT_DECKS();
     } else if (nextToken === "Load decks") {
       this.command = new LOAD_DECKS();
     } else {
       this.command = new COMPLEX_COMMAND();
+      this.type = "complex command";
     }
     if (this.command === null) {
       throw new Error("Invalid command specified");

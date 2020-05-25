@@ -9,8 +9,16 @@ body {
 }
 .MuiTypography-body1,
 .MuiTab-root {
-  font-family: "Roboto Mono", monospace;
+  font-family: "Roboto Mono", monospace !important;
+  font-size: 1.5em !important;
+  color: #333333 !important;
 }
+.MuiTypography-body1 {
+  font-size: 1.5em !important;
+  color: #333333 !important;
+  /* padding-top: 3.5em; */
+}
+
 .navbar {
   height: 8vh;
   background-color: white;
@@ -44,7 +52,8 @@ body {
 }
 
 .card-view,
-.right-side-container {
+.right-side-container,
+.session-container {
   grid-area: card-view;
   align-items: center;
   display: flex;
@@ -53,7 +62,8 @@ body {
 }
 
 .card-view-container,
-.right-side-container {
+.right-side-container,
+.session-container {
   grid-area: card-view;
   overflow-y: auto;
   height: 92vh;
@@ -63,6 +73,29 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.duration {
+  grid-area: duration;
+}
+.decks {
+  grid-area: decks;
+}
+.timer {
+  grid-area: timer;
+}
+.deckNames {
+  grid-area: deckNames;
+  margin-top: -1px;
+}
+.session-duration {
+  display: grid;
+  min-width: 0;
+  width: 30vw;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "duration decks"
+    "timer deckNames";
 }
 
 .MuiLinearProgress-barColorPrimary {
@@ -87,6 +120,10 @@ body {
   color: #666666 !important;
 }
 
+.MuiSnackbarContent-root {
+  background-color: #1f233e !important;
+  padding: 0px 16px 10px 16px !important;
+}
 .syntax-highlight {
   color: #89c999;
   font-weight: bold;
@@ -95,4 +132,7 @@ body {
 
 .confetti {
   width: 300px;
+}
+.MuiAlert-filledError {
+  background-color: "#EB6A67" !important;
 }
