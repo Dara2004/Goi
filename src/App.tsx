@@ -49,12 +49,6 @@ const CustomListView = ({ program, dispatch }) => {
 export const cardEditorStrKey = "cardEditorStrKey";
 const updateViewReducer = (state, action) => {
   switch (action.type) {
-    case "test change code editor text": {
-      state.cardEditor.getDoc().setValue(action.payload);
-      return {
-        ...state,
-      };
-    }
     case "set card editor": {
       return {
         ...state,
@@ -108,9 +102,9 @@ const updateViewReducer = (state, action) => {
     }
 
     case "load decks": {
+      state.cardEditor.getDoc().setValue(action.createDSLValue);
       return {
         ...state,
-        initialText: action.createDSLValue,
       };
     }
     case "command": {
