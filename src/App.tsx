@@ -166,6 +166,18 @@ export default function App() {
   ] = useReducer(updateViewReducer, initialState);
 
   const showView = (view: View) => {
+    if (view === View.SESSION) {
+      const sessionData = localStorage.getItem("sessionData");
+      if (!sessionData) {
+        // don't forget to delete localstorage session data at end once entered into db
+        const nowString = new Date().toString();
+        const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
+        const initialDataString = JSON.stringify(initialData);
+        localStorage.setItem("sessionData", initialDataString);
+      }
+    } else {
+      localStorage.removeItem("sessionData");
+    }
     switch (view) {
       case View.DECK: {
         return <DeckView program={program} dispatch={dispatch}></DeckView>;
@@ -198,8 +210,10 @@ export default function App() {
           );
         }
         for (const cd of selectedCreateDecks) {
+          const deckName = cd.name;
           for (const card of cd.deck.cards) {
-            selectedCards.push(card);
+            const cardWithDeck = { ...card, deckName };
+            selectedCards.push(cardWithDeck);
           }
         }
         return (

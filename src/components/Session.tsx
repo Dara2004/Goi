@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import ProgressBar from "./ProgressBar";
 import CardFlip from "./CardFlip";
 import WrongBtn from "../assets/wrongBtn.svg";
@@ -6,14 +6,65 @@ import CorrectBtn from "../assets/correctBtn.svg";
 import Timer from "react-compound-timer";
 import PostSessionSummary from "./PostSessionSummary";
 
+function addCardDataToLocalStorage(card: any, gotCorrect: boolean) {
+  const sessionData = localStorage.getItem("sessionData");
+  let cardDataArray;
+  let sessionDataObject;
+  let newSessionDataObject;
+  if (sessionData) {
+    sessionDataObject = JSON.parse(sessionData);
+    cardDataArray = sessionDataObject["cardDataArray"];
+    if (!cardDataArray) cardDataArray = [];
+    const currentCardID = `${card.deckName}_${card.front}_${card.back}`;
+    const cardData = {
+      card_id: currentCardID,
+      front: card.front,
+      back: card.back,
+      is_correct: gotCorrect,
+      card_index: card.nextCardIndex,
+    };
+    const storedCardIDsAndResults = cardDataArray.map((c) => {
+      return { id: c["card_id"], result: c["is_correct"] };
+    });
+    const alreadyAdded =
+      storedCardIDsAndResults.filter(
+        (o) => o.id === currentCardID && o.result !== undefined
+      ).length > 0;
+    if (!alreadyAdded) cardDataArray.push(cardData);
+    newSessionDataObject = {
+      ...sessionDataObject,
+      cardDataArray: cardDataArray,
+    };
+    localStorage.setItem("sessionData", JSON.stringify(newSessionDataObject));
+  }
+}
+
+function addEndTimeToSessionDataInLocalStorage() {
+  const sessionData = localStorage.getItem("sessionData");
+  let endedAt;
+  let currentSessionData;
+  if (sessionData) {
+    currentSessionData = JSON.parse(sessionData);
+    endedAt = currentSessionData["ended_at"];
+  }
+  if (currentSessionData && !endedAt) {
+    const data = { ...currentSessionData, ended_at: new Date().toString() };
+    const dataString = JSON.stringify(data);
+    localStorage.setItem("sessionData", dataString);
+  }
+}
+
 type Props = { deckNames; cards };
 export default function Session(props: Props) {
   const [result, setResult] = useState("");
   const [isDone, setIsDone] = useState(false);
   const [nextCardIndex, setNextCardIndex] = useState(0);
 
+  if (isDone) {
+    addEndTimeToSessionDataInLocalStorage();
+  }
   return isDone ? (
-    <PostSessionSummary></PostSessionSummary>
+    <PostSessionSummary />
   ) : (
     <>
       <div className="session-container">
@@ -47,25 +98,37 @@ export default function Session(props: Props) {
           cards={props.cards}
           dispatch={setIsDone}
           setNextCard={setNextCardIndex}
+          addCardDataToLocalStorage={addCardDataToLocalStorage}
+          currentCard={props.cards[nextCardIndex]}
         ></ProgressBar>
         <CardFlip
           front={props.cards[nextCardIndex].front}
           back={props.cards[nextCardIndex].back}
         ></CardFlip>
         <div style={{ textAlign: "center", marginTop: "3em" }}>
-          <img
+          <input
+            type="image"
             src={CorrectBtn}
             style={{ width: "3em", marginRight: "4em" }}
             onClick={() => {
               setResult("Correct!");
+              addCardDataToLocalStorage(
+                { ...props.cards[nextCardIndex], nextCardIndex },
+                true
+              );
             }}
           />
-          <img
+          <input
+            type="image"
             src={WrongBtn}
             style={{ width: "3em" }}
             onClick={() => {
               setResult("Try again!");
               console.log(result);
+              addCardDataToLocalStorage(
+                { ...props.cards[nextCardIndex], nextCardIndex },
+                false
+              );
             }}
           />
         </div>

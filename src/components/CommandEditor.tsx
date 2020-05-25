@@ -145,7 +145,7 @@ export default function CommandEditor(props: Props) {
     <>
       <div className="command-editor">
         <CodeMirror
-          value={"> Start Session from Decks: deck1, deck2"}
+          value={"> Start Session from Decks: Practice Final"}
           options={{
             mode: "xml",
             theme: "yonce",

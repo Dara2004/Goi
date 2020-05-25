@@ -69,15 +69,19 @@ export default function StatisticsTable(props: Props) {
   switch (columnType) {
     case ColumnType.CARD_COLUMNS: {
       columns = cardColumns;
+      break;
     }
     case ColumnType.SUMMARY_COLUMNS: {
       columns = summaryColumns;
+      break;
     }
     case ColumnType.DECK_COLUMNS: {
       columns = deckColumns;
+      break;
     }
     case ColumnType.SESSION_COLUMNS: {
       columns = sessionColumns;
+      break;
     }
   }
 
