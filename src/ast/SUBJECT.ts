@@ -8,11 +8,11 @@ export default class SUBJECT extends NODE {
 
   parse() {
     const nextToken = this.tokenizer.checkNext();
-    if (nextToken === "Past Sessions") {
+    if (nextToken === "past sessions") {
       this.subject = new SESSIONS();
-    } else if (nextToken === "Decks:") {
+    } else if (nextToken === "decks:") {
       this.subject = new DECKS();
-    } else if (nextToken === "Tags:") {
+    } else if (nextToken === "tags:") {
       this.subject = new TAGS();
     } else {
       throw new Error(

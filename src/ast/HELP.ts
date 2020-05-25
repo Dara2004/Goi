@@ -4,6 +4,6 @@ export default class HELP extends NODE {
   type: string = "";
   parse() {
     this.type = "help";
-    this.tokenizer.getAndCheckToken("Help");
+    this.tokenizer.getAndCheckToken("help");
   }
 }

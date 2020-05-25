@@ -6,11 +6,11 @@ export default class DECK extends NODE {
   parse() {
     while (
       this.tokenizer.moreTokens() &&
-      !this.tokenizer.checkToken("add Color") &&
-      !this.tokenizer.checkToken("add Direction") &&
-      !this.tokenizer.checkToken("add Alignment") &&
-      !this.tokenizer.checkToken("add Tags") &&
-      !this.tokenizer.checkToken("Create Deck")
+      !this.tokenizer.checkToken("add color") &&
+      !this.tokenizer.checkToken("add direction") &&
+      !this.tokenizer.checkToken("add alignment") &&
+      !this.tokenizer.checkToken("add tags") &&
+      !this.tokenizer.checkToken("create deck")
     ) {
       let card = new CARD();
       card.parse();

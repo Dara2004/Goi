@@ -5,7 +5,7 @@ export default class TAGS extends NODE {
   tags: TAG[] = [];
 
   parseInteractivePrompt() {
-    this.tokenizer.getAndCheckToken("Tags:");
+    this.tokenizer.getAndCheckToken("tags:");
     while (this.tokenizer.moreTokens()) {
       let tag = new TAG();
       tag.parse();
@@ -17,13 +17,13 @@ export default class TAGS extends NODE {
   }
 
   parse() {
-    this.tokenizer.getAndCheckToken("add Tags");
+    this.tokenizer.getAndCheckToken("add tags");
     this.tokenizer.getAndCheckToken(":");
     while (
       this.tokenizer.moreTokens() &&
-      !this.tokenizer.checkToken("add Color") &&
-      !this.tokenizer.checkToken("add Direction") &&
-      !this.tokenizer.checkToken("add Alignment") &&
+      !this.tokenizer.checkToken("add color") &&
+      !this.tokenizer.checkToken("add direction") &&
+      !this.tokenizer.checkToken("add alignment") &&
       !this.tokenizer.checkToken("\\(")
     ) {
       if (this.tokenizer.checkNext() === ",") {

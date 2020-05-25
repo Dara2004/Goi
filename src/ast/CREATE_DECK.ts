@@ -12,14 +12,14 @@ export default class CREATE_DECK extends NODE {
   name: string = "";
 
   checkForAndParseTags() {
-    if (this.tokenizer.checkToken("add Tags")) {
+    if (this.tokenizer.checkToken("add tags")) {
       this.tags = new TAGS();
       this.tags.parse();
     }
   }
 
   checkForAndParseAttributes() {
-    if (this.tokenizer.checkToken("add Color|add Alignment|add Direction")) {
+    if (this.tokenizer.checkToken("add color|add alignment|add direction")) {
       this.attributes = new ATTRIBUTES();
       this.attributes.parse();
     }
@@ -34,7 +34,7 @@ export default class CREATE_DECK extends NODE {
 
   parse() {
     //parse deck
-    this.tokenizer.getAndCheckToken("Create Deck");
+    this.tokenizer.getAndCheckToken("create deck");
     const name = this.tokenizer.getNext();
     if (invalidNameTokens.includes(name)) {
       throw new Error("invalid deck name");

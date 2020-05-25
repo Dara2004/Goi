@@ -19,6 +19,7 @@ class Tokenizer {
   tokenize(): void {
     let tokenizedProgram = Tokenizer.program;
     tokenizedProgram = tokenizedProgram.replace(/\n/g, "_");
+    tokenizedProgram = tokenizedProgram.toLowerCase();
     debug(Tokenizer.program);
 
     Tokenizer.literals.forEach((s) => {
