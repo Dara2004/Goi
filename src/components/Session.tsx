@@ -6,7 +6,11 @@ import CorrectBtn from "../assets/correctBtn.svg";
 import Timer from "react-compound-timer";
 import PostSessionSummary from "./PostSessionSummary";
 
-function addCardDataToLocalStorage(card: any, gotCorrect: boolean) {
+function addCardDataToLocalStorage(
+  card: any,
+  nextCardIndex: number,
+  gotCorrect: boolean
+) {
   const sessionData = localStorage.getItem("sessionData");
   let cardDataArray;
   let sessionDataObject;
@@ -21,7 +25,7 @@ function addCardDataToLocalStorage(card: any, gotCorrect: boolean) {
       front: card.front,
       back: card.back,
       is_correct: gotCorrect,
-      card_index: card.nextCardIndex,
+      card_index: nextCardIndex,
     };
     const storedCardIDsAndResults = cardDataArray.map((c) => {
       return { id: c["card_id"], result: c["is_correct"] };
@@ -114,6 +118,7 @@ export default function Session(props: Props) {
               setResult("Correct!");
               addCardDataToLocalStorage(
                 { ...props.cards[nextCardIndex], nextCardIndex },
+                nextCardIndex,
                 true
               );
             }}
@@ -127,6 +132,7 @@ export default function Session(props: Props) {
               console.log(result);
               addCardDataToLocalStorage(
                 { ...props.cards[nextCardIndex], nextCardIndex },
+                nextCardIndex,
                 false
               );
             }}

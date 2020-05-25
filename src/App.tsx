@@ -167,14 +167,10 @@ export default function App() {
 
   const showView = (view: View) => {
     if (view === View.SESSION) {
-      const sessionData = localStorage.getItem("sessionData");
-      if (!sessionData) {
-        // don't forget to delete localstorage session data at end once entered into db
-        const nowString = new Date().toString();
-        const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
-        const initialDataString = JSON.stringify(initialData);
-        localStorage.setItem("sessionData", initialDataString);
-      }
+      const nowString = new Date().toString();
+      const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
+      const initialDataString = JSON.stringify(initialData);
+      localStorage.setItem("sessionData", initialDataString);
     } else {
       localStorage.removeItem("sessionData");
     }

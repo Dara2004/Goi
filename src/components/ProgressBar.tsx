@@ -29,7 +29,7 @@ export default function ProgressBar({
     if (activeStep == cards.length - 1) {
       dispatch(true);
     }
-    addCardDataToLocalStorage(currentCard, undefined);
+    addCardDataToLocalStorage(currentCard, activeStep, undefined);
   };
 
   const handleBack = () => {
