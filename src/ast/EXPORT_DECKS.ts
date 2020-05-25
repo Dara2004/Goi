@@ -2,7 +2,7 @@ import NODE from "./NODE";
 
 export default class EXPORT_DECKS extends NODE {
   parse() {
-    this.tokenizer.getAndCheckToken("Export decks");
+    this.tokenizer.getAndCheckToken("export decks");
   }
 
   evaluate() {

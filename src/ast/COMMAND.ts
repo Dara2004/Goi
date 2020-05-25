@@ -17,16 +17,16 @@ export default class COMMAND extends NODE {
 
   parse() {
     const nextToken = this.tokenizer.checkNext();
-    if (nextToken === "Help") {
+    if (nextToken === "help") {
       this.command = new HELP();
       this.type = "help";
-    } else if (nextToken === "List") {
+    } else if (nextToken === "list") {
       this.command = new LIST();
       this.type = "list";
-    } else if (nextToken === "Export decks") {
+    } else if (nextToken === "export decks") {
       this.command = new EXPORT_DECKS();
       this.type = "export decks";
-    } else if (nextToken === "Load decks") {
+    } else if (nextToken === "load decks") {
       this.command = new LOAD_DECKS();
       this.type = "load decks";
     } else {

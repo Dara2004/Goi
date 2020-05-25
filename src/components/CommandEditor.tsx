@@ -1,21 +1,16 @@
 import React from "react";
+import { highlight } from "../lib/highlighter";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/yonce.css";
-import "codemirror/mode/xml/xml";
 import { UnControlled as CodeMirror } from "react-codemirror2";
 import Tokenizer from "../lib/tokenizer";
-import { deckCreationLiterals, allTokens } from "../lib/constants";
+import { allTokens as literals } from "../lib/constants";
 import COMMAND from "../ast/COMMAND";
-import LIST from "../ast/LIST";
 import COMPLEX_COMMAND from "../ast/COMPLEX_COMMAND";
-import START_SESSION from "../ast/START_SESSION";
-import HELP from "../ast/HELP";
 import { Snackbar, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import SUBJECT_MODIFIER from "../ast/SUBJECT_MODIFIER";
-import DECK from "../ast/DECK";
 import DECKS from "../ast/DECKS";
-import LOAD_DECKS from "../ast/LOAD_DECKS";
 
 const helpMsg = (
   <div
@@ -70,7 +65,8 @@ export default function CommandEditor(props: Props) {
     setOpenHelp(false);
   };
 
-  const handleCommandChange = (editor, data, value) => {
+  const handleCommandChange = (editor: CodeMirror.Editor, data, value) => {
+    highlight(editor, literals);
     if (!value.startsWith("> ")) {
       //reset the cursor if user tries to delete
       editor.getDoc().setValue("> ");
@@ -82,7 +78,7 @@ export default function CommandEditor(props: Props) {
       //after user hits enter, reset the cursor
       // Parse the value
       try {
-        Tokenizer.makeTokenizer(value, allTokens);
+        Tokenizer.makeTokenizer(value, literals);
         const command = new COMMAND();
         command.parse(); //commands = COMPLEX_COMMAND | HELP | LIST
         console.log(command.command);
@@ -150,6 +146,9 @@ export default function CommandEditor(props: Props) {
             mode: "xml",
             theme: "yonce",
             lineNumbers: true,
+          }}
+          editorDidMount={(editor, value) => {
+            highlight(editor, literals);
           }}
           onChange={handleCommandChange}
         />
