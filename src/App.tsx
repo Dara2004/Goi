@@ -11,8 +11,10 @@ import Deck from "./model/Deck";
 import PostSessionSummary from "./components/PostSessionSummary";
 import ListView from "./components/ListView";
 import PROGRAM from "./ast/PROGRAM";
+import { getInitialData } from "./lib/getIintialData";
+import { useDatabase } from "@nozbe/watermelondb/hooks";
+import { createOrUpdateAllDecks } from "./lib/reconciler";
 
-export const cardEditorStrKey = "cardEditorStrKey";
 const updateViewReducer = (state, action) => {
   switch (action.type) {
     case "card editor parse success": {
@@ -56,36 +58,25 @@ export enum View {
   LIST,
 }
 
-const initialProgram = {
-  create_decks: [
-    {
-      name: "Practice Final",
-      deck: {
-        cards: [
-          { front: "Foo", back: "Bar" },
-          { front: "Evan", back: "You" },
-        ],
-      },
-    },
-  ],
-};
-
-const initialState = {
-  view: View.DECK,
-  program:
-    JSON.parse(localStorage.getItem("programAST")) ||
-    (initialProgram as PROGRAM),
-  command: "",
-};
-
 export default function App() {
-  // useEffect(() => {
-  //   const cardEditorStrValue = localStorage.getItem(cardEditorStrKey);
-  // }, []); //only run useEffect on didMount, not every update
+  const { isFirstTimeUser, initialText, initialProgram } = getInitialData();
+
+  const initialState = {
+    view: View.DECK,
+    program: initialProgram,
+    initialText: initialText,
+    command: "",
+  };
+
   const [{ view, program, command }, dispatch] = useReducer(
     updateViewReducer,
     initialState
   );
+
+  const db = useDatabase();
+  if (isFirstTimeUser) {
+    createOrUpdateAllDecks(initialProgram, db);
+  }
 
   const handleCommandChange = (value) => {
     dispatch({ type: "command", value: value });
@@ -124,7 +115,11 @@ export default function App() {
       </div>
       <div className="container" style={{ backgroundColor: "#FAFAFA" }}>
         {/*gives CardEditor the ability to change Deck view */}
-        <CardEditor dispatch={dispatch} program={program}></CardEditor>{" "}
+        <CardEditor
+          dispatch={dispatch}
+          program={program}
+          initialText={initialText}
+        ></CardEditor>{" "}
         <CommandEditor dispatch={dispatch}></CommandEditor>
         {showView(view)}
       </div>

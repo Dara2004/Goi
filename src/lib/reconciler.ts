@@ -281,7 +281,7 @@ async function createOrUpdateEntireDeck(createDeck: CREATE_DECK, db: Database) {
   }
 }
 
-async function createOrUpdateAllDecks(program: PROGRAM, db: Database) {
+export async function createOrUpdateAllDecks(program: PROGRAM, db: Database) {
   debugDB("Beginning to process what is guessed to be a multi-deck copy paste");
   try {
     for (const cd of program.create_decks) {

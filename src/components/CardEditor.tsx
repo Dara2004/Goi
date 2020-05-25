@@ -6,14 +6,17 @@ import { UnControlled as CodeMirror } from "react-codemirror2";
 import PROGRAM from "../ast/PROGRAM";
 import Tokenizer from "../lib/tokenizer";
 import { deckCreationLiterals } from "../lib/constants";
-import { cardEditorStrKey } from "../App";
-import { initialCodeEditorStr } from "../";
 import { getHighlights } from "../lib/highlighter";
 import { useDatabase } from "@nozbe/watermelondb/hooks";
 import reconcile from "../lib/reconciler";
 import { debug, debugDB } from "../lib/utils";
+import { astStrKey, cardEditorStrKey } from "../lib/getIintialData";
 
-type Props = { dispatch; program };
+type Props = {
+  dispatch;
+  program: PROGRAM;
+  initialText: string;
+};
 
 export default function CardEditor(props: Props) {
   const db = useDatabase();
@@ -41,7 +44,7 @@ export default function CardEditor(props: Props) {
       ) {
         debug("last deck is null, not sending dispatch");
       } else {
-        localStorage.setItem("programAST", JSON.stringify(program));
+        localStorage.setItem(astStrKey, JSON.stringify(program));
         // Trigger background reconciliation with DB
         reconcile(props.program, program, db)
           .then(() => debugDB("Background DB update complete!"))
@@ -57,16 +60,7 @@ export default function CardEditor(props: Props) {
     <>
       <div className="card-editor">
         <CodeMirror
-          value={
-            initialCodeEditorStr ||
-            `Create Deck Practice Final:
-(1) Foo : Bar
-(2) Bill : Gates
-(3) Steve : Jobs
-(4) Justin : Trudeau 
-(5) Evan : You
-`
-          }
+          value={props.initialText}
           options={{
             mode: "xml",
             theme: "material",
