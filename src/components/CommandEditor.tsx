@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/yonce.css";
 import "codemirror/mode/xml/xml";
@@ -15,6 +15,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import SUBJECT_MODIFIER from "../ast/SUBJECT_MODIFIER";
 import DECK from "../ast/DECK";
 import DECKS from "../ast/DECKS";
+import LOAD_DECKS from "../ast/LOAD_DECKS";
 
 const helpMsg = (
   <div
@@ -105,7 +106,26 @@ export default function CommandEditor(props: Props) {
                 .subject as DECKS).decks,
             });
           }
+        } else if ((command.command as LOAD_DECKS).isLoadDecks) {
+          const fakeInput = document.createElement("input");
+          fakeInput.type = "file";
+
+          fakeInput.onchange = (e: any) => {
+            const file = e.target.files[0];
+            const fileReader = new FileReader();
+            fileReader.readAsText(file, "UTF-8");
+
+            fileReader.onload = (e) => {
+              const deckCreationDSL = e.target.result as string;
+              props.dispatch({
+                type: "load decks",
+                createDSLValue: deckCreationDSL,
+              });
+            };
+          };
+          fakeInput.click();
         }
+        command.evaluate();
       } catch (err) {
         console.log(err);
         props.dispatch({

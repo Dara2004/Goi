@@ -93,6 +93,13 @@ const updateViewReducer = (state, action) => {
     }
     case "command not found": {
       console.log("command not found");
+    case "load decks": {
+      return {
+        ...state,
+        createDSLValue: action.createDSLValue,
+      };
+    }
+    case "command": {
       return {
         ...state,
         view: View.ERROR,
@@ -154,7 +161,7 @@ export default function App() {
   //   ).then((cards) => {});
   // });
 
-  const [{ view, program, deckToViewDetail, from }, dispatch] = useReducer(
+  const [{ view, program, deckToViewDetail, createDSLValue, from }, dispatch] = useReducer(
     updateViewReducer,
     initialState
   );
@@ -231,7 +238,10 @@ export default function App() {
       </div>
       <div className="container" style={{ backgroundColor: "#FAFAFA" }}>
         {/*gives CardEditor the ability to change Deck view */}
-        <CardEditor dispatch={dispatch}></CardEditor>{" "}
+        <CardEditor
+          dispatch={dispatch}
+          createDSLValue={createDSLValue}
+        ></CardEditor>{" "}
         <CommandEditor dispatch={dispatch}></CommandEditor>
         {showView(view)}
       </div>

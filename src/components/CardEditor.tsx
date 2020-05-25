@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/ayu-mirage.css";
 import "codemirror/mode/xml/xml";
@@ -10,9 +10,36 @@ import { cardEditorStrKey } from "../App";
 import { initialCodeEditorStr } from "../";
 import { getHighlights } from "../lib/highlighter";
 
-type Props = { dispatch };
+type Props = { dispatch; createDSLValue: string };
+
+const getInitialState = () => {
+  const cardStr = localStorage.getItem(cardEditorStrKey);
+  if (cardStr) {
+    return cardStr;
+  } else {
+    const initialVal = `Create Deck Practice Final:
+(1) Foo : Bar
+(2) Bill : Gates
+(3) Steve : Jobs
+(4) Justin : Trudeau 
+(5) Evan : You
+`;
+    localStorage.setItem(cardEditorStrKey, initialVal);
+    return initialVal;
+  }
+};
 
 export default function CardEditor(props: Props) {
+  const [stateVal, setValue] = useState(getInitialState);
+  const { createDSLValue } = props;
+
+  useEffect(() => {
+    if (createDSLValue) {
+      setValue(createDSLValue);
+      localStorage.setItem(cardEditorStrKey, stateVal);
+    }
+  }, [createDSLValue]);
+
   const handleChange = (editor: CodeMirror.Editor, data, value) => {
     const highlights = getHighlights(value, ["create deck", "(", ":", ")"]);
     const doc = editor.getDoc();
@@ -48,16 +75,7 @@ export default function CardEditor(props: Props) {
     <>
       <div className="card-editor">
         <CodeMirror
-          value={
-            initialCodeEditorStr ||
-            `Create Deck Practice Final:
-(1) Foo : Bar
-(2) Bill : Gates
-(3) Steve : Jobs
-(4) Justin : Trudeau 
-(5) Evan : You
-`
-          }
+          value={stateVal || initialCodeEditorStr}
           options={{
             mode: "xml",
             theme: "ayu-mirage",

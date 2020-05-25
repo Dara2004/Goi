@@ -3,6 +3,8 @@ export const keywords = [
   "Start Session from",
   "Help",
   "List",
+  "Export decks",
+  "Load decks",
   ",",
   "Past Sessions",
   "cards from",
