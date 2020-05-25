@@ -23,7 +23,8 @@ function getSessionCards() {
         c["card_index"] + 1,
         c["front"],
         c["back"],
-        c["is_correct"]
+        c["is_correct"],
+        c["deck"]
       );
     });
   return {

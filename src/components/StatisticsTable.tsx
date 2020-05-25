@@ -39,6 +39,7 @@ const summaryColumns = [
   { id: "front", label: "Front", minWidth: 80, align: "center" },
   { id: "back", label: "Back", minWidth: 80, align: "center" },
   { id: "results", label: "Results", minWidth: 80, align: "center" },
+  { id: "deck", label: "Deck", minWidth: 80, align: "center" },
 ];
 
 const deckColumns = [

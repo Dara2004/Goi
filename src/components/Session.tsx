@@ -26,6 +26,7 @@ function addCardDataToLocalStorage(
       back: card.back,
       is_correct: gotCorrect,
       card_index: nextCardIndex,
+      deck: card.deckName,
     };
     const storedCardIDsAndResults = cardDataArray.map((c) => {
       return { id: c["card_id"], result: c["is_correct"] };
