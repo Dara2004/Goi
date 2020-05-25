@@ -36,7 +36,12 @@ export function createSummaryData(
   back: string,
   isCorrect: boolean
 ) {
-  const results = isCorrect ? "correct" : "incorrect";
+  let results;
+  if (isCorrect === undefined) {
+    results = "skipped";
+  } else {
+    results = isCorrect ? "correct" : "incorrect";
+  }
   const indexString = index.toString() + ".)";
   return { indexString, front, back, results };
 }

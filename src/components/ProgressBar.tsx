@@ -12,7 +12,13 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ProgressBar({ cards, dispatch, setNextCard }) {
+export default function ProgressBar({
+  cards,
+  dispatch,
+  setNextCard,
+  addCardDataToLocalStorage,
+  currentCard,
+}) {
   const classes = useStyles();
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -23,6 +29,7 @@ export default function ProgressBar({ cards, dispatch, setNextCard }) {
     if (activeStep == cards.length - 1) {
       dispatch(true);
     }
+    addCardDataToLocalStorage(currentCard, activeStep, undefined);
   };
 
   const handleBack = () => {
