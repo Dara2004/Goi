@@ -9,6 +9,13 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 
+export enum ColumnType {
+  CARD_COLUMNS,
+  SUMMARY_COLUMNS,
+  DECK_COLUMNS,
+  SESSION_COLUMNS,
+}
+
 const useStyles = makeStyles({
   root: {
     width: "100%",
@@ -18,7 +25,7 @@ const useStyles = makeStyles({
   },
 });
 
-const statsColumns = [
+const cardColumns = [
   { id: "indexString", label: "", minWidth: 20, align: "center" },
   { id: "front", label: "Front", minWidth: 80, align: "center" },
   { id: "back", label: "Back", minWidth: 80, align: "center" },
@@ -34,14 +41,45 @@ const summaryColumns = [
   { id: "results", label: "Results", minWidth: 80, align: "center" },
 ];
 
-type Props = { rows: any[]; isForSummary: boolean };
+const deckColumns = [
+  { id: "indexString", label: "", minWidth: 20, align: "center" },
+  { id: "cardCount", label: "Card Count", minWidth: 80, align: "center" },
+  { id: "score", label: "Score", minWidth: 80, align: "center" },
+  { id: "duration", label: "Time Spent", minWidth: 80, align: "center" },
+  { id: "tagsString", label: "Tag", minWidth: 80, align: "center" },
+];
+
+const sessionColumns = [
+  { id: "indexString", label: "", minWidth: 20, align: "center" },
+  { id: "score", label: "Score", minWidth: 80, align: "center" },
+  { id: "cardCount", label: "Card Count", minWidth: 80, align: "center" },
+  { id: "duration", label: "Time Spent", minWidth: 80, align: "center" },
+  { id: "decks", label: "Decks", minWidth: 80, align: "center" },
+  { id: "tagsString", label: "Tags", minWidth: 80, align: "center" },
+];
+type Props = { rows: any[]; columnType: ColumnType };
 
 export default function StatisticsTable(props: Props) {
-  const { rows, isForSummary } = props;
+  const { rows, columnType } = props;
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const columns = isForSummary ? summaryColumns : statsColumns;
+
+  let columns = null;
+  switch (columnType) {
+    case ColumnType.CARD_COLUMNS: {
+      columns = cardColumns;
+    }
+    case ColumnType.SUMMARY_COLUMNS: {
+      columns = summaryColumns;
+    }
+    case ColumnType.DECK_COLUMNS: {
+      columns = deckColumns;
+    }
+    case ColumnType.SESSION_COLUMNS: {
+      columns = sessionColumns;
+    }
+  }
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

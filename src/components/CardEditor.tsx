@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "codemirror/lib/codemirror.css";
-import "codemirror/theme/material.css";
+import "codemirror/theme/ayu-mirage.css";
 import "codemirror/mode/xml/xml";
 import { UnControlled as CodeMirror } from "react-codemirror2";
 import PROGRAM from "../ast/PROGRAM";
@@ -12,6 +12,19 @@ import reconcile from "../lib/reconciler";
 import { debug, debugDB } from "../lib/utils";
 import { astStrKey, cardEditorStrKey } from "../lib/getIintialData";
 
+const literals = ["create deck", "(", ":", ")"];
+
+function highlight(doc, value, literals) {
+  const highlights = getHighlights(value, literals);
+  highlights.forEach((highlight) => {
+    doc.markText(
+      { line: highlight.lineNumber, ch: highlight.charStart },
+      { line: highlight.lineNumber, ch: highlight.charEnd },
+      { className: "syntax-highlight" }
+    );
+  });
+}
+
 type Props = {
   dispatch;
   program: PROGRAM;
@@ -22,15 +35,9 @@ export default function CardEditor(props: Props) {
   const db = useDatabase();
 
   const handleChange = (editor: CodeMirror.Editor, data, value) => {
-    const highlights = getHighlights(value, ["create deck", "(", ":", ")"]);
     const doc = editor.getDoc();
-    highlights.forEach((highlight) => {
-      doc.markText(
-        { line: highlight.lineNumber, ch: highlight.charStart },
-        { line: highlight.lineNumber, ch: highlight.charEnd },
-        { className: "syntax-highlight" }
-      );
-    });
+    highlight(doc, value, literals);
+
     localStorage.setItem(cardEditorStrKey, value);
     // Parse it
     try {
@@ -63,8 +70,13 @@ export default function CardEditor(props: Props) {
           value={props.initialText}
           options={{
             mode: "xml",
-            theme: "material",
+            theme: "ayu-mirage",
             lineNumbers: true,
+          }}
+          editorDidMount={(editor, value) => {
+            const doc = editor.getDoc();
+            highlight(doc, value, literals);
+            props.dispatch({ type: "set card editor", cardEditor: editor });
           }}
           onChange={handleChange}
           className="card-editor-codemirror"

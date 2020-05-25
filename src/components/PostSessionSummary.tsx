@@ -1,7 +1,8 @@
 import React from "react";
-import { createCardData } from "../lib/util";
 import StatisticsTable from "./StatisticsTable";
+import { ColumnType } from "./StatisticsTable";
 import ConfettiEmoji from "../assets/confettiEmoji.png";
+import { createSummaryData } from "../lib/utils";
 
 function getSessionCards() {
   // temp return object for testing:
@@ -13,86 +14,14 @@ function getSessionCards() {
   return {
     overview: { "total time": "80min" },
     details: [
-      createCardData(
-        2,
-        "Aurevoir",
-        "Bye",
-        1,
-        0,
-        "French",
-        ["test1", "test2"],
-        true
-      ),
-      createCardData(
-        3,
-        "Aurevoir",
-        "Bye",
-        1,
-        0,
-        "French",
-        ["test1", "test2"],
-        true
-      ),
-      createCardData(
-        4,
-        "Aurevoir",
-        "Bye",
-        1,
-        0,
-        "French",
-        ["test1", "test2"],
-        true
-      ),
-      createCardData(
-        5,
-        "Aurevoir",
-        "Bye",
-        1,
-        1,
-        "French",
-        ["test1", "test2"],
-        true
-      ),
-      createCardData(
-        6,
-        "Aurevoir",
-        "Bye",
-        1,
-        0,
-        "French",
-        ["test1", "test2"],
-        true
-      ),
-      createCardData(
-        7,
-        "Aurevoir",
-        "Bye",
-        1,
-        1,
-        "French",
-        ["test1", "test2"],
-        true
-      ),
-      createCardData(
-        8,
-        "Aurevoir",
-        "Bye",
-        1,
-        1,
-        "French",
-        ["test1", "test2"],
-        true
-      ),
-      createCardData(
-        9,
-        "Aurevoir",
-        "Bye",
-        1,
-        0,
-        "French",
-        ["test1", "test2"],
-        true
-      ),
+      createSummaryData(2, "Aurevoir", "Bye", true),
+      createSummaryData(3, "Aurevoir", "Bye", true),
+      createSummaryData(4, "Aurevoir", "Bye", true),
+      createSummaryData(5, "Aurevoir", "Bye", true),
+      createSummaryData(6, "Aurevoir", "Bye", true),
+      createSummaryData(7, "Aurevoir", "Bye", true),
+      createSummaryData(8, "Aurevoir", "Bye", true),
+      createSummaryData(9, "Aurevoir", "Bye", true),
     ],
   };
 }
@@ -132,7 +61,10 @@ export default function PostSessionSummary() {
       <br />
       <h3>Time spent: {sessionCards.overview["total time"]}</h3>
       <br />
-      <StatisticsTable rows={sessionCards.details} isForSummary={true} />
+      <StatisticsTable
+        rows={sessionCards.details}
+        columnType={ColumnType.SUMMARY_COLUMNS}
+      />
     </div>
   );
 }
