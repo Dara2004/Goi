@@ -91,8 +91,7 @@ const updateViewReducer = (state, action) => {
         },
       };
     }
-    case "command not found": {
-      console.log("command not found");
+
     case "load decks": {
       return {
         ...state,
@@ -161,10 +160,10 @@ export default function App() {
   //   ).then((cards) => {});
   // });
 
-  const [{ view, program, deckToViewDetail, createDSLValue, from }, dispatch] = useReducer(
-    updateViewReducer,
-    initialState
-  );
+  const [
+    { view, program, deckToViewDetail, createDSLValue, from },
+    dispatch,
+  ] = useReducer(updateViewReducer, initialState);
 
   const showView = (view: View) => {
     switch (view) {
