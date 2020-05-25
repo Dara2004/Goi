@@ -60,7 +60,7 @@ const updateViewReducer = (state, action) => {
         from: {
           limit: action.limit,
           filter: action.filter,
-          selectedCards: action.selectedCards, // determines whether limit applies to cards or SUBJECT (decks/sessions)
+          selectCards: action.selectCards, // determines whether limit applies to cards or SUBJECT (decks/sessions)
           deckNames: action.deckNames, // if deckNames is null then it is from past sessions
         },
       };
@@ -86,7 +86,7 @@ const updateViewReducer = (state, action) => {
         from: {
           limit: action.limit,
           filter: action.filter,
-          selectedCards: action.selectedCards, // determines whether limit applies to cards or SUBJECT (decks/sessions)
+          selectCards: action.selectCards, // determines whether limit applies to cards or SUBJECT (decks/sessions)
           deckNames: action.deckNames, // if deckNames is null then it is from past sessions
         },
       };
@@ -143,7 +143,7 @@ const initialState = {
   from: {
     limit: 0,
     filter: "",
-    selectedCards: false, // determines whether limit applies to cards or SUBJECT (decks/sessions)
+    selectCards: false, // determines whether limit applies to cards or SUBJECT (decks/sessions)
     deckNames: [], // if deckNames is null then it is from past sessions
   },
 };
@@ -183,7 +183,7 @@ export default function App() {
       case View.SESSION: {
         // `from` contains all the parameters needed to select the cards
         // TODO
-        let selectedCards = [];
+        let selectCards = [];
         if (program.create_decks.length === 0) {
           return (
             <ErrorMessage message="You haven't created any deck!"></ErrorMessage>
@@ -199,15 +199,23 @@ export default function App() {
         }
         for (const cd of selectedCreateDecks) {
           for (const card of cd.deck.cards) {
-            selectedCards.push(card);
+            selectCards.push(card);
           }
         }
         return (
-          <Session deckNames={from.deckNames} cards={selectedCards}></Session>
+          <Session deckNames={from.deckNames} cards={selectCards}></Session>
         );
       }
       case View.STATS: {
-        return <Statistics></Statistics>;
+        console.log(from);
+        return (
+          <Statistics
+            limit={from.limit}
+            filter={from.filter}
+            selectCards={from.selectCards}
+            deckNames={from.deckNames}
+          ></Statistics>
+        );
       }
       case View.DECK_DETAIL: {
         console.log(deckToViewDetail);

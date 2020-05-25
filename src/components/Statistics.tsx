@@ -43,8 +43,26 @@ function getStatsObject() {
   };
 }
 
-export default function Statistics() {
-  const statsObject = getStatsObject();
+type Props = { limit; filter; selectCards; deckNames };
+
+export default function Statistics(props: Props) {
+  function createStatsObject() {
+    let statsColumn = ColumnType.SESSION_COLUMNS;
+    if (props.selectCards) {
+      statsColumn = ColumnType.CARD_COLUMNS;
+    } else if (props.deckNames !== undefined) {
+      statsColumn = ColumnType.DECK_COLUMNS;
+    }
+    let createdOverview: {};
+    let createdDetails: [];
+    return {
+      overview: createdOverview,
+      details: createdDetails,
+      statsColumn: statsColumn,
+    };
+  }
+  createStatsObject();
+  const statsObject = createStatsObject();
   return (
     <>
       <div className="right-side-container">
@@ -52,7 +70,7 @@ export default function Statistics() {
         <StatisticsOverview overview={statsObject.overview} />
         <StatisticsTable
           rows={statsObject.details}
-          columnType={ColumnType.CARD_COLUMNS}
+          columnType={statsObject.statsColumn}
         />
       </div>
     </>
