@@ -6,24 +6,14 @@ import { UnControlled as CodeMirror } from "react-codemirror2";
 import PROGRAM from "../ast/PROGRAM";
 import Tokenizer from "../lib/tokenizer";
 import { deckCreationLiterals } from "../lib/constants";
-import { getHighlights } from "../lib/highlighter";
+import { highlight } from "../lib/highlighter";
 import { useDatabase } from "@nozbe/watermelondb/hooks";
 import reconcile from "../lib/reconciler";
 import { debug, debugDB } from "../lib/utils";
 import { astStrKey, cardEditorStrKey } from "../lib/getIintialData";
 
+// for syntax highlighting
 const literals = ["create deck", "(", ":", ")"];
-
-function highlight(doc, value, literals) {
-  const highlights = getHighlights(value, literals);
-  highlights.forEach((highlight) => {
-    doc.markText(
-      { line: highlight.lineNumber, ch: highlight.charStart },
-      { line: highlight.lineNumber, ch: highlight.charEnd },
-      { className: "syntax-highlight" }
-    );
-  });
-}
 
 type Props = {
   dispatch;
@@ -35,8 +25,7 @@ export default function CardEditor(props: Props) {
   const db = useDatabase();
 
   const handleChange = (editor: CodeMirror.Editor, data, value) => {
-    const doc = editor.getDoc();
-    highlight(doc, value, literals);
+    highlight(editor, literals);
 
     localStorage.setItem(cardEditorStrKey, value);
     // Parse it
@@ -74,8 +63,7 @@ export default function CardEditor(props: Props) {
             lineNumbers: true,
           }}
           editorDidMount={(editor, value) => {
-            const doc = editor.getDoc();
-            highlight(doc, value, literals);
+            highlight(editor, literals);
             props.dispatch({ type: "set card editor", cardEditor: editor });
           }}
           onChange={handleChange}
