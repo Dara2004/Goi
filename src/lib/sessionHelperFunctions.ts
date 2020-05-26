@@ -138,6 +138,8 @@ export async function getCardsForSession(
     );
   } else if (subject === "sessions") {
     return null; // TODO
-    return getCardsFromSessions(filter, isLimitAppliedToCards, limit);
+    // return getCardsFromSessions(filter, isLimitAppliedToCards, limit);
+  } else {
+    return null;
   }
 }
