@@ -20,6 +20,7 @@ import {
   Filter,
   getCardsFromSelectedDecks,
 } from "./model/query";
+import { randomizeCards } from "./lib/utils";
 
 const CustomListView = ({ program, dispatch }) => {
   return (
@@ -221,6 +222,7 @@ export default function App() {
             selectedCards.push(cardWithDeck);
           }
         }
+        selectedCards = randomizeCards(selectedCards);
         return (
           <Session
             deckNames={from.deckNames}

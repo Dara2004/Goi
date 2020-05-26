@@ -76,3 +76,15 @@ export function createSessionData(
   const indexString = index.toString() + ".)";
   return { indexString, count, score, duration, decksString, tagsString };
 }
+
+// shuffle function from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+export function randomizeCards(cards: any[]): any[] {
+  let shuffledCards = cards;
+  for (let i = shuffledCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = shuffledCards[i];
+    shuffledCards[i] = shuffledCards[j];
+    shuffledCards[j] = temp;
+  }
+  return shuffledCards;
+}
