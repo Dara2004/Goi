@@ -19,7 +19,9 @@ import { debug } from "./lib/utils";
 import {
   checkSessionCommandError,
   getCardsForSession,
+  FlashCard,
 } from "./lib/sessionHelperFunctions";
+import PostSessionSummary from "./components/PostSessionSummary";
 
 const CustomListView = ({ program, dispatch }) => {
   return (
@@ -83,6 +85,7 @@ export enum ActionType {
   SetCardEditor = "set card editor",
   CardEditorParseSuccess = "card editor parse success",
   StartSession = "start session",
+  PostSession = "post session",
   List = "list",
   ViewDeckDetail = "view deck detail",
   ShowStats = "show stats",
@@ -130,6 +133,9 @@ export type Action =
     }
   | {
       type: ActionType.CommandNotFound;
+    }
+  | {
+      type: ActionType.PostSession;
     }; // Add actions here
 
 const reducer = (state: State, action: Action): State => {
@@ -179,6 +185,12 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         view: View.LIST,
+      };
+    }
+    case "post session": {
+      return {
+        ...state,
+        view: View.POST_SESSION,
       };
     }
     case "view deck detail": {
@@ -238,17 +250,15 @@ export default function App() {
   ] = useReducer(reducer, initialState);
 
   const showView = (view: View) => {
-    if (view === View.SESSION) {
-      const nowString = new Date().toString();
-      const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
-      const initialDataString = JSON.stringify(initialData);
-      localStorage.setItem("sessionData", initialDataString);
-    } else {
+    if (view !== View.SESSION && view !== View.POST_SESSION) {
       localStorage.removeItem("sessionData");
     }
     switch (view) {
       case View.DECK: {
         return <DeckView program={program} dispatch={dispatch}></DeckView>;
+      }
+      case View.POST_SESSION: {
+        return <PostSessionSummary />;
       }
       case View.LIST: {
         return (
@@ -270,9 +280,27 @@ export default function App() {
             <ErrorMessage message={sessionQueryError.message}></ErrorMessage>
           );
         }
-        const selectedCards = getCardsForSession(program, complexCommandParams);
+        const nowString = new Date().toString();
+        const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
+        const initialDataString = JSON.stringify(initialData);
+        localStorage.setItem("sessionData", initialDataString);
 
-        return <Session dispatch={dispatch} cards={selectedCards}></Session>;
+        const selectedCards: FlashCard[] = [
+          {
+            front: "hello",
+            back: "world",
+            deckName: "French",
+          },
+        ];
+        getCardsForSession(program, complexCommandParams, db);
+
+        return (
+          <Session
+            deckNames={["French"]}
+            dispatch={dispatch}
+            cards={selectedCards}
+          ></Session>
+        );
       }
       case View.STATS: {
         return <Statistics></Statistics>;
@@ -309,6 +337,7 @@ export default function App() {
           dispatch={dispatch}
           program={program}
           initialText={initialText}
+          isInSession={view === View.SESSION}
         ></CardEditor>
         <CommandEditor dispatch={dispatch}></CommandEditor>
         {showView(view)}

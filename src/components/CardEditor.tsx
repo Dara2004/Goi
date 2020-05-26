@@ -11,18 +11,21 @@ import { useDatabase } from "@nozbe/watermelondb/hooks";
 import reconcile from "../lib/reconciler";
 import { debug, debugDB } from "../lib/utils";
 import { astStrKey, cardEditorStrKey } from "../lib/getIintialData";
+import { Action, ActionType } from "../App";
 
 // for syntax highlighting
 const literals = ["create deck", "(", ":", ")"];
-
 type Props = {
-  dispatch;
-  program: PROGRAM;
+  dispatch: React.Dispatch<Action>;
   initialText: string;
+  isInSession: boolean;
+  program: PROGRAM;
 };
 
 export default function CardEditor(props: Props) {
   const db = useDatabase();
+
+  const { initialText, isInSession } = props;
 
   const handleChange = (editor: CodeMirror.Editor, data, value) => {
     highlight(editor, literals);
@@ -45,7 +48,7 @@ export default function CardEditor(props: Props) {
         reconcile(props.program, program, db)
           .then(() => debugDB("Background DB update complete!"))
           .catch((err) => debugDB("Error during reconciliation!", err));
-        props.dispatch({ type: "card editor parse success", program });
+        props.dispatch({ type: ActionType.CardEditorParseSuccess, program });
       }
     } catch (err) {
       debug(err);
@@ -55,20 +58,27 @@ export default function CardEditor(props: Props) {
   return (
     <>
       <div className="card-editor">
-        <CodeMirror
-          value={props.initialText}
-          options={{
-            mode: "xml",
-            theme: "ayu-mirage",
-            lineNumbers: true,
-          }}
-          editorDidMount={(editor, value) => {
-            highlight(editor, literals);
-            props.dispatch({ type: "set card editor", cardEditor: editor });
-          }}
-          onChange={handleChange}
-          className="card-editor-codemirror"
-        />
+        {isInSession ? (
+          <div className="card-editor-codemirror card-hider">{initialText}</div>
+        ) : (
+          <CodeMirror
+            value={initialText}
+            options={{
+              mode: "xml",
+              theme: "ayu-mirage",
+              lineNumbers: true,
+            }}
+            editorDidMount={(editor, value) => {
+              highlight(editor, literals);
+              props.dispatch({
+                type: ActionType.SetCardEditor,
+                cardEditor: editor,
+              });
+            }}
+            onChange={handleChange}
+            className="card-editor-codemirror"
+          />
+        )}
       </div>
     </>
   );

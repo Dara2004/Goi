@@ -5,9 +5,14 @@ import WrongBtn from "../assets/wrongBtn.svg";
 import CorrectBtn from "../assets/correctBtn.svg";
 import Timer from "react-compound-timer";
 import PostSessionSummary from "./PostSessionSummary";
-import { Action } from "../App";
+import { Action, ActionType } from "../App";
+import { FlashCard } from "../lib/sessionHelperFunctions";
 
-type Props = { cards; dispatch: React.Dispatch<Action> };
+type Props = {
+  deckNames: string[];
+  cards: FlashCard[];
+  dispatch: React.Dispatch<Action>;
+};
 
 function addCardDataToLocalStorage(
   card: any,
@@ -69,88 +74,83 @@ export default function Session(props: Props) {
 
   if (isDone) {
     addEndTimeToSessionDataInLocalStorage();
+    props.dispatch({ type: ActionType.PostSession });
   }
-  return isDone ? (
-    <PostSessionSummary />
-  ) : (
+  return (
     <>
-      <div className="session-container">
-        <h1>Session</h1>
+      {!isDone && (
+        <div className="session-container">
+          <h1>Session</h1>
 
-        <div className="session-duration">
-          <h3 className="duration">DURATION: </h3>
-          <br></br>
-          <Timer initialTime={1000}>
-            {({ start, resume, pause, stop, reset, timerState }) => (
-              <React.Fragment>
-                <div className="timer">
-                  <Timer.Minutes /> mins <Timer.Seconds /> secs
-                </div>
-              </React.Fragment>
-            )}
-          </Timer>
+          <div className="session-duration">
+            <h3 className="duration">DURATION: </h3>
+            <br></br>
+            <Timer initialTime={1000}>
+              {({ start, resume, pause, stop, reset, timerState }) => (
+                <React.Fragment>
+                  <div className="timer">
+                    <Timer.Minutes /> mins <Timer.Seconds /> secs
+                  </div>
+                </React.Fragment>
+              )}
+            </Timer>
 
-          <h3 className="decks">DECKS: </h3>
-          <br></br>
-          <p className="deckNames">
-            {/* {props.deckNames.map((deckname) => {
+            <h3 className="decks">DECKS: </h3>
+            <br></br>
+            <p className="deckNames">
+              {props.deckNames.map((deckname) => {
                 if (deckname === props.deckNames[props.deckNames.length - 1]) {
                   return <span>{deckname} </span>;
                 }
                 return <span>{deckname}, </span>;
-              })
-              } */}
-          </p>
+              })}
+            </p>
+          </div>
+          <ProgressBar
+            cards={props.cards}
+            dispatch={setIsDone}
+            setNextCard={setNextCardIndex}
+            addCardDataToLocalStorage={addCardDataToLocalStorage}
+            currentCard={props.cards[nextCardIndex]}
+          ></ProgressBar>
+          <CardFlip
+            front={props.cards[nextCardIndex].front}
+            back={props.cards[nextCardIndex].back}
+          ></CardFlip>
+          <div style={{ textAlign: "center", marginTop: "3em" }}>
+            <input
+              alt="correct"
+              type="image"
+              src={CorrectBtn}
+              style={{ width: "3em", marginRight: "4em" }}
+              onClick={() => {
+                setResult("Correct!");
+                addCardDataToLocalStorage(
+                  { ...props.cards[nextCardIndex], nextCardIndex },
+                  nextCardIndex,
+                  true
+                );
+              }}
+            />
+            <input
+              alt="wrong"
+              type="image"
+              src={WrongBtn}
+              style={{ width: "3em" }}
+              onClick={() => {
+                setResult("Try again!");
+                console.log(result);
+                addCardDataToLocalStorage(
+                  { ...props.cards[nextCardIndex], nextCardIndex },
+                  nextCardIndex,
+                  false
+                );
+              }}
+            />
+          </div>
+          <h2>{result}</h2>
         </div>
-        <ProgressBar
-          cards={props.cards}
-          dispatch={setIsDone}
-          setNextCard={setNextCardIndex}
-          addCardDataToLocalStorage={addCardDataToLocalStorage}
-          currentCard={props.cards[nextCardIndex]}
-        ></ProgressBar>
-        <CardFlip
-          front={props.cards[nextCardIndex].front}
-          back={props.cards[nextCardIndex].back}
-        ></CardFlip>
-        <div style={{ textAlign: "center", marginTop: "3em" }}>
-          <input
-            alt="correct"
-            type="image"
-            src={CorrectBtn}
-            style={{ width: "3em", marginRight: "4em" }}
-            onClick={() => {
-              setResult("Correct!");
-              addCardDataToLocalStorage(
-                { ...props.cards[nextCardIndex], nextCardIndex },
-                nextCardIndex,
-                true
-              );
-              // TODO
-              // props.dispatch({
-              //   type: CardCorrect, card: {
-              //   }
-              // });
-            }}
-          />
-          <input
-            alt="wrong"
-            type="image"
-            src={WrongBtn}
-            style={{ width: "3em" }}
-            onClick={() => {
-              setResult("Try again!");
-              console.log(result);
-              addCardDataToLocalStorage(
-                { ...props.cards[nextCardIndex], nextCardIndex },
-                nextCardIndex,
-                false
-              );
-            }}
-          />
-        </div>
-        <h2>{result}</h2>
-      </div>
+      )}
     </>
   );
 }
