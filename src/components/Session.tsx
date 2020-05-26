@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import ProgressBar from "./ProgressBar";
 import CardFlip from "./CardFlip";
 import WrongBtn from "../assets/wrongBtn.svg";
@@ -6,6 +6,8 @@ import CorrectBtn from "../assets/correctBtn.svg";
 import Timer from "react-compound-timer";
 import PostSessionSummary from "./PostSessionSummary";
 import { Action } from "../App";
+
+type Props = { cards; dispatch: React.Dispatch<Action> };
 
 function addCardDataToLocalStorage(
   card: any,
@@ -27,6 +29,7 @@ function addCardDataToLocalStorage(
       back: card.back,
       is_correct: gotCorrect,
       card_index: nextCardIndex,
+      deck: card.deckName,
     };
     const storedCardIDsAndResults = cardDataArray.map((c) => {
       return { id: c["card_id"], result: c["is_correct"] };
@@ -59,15 +62,16 @@ function addEndTimeToSessionDataInLocalStorage() {
   }
 }
 
-type Props = { cards; dispatch: React.Dispatch<Action> };
-
 export default function Session(props: Props) {
   const [result, setResult] = useState("");
   const [isDone, setIsDone] = useState(false);
   const [nextCardIndex, setNextCardIndex] = useState(0);
 
+  if (isDone) {
+    addEndTimeToSessionDataInLocalStorage();
+  }
   return isDone ? (
-    <PostSessionSummary></PostSessionSummary>
+    <PostSessionSummary />
   ) : (
     <>
       <div className="session-container">

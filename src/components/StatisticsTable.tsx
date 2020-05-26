@@ -39,6 +39,7 @@ const summaryColumns = [
   { id: "front", label: "Front", minWidth: 80, align: "center" },
   { id: "back", label: "Back", minWidth: 80, align: "center" },
   { id: "results", label: "Results", minWidth: 80, align: "center" },
+  { id: "deck", label: "Deck", minWidth: 80, align: "center" },
 ];
 
 const deckColumns = [
@@ -69,15 +70,19 @@ export default function StatisticsTable(props: Props) {
   switch (columnType) {
     case ColumnType.CARD_COLUMNS: {
       columns = cardColumns;
+      break;
     }
     case ColumnType.SUMMARY_COLUMNS: {
       columns = summaryColumns;
+      break;
     }
     case ColumnType.DECK_COLUMNS: {
       columns = deckColumns;
+      break;
     }
     case ColumnType.SESSION_COLUMNS: {
       columns = sessionColumns;
+      break;
     }
   }
 

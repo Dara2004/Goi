@@ -5,31 +5,38 @@ import ConfettiEmoji from "../assets/confettiEmoji.png";
 import { createSummaryData } from "../lib/utils";
 
 function getSessionCards() {
-  // temp return object for testing:
-
-  // same type of return object as for Stats - assuming the session data will be
-  // saved upon session completion, and will be retrieved using the same query as
-  // for stats, but only for the current/most recent session
-  // because this is only one session, 'correct' and 'incorrect' should only ever be 0 or 1
+  const sessionDataString = localStorage.getItem("sessionData");
+  const sessionData = sessionDataString && JSON.parse(sessionDataString);
+  const endedAt = sessionData["ended_at"];
+  const createdAt = sessionData["created_at"];
+  const endedAtObj = new Date(endedAt);
+  const createdAtObj = new Date(createdAt);
+  const totalTimeInMS = endedAtObj.getTime() - createdAtObj.getTime();
+  const totalMinutes = Math.floor(totalTimeInMS / 60000);
+  const totalSeconds = ((totalTimeInMS % 60000) / 1000).toFixed(0);
+  const totalTime = `${totalMinutes} min ${totalSeconds} sec`;
+  const cardDataArray = sessionData["cardDataArray"];
+  const cardSummaryDataArray =
+    cardDataArray &&
+    sessionData["cardDataArray"].map((c) => {
+      return createSummaryData(
+        c["card_index"] + 1,
+        c["front"],
+        c["back"],
+        c["is_correct"],
+        c["deck"]
+      );
+    });
   return {
-    overview: { "total time": "80min" },
-    details: [
-      createSummaryData(2, "Aurevoir", "Bye", true),
-      createSummaryData(3, "Aurevoir", "Bye", true),
-      createSummaryData(4, "Aurevoir", "Bye", true),
-      createSummaryData(5, "Aurevoir", "Bye", true),
-      createSummaryData(6, "Aurevoir", "Bye", true),
-      createSummaryData(7, "Aurevoir", "Bye", true),
-      createSummaryData(8, "Aurevoir", "Bye", true),
-      createSummaryData(9, "Aurevoir", "Bye", true),
-    ],
+    overview: { "total time": totalTime },
+    details: cardSummaryDataArray || [],
   };
 }
 
 function getSessionScore(cardArray: any[]): [string, boolean] {
   const reducer = (accumulator, currentValue) => {
     const cardNumerator =
-      currentValue && currentValue.score === "correct" ? 1 : 0;
+      currentValue && currentValue.results === "correct" ? 1 : 0;
     return accumulator + cardNumerator;
   };
   const numerator = cardArray.reduce(reducer, 0);
@@ -39,7 +46,7 @@ function getSessionScore(cardArray: any[]): [string, boolean] {
   const denominatorString = denominator && denominator.toString();
 
   const sessionScore = [numeratorString, denominatorString].join("/");
-  const isAllCorrect = numerator === denominator;
+  const isAllCorrect = numerator === denominator && denominator !== 0;
 
   return [sessionScore, isAllCorrect];
 }

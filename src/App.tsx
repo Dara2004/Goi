@@ -238,6 +238,14 @@ export default function App() {
   ] = useReducer(reducer, initialState);
 
   const showView = (view: View) => {
+    if (view === View.SESSION) {
+      const nowString = new Date().toString();
+      const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
+      const initialDataString = JSON.stringify(initialData);
+      localStorage.setItem("sessionData", initialDataString);
+    } else {
+      localStorage.removeItem("sessionData");
+    }
     switch (view) {
       case View.DECK: {
         return <DeckView program={program} dispatch={dispatch}></DeckView>;
