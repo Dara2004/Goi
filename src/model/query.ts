@@ -36,7 +36,9 @@ export async function getCardsFromSelectedDecks(
 ): Promise<Array<Card>> {
   let result = [];
   const decks = await getSelectedDecks(db, deckNames);
-  decks.forEach((deck) => result.concat(deck.cards));
+  for (let deck of decks) {
+    result = result.concat(await deck.cards.fetch());
+  }
   return result;
 }
 
@@ -133,23 +135,22 @@ export function cardFilter(
   return result;
 }
 
-export function deckFilter(
+export async function deckFilter(
   decks: Array<Deck>,
   filter: Filter,
   n: number = 1
-): Array<Deck> {
+): Promise<Array<Deck>> {
   let result = [];
+  let resolvedDecks = await Promise.all(
+    decks.map((deck) => calculateDeckScore(deck))
+  );
 
   switch (filter) {
     case Filter.BEST:
-      result = decks
-        .sort((a, b) => getDeckScore(b) - getDeckScore(a))
-        .slice(0, n);
+      result = resolvedDecks.sort((a, b) => b.score - a.score).slice(0, n);
       break;
     case Filter.WORST:
-      result = decks
-        .sort((a, b) => getDeckScore(a) - getDeckScore(b))
-        .slice(0, n);
+      result = resolvedDecks.sort((a, b) => a.score - b.score).slice(0, n);
       break;
     case Filter.NEWEST:
       result = decks.sort((a, b) => a.created_at - b.created_at).slice(0, n);
@@ -204,10 +205,12 @@ export function sessionFilter(
   return result;
 }
 
-function getDeckScore(deck: Deck): number {
+async function calculateDeckScore(deck: Deck): Promise<Deck> {
   let result = 0;
-  deck.cards.forEach((card) => (result += card.right - card.wrong));
-  return result;
+  let cards = await deck.cards.fetch();
+  cards.forEach((card) => (result += card.right - card.wrong));
+  deck.score = result;
+  return deck;
 }
 
 export async function getSessionScore(

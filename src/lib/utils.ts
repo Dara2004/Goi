@@ -21,13 +21,11 @@ export function createCardData(
   back: string,
   correct: number,
   incorrect: number,
-  deck: string,
-  tags: string[]
+  deck: string
 ) {
   const score = correct.toString() + "/" + (incorrect + correct).toString();
-  const tagsString = tags.join(", ");
   const indexString = index.toString() + ".)";
-  return { indexString, front, back, score, deck, tagsString };
+  return { indexString, front, back, score, deck };
 }
 
 export function createSummaryData(

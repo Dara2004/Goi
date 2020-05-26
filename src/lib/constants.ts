@@ -6,11 +6,10 @@ export const keywords = [
   "Export decks",
   "Load decks",
   ",",
-  "Past Sessions",
   "cards from",
 ];
 export const validCardFilter = ["best", "worst", "random", "oldest", "newest"];
-export const subjectKeywords = ["Decks:", "Tags:", "Sessions"];
+export const subjectKeywords = ["decks:", "tags:", "past sessions"];
 
 export const allTokens = [...validCardFilter, ...keywords, ...subjectKeywords];
 

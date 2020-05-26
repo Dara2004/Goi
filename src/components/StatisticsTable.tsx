@@ -31,7 +31,6 @@ const cardColumns = [
   { id: "back", label: "Back", minWidth: 80, align: "center" },
   { id: "score", label: "Score", minWidth: 80, align: "center" },
   { id: "deck", label: "Deck", minWidth: 80, align: "center" },
-  { id: "tagsString", label: "Tag", minWidth: 80, align: "center" },
 ];
 
 const summaryColumns = [
