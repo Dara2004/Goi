@@ -36,14 +36,15 @@ function addCardDataToLocalStorage(
       card_index: nextCardIndex,
       deck: card.deckName,
     };
-    const storedCardIDsAndResults = cardDataArray.map((c) => {
-      return { id: c["card_id"], result: c["is_correct"] };
-    });
-    const alreadyAdded =
-      storedCardIDsAndResults.filter(
-        (o) => o.id === currentCardID && o.result !== undefined
-      ).length > 0;
-    if (!alreadyAdded) cardDataArray.push(cardData);
+    const alreadyAdded = cardDataArray.filter(
+      (o) => o.card_id === currentCardID
+    )[0];
+    const alreadyAddedIndex = cardDataArray.indexOf(alreadyAdded);
+    if (alreadyAdded) {
+      cardDataArray[alreadyAddedIndex] = cardData;
+    } else {
+      cardDataArray.push(cardData);
+    }
     newSessionDataObject = {
       ...sessionDataObject,
       cardDataArray: cardDataArray,
@@ -112,6 +113,7 @@ export default function Session(props: Props) {
             setNextCard={setNextCardIndex}
             addCardDataToLocalStorage={addCardDataToLocalStorage}
             currentCard={props.cards[nextCardIndex]}
+            currentResult={result}
           ></ProgressBar>
           <CardFlip
             front={props.cards[nextCardIndex].front}

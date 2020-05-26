@@ -14,8 +14,6 @@ import { createOrUpdateAllDecks } from "./lib/reconciler";
 import DeckViewDetails from "./components/DeckViewDetails";
 import ErrorMessage from "./components/ErrorMessage";
 import { useDatabase } from "@nozbe/watermelondb/hooks";
-import { Filter } from "./model/query";
-import { debug } from "./lib/utils";
 import {
   checkSessionCommandError,
   getCardsForSession,
@@ -23,6 +21,13 @@ import {
 } from "./lib/sessionHelperFunctions";
 import PostSessionSummary from "./components/PostSessionSummary";
 import { CircularProgress } from "@material-ui/core";
+import {
+  getSelectedDecks,
+  deckFilter,
+  Filter,
+  getCardsFromSelectedDecks,
+} from "./model/query";
+import { debug, randomizeCards } from "./lib/utils";
 
 const CustomListView = ({ program, dispatch }) => {
   return (
@@ -292,13 +297,30 @@ export default function App() {
         const initialDataString = JSON.stringify(initialData);
         localStorage.setItem("sessionData", initialDataString);
 
-        const selectedCards: FlashCard[] = [
-          {
-            front: "hello",
-            back: "world",
-            deckName: "French",
-          },
-        ];
+        // `from` contains all the parameters needed to select the cards
+        // TODO
+        let selectedCards = [];
+        if (program.create_decks.length === 0) {
+          return (
+            <ErrorMessage message="You haven't created any deck!"></ErrorMessage>
+          );
+        }
+        const selectedCreateDecks = program.create_decks.filter((cd) => {
+          return complexCommandParams.deckNames?.includes(cd.name);
+        });
+        if (selectedCreateDecks.length === 0) {
+          return (
+            <ErrorMessage message="Please select one of the decks on the card editor"></ErrorMessage>
+          );
+        }
+        for (const cd of selectedCreateDecks) {
+          const deckName = cd.name;
+          for (const card of cd.deck.cards) {
+            const cardWithDeck = { ...card, deckName };
+            selectedCards.push(cardWithDeck);
+          }
+        }
+        selectedCards = randomizeCards(selectedCards);
 
         return (
           <Session
