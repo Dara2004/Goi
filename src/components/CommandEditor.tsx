@@ -11,6 +11,9 @@ import { Snackbar, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import SUBJECT_MODIFIER from "../ast/SUBJECT_MODIFIER";
 import DECKS from "../ast/DECKS";
+import { Action, Subject, ActionType } from "../App";
+import LIST from "../ast/LIST";
+import { Filter } from "../model/query";
 
 const helpMsg = (
   <div
@@ -31,7 +34,7 @@ const helpMsg = (
   </div>
 );
 
-type Props = { dispatch };
+type Props = { dispatch: React.Dispatch<Action> };
 
 let startSessionOrStats: string = "";
 function isStartSessionOrShowStats(command: COMMAND): boolean {
@@ -83,7 +86,14 @@ export default function CommandEditor(props: Props) {
         command.parse(); //commands = COMPLEX_COMMAND | HELP | LIST
         console.log(command.command);
         if (command.type === "list") {
-          props.dispatch({ type: "list", command: value.trim() });
+          const listNode = command.command as LIST;
+          if (listNode.option === "decks") {
+            props.dispatch({ type: ActionType.List, listOption: "decks" });
+          } else if (listNode.option === "tags") {
+            props.dispatch({ type: ActionType.List, listOption: "tags" }); // not implemented
+          } else {
+            console.log("Unexpected list option: ", listNode.option);
+          }
         } else if (command.type === "help") {
           isHelpCommand = true;
         } else if (command.type === "export decks") {
@@ -100,7 +110,7 @@ export default function CommandEditor(props: Props) {
             fileReader.onload = (e) => {
               const deckCreationDSL = e.target.result as string;
               props.dispatch({
-                type: "load decks",
+                type: ActionType.LoadDecks,
                 createDSLValue: deckCreationDSL,
               });
             };
@@ -113,20 +123,21 @@ export default function CommandEditor(props: Props) {
             props.dispatch({
               type:
                 startSessionOrStats === "start session"
-                  ? "start session"
-                  : "show stats",
+                  ? ActionType.StartSession
+                  : ActionType.ShowStats,
               limit: modifier.limit,
-              filter: modifier.filter,
-              selectCards: modifier.selectCards,
+              filter: Filter[modifier.filter as keyof typeof Filter],
+              isLimitAppliedToCards: modifier.selectCards,
               deckNames: ((command.command as COMPLEX_COMMAND).subject
                 .subject as DECKS).decks,
+              subject: Subject.Decks,
             });
           }
         }
       } catch (err) {
         console.log(err);
         props.dispatch({
-          type: "command not found",
+          type: ActionType.CommandNotFound,
         });
       }
       if (isHelpCommand) {

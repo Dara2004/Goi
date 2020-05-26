@@ -1,14 +1,11 @@
-import React, { useRef, useEffect, useState, useReducer } from "react";
+import React, { useReducer } from "react";
 import "./App.css";
 import NavBar from "./components/NavBar";
 import DeckView from "./components/DeckView";
-import { UnControlled as CodeMirror } from "react-codemirror2";
 import CardEditor from "./components/CardEditor";
 import CommandEditor from "./components/CommandEditor";
 import Session from "./components/Session";
 import Statistics from "./components/Statistics";
-import Deck from "./model/Deck";
-import PostSessionSummary from "./components/PostSessionSummary";
 import ListView from "./components/ListView";
 import PROGRAM from "./ast/PROGRAM";
 import { getInitialData } from "./lib/getIintialData";
@@ -17,13 +14,12 @@ import { createOrUpdateAllDecks } from "./lib/reconciler";
 import DeckViewDetails from "./components/DeckViewDetails";
 import ErrorMessage from "./components/ErrorMessage";
 import { useDatabase } from "@nozbe/watermelondb/hooks";
-import {
-  getSelectedDecks,
-  deckFilter,
-  Filter,
-  getCardsFromSelectedDecks,
-} from "./model/query";
+import { Filter } from "./model/query";
 import { debug } from "./lib/utils";
+import {
+  checkSessionCommandError,
+  getCardsForSession,
+} from "./lib/sessionHelperFunctions";
 
 const CustomListView = ({ program, dispatch }) => {
   return (
@@ -59,26 +55,31 @@ export enum View {
   ERROR,
 }
 
-// Get initial data once from localStorage
-const { isFirstTimeUser, initialText, initialProgram } = getInitialData();
+export enum Subject {
+  Decks = "decks",
+  Sessions = "sessions",
+  Tags = "tags", // not supported yet
+  Undefined = "undefined",
+}
 
-const initialState = {
-  view: View.DECK,
-  program: initialProgram, // The "source of truth" until Goi gives user more card management
-  cardEditor: undefined,
-  intialText: initialText,
-  deckToViewDetail: undefined,
-  from: {
-    limit: undefined,
-    filter: undefined,
-    selectedCards: undefined, // determines whether limit applies to cards or SUBJECT (decks/sessions)
-    deckNames: undefined, // if deckNames is null then it is from past sessions
-  },
+export type ComplexCommandParams = {
+  limit?: number;
+  filter?: Filter;
+  isLimitAppliedToCards?: boolean;
+  deckNames?: string[];
+  subject: Subject;
 };
 
-type State = typeof initialState;
+type State = {
+  view: View;
+  program: PROGRAM;
+  cardEditor?: CodeMirror.Editor;
+  subjectToList: Subject;
+  deckToViewDetail?: string;
+  complexCommandParams?: ComplexCommandParams;
+};
 
-enum ActionType {
+export enum ActionType {
   SetCardEditor = "set card editor",
   CardEditorParseSuccess = "card editor parse success",
   StartSession = "start session",
@@ -86,17 +87,12 @@ enum ActionType {
   ViewDeckDetail = "view deck detail",
   ShowStats = "show stats",
   LoadDecks = "load decks",
+  CommandNotFound = "command not found",
 }
 
-export enum Subject {
-  Decks = "decks",
-  Sessions = "sessions",
-  Tags = "tags", // not supported yet
-}
-
-type Action =
+export type Action =
   | {
-      type: ActionType.SetCardEditor;
+      type: ActionType.SetCardEditor; // Enables "Load decks" to work
       cardEditor: CodeMirror.Editor;
     }
   | {
@@ -105,15 +101,16 @@ type Action =
     }
   | {
       type: ActionType.StartSession;
-      limit: number;
-      filter?: string;
-      selectedCards?: boolean;
+      limit?: number;
+      filter?: Filter;
+      isLimitAppliedToCards?: boolean;
       deckNames?: string[];
       subject: Subject;
     }
   | {
       type: ActionType.List;
-      deckNames?: string[]; // Tags not implemented
+      listOption: "decks" | "tags";
+      // tags not implemented
     }
   | {
       type: ActionType.ViewDeckDetail;
@@ -122,20 +119,23 @@ type Action =
   | {
       type: ActionType.ShowStats;
       limit: number;
-      filter?;
-      selectedCards?;
+      filter?: Filter;
+      isLimitAppliedToCards?: boolean;
       deckNames?: string[];
       subject: Subject;
     }
   | {
       type: ActionType.LoadDecks;
       createDSLValue: string;
-      // TODO
-    };
+    }
+  | {
+      type: ActionType.CommandNotFound;
+    }; // Add actions here
 
 const reducer = (state: State, action: Action): State => {
   debug("Dispatched to App: ", action);
   switch (action.type) {
+    // Add action handlers here
     case "set card editor": {
       return {
         ...state,
@@ -153,11 +153,25 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         view: View.SESSION,
-        from: {
+        complexCommandParams: {
           limit: action.limit,
           filter: action.filter,
-          selectedCards: action.selectedCards, // determines whether limit applies to cards or SUBJECT (decks/sessions)
-          deckNames: action.deckNames, // if deckNames is null then it is from past sessions
+          isLimitAppliedToCards: action.isLimitAppliedToCards,
+          deckNames: action.deckNames,
+          subject: action.subject,
+        },
+      };
+    }
+    case "show stats": {
+      return {
+        ...state,
+        view: View.STATS,
+        complexCommandParams: {
+          limit: action.limit,
+          filter: action.filter,
+          isLimitAppliedToCards: action.isLimitAppliedToCards,
+          deckNames: action.deckNames,
+          subject: action.subject, // if deckNames is null then it is from past sessions
         },
       };
     }
@@ -174,21 +188,15 @@ const reducer = (state: State, action: Action): State => {
         deckToViewDetail: action.deckName,
       };
     }
-    case "show stats": {
-      return {
-        ...state,
-        view: View.STATS,
-        from: {
-          limit: action.limit,
-          filter: action.filter,
-          selectedCards: action.selectedCards, // determines whether limit applies to cards or SUBJECT (decks/sessions)
-          deckNames: action.deckNames, // if deckNames is null then it is from past sessions
-        },
-      };
-    }
     case "load decks": {
       state.cardEditor.getDoc().setValue(action.createDSLValue);
       return state;
+    }
+    case "command not found": {
+      return {
+        ...state,
+        view: View.ERROR,
+      };
     }
     default:
       break;
@@ -198,16 +206,36 @@ const reducer = (state: State, action: Action): State => {
 };
 
 export default function App() {
+  // Get initial data once from localStorage
+  const { isFirstTimeUser, initialText, initialProgram } = getInitialData(); // TODO: Also find session information from localStorage
+
   const db = useDatabase();
 
   if (isFirstTimeUser) {
     createOrUpdateAllDecks(initialProgram, db);
   }
 
-  const [{ view, program, deckToViewDetail, from }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  // TODO: Resume session from local storage
+  const initialState: State = {
+    view: View.DECK,
+    program: initialProgram, // The "source of truth" until Goi gives user more card management
+
+    cardEditor: undefined,
+    deckToViewDetail: undefined,
+    subjectToList: undefined,
+    complexCommandParams: {
+      limit: undefined,
+      filter: undefined,
+      isLimitAppliedToCards: undefined, // SUBJECT_MODIFIER::selectedCards boolean attribute
+      deckNames: undefined,
+      subject: Subject.Undefined, // if deckNames is null then it is from past sessions
+    },
+  };
+
+  const [
+    { view, program, deckToViewDetail, complexCommandParams },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
   const showView = (view: View) => {
     switch (view) {
@@ -225,31 +253,18 @@ export default function App() {
         );
       }
       case View.SESSION: {
-        // `from` contains all the parameters needed to select the cards
-        let selectedCards = [];
-        if (program.create_decks.length === 0) {
-          return (
-            <ErrorMessage message="You haven't created any deck!"></ErrorMessage>
-          );
-        }
-        if (from.deckNames) {
-        }
-        const selectedCreateDecks = program.create_decks.filter((cd) => {
-          return from.deckNames?.includes(cd.name);
-        });
-        if (selectedCreateDecks.length === 0) {
-          return (
-            <ErrorMessage message="Please select one of the decks on the card editor"></ErrorMessage>
-          );
-        }
-        for (const cd of selectedCreateDecks) {
-          for (const card of cd.deck.cards) {
-            selectedCards.push(card);
-          }
-        }
-        return (
-          <Session deckNames={from.deckNames} cards={selectedCards}></Session>
+        const sessionQueryError = checkSessionCommandError(
+          program,
+          complexCommandParams
         );
+        if (sessionQueryError) {
+          return (
+            <ErrorMessage message={sessionQueryError.message}></ErrorMessage>
+          );
+        }
+        const selectedCards = getCardsForSession(program, complexCommandParams);
+
+        return <Session dispatch={dispatch} cards={selectedCards}></Session>;
       }
       case View.STATS: {
         return <Statistics></Statistics>;
