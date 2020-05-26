@@ -344,10 +344,21 @@ export default function App() {
             <ErrorMessage message="Please select one of the decks on the card editor"></ErrorMessage>
           );
         }
+        let attributes;
         for (const cd of selectedCreateDecks) {
           const tags = cd.tags && cd.tags.tags.map((t) => t && t.tagName);
 
           const deckName = cd.name;
+          attributes =
+            cd.attributes &&
+            cd.attributes.attributes.map((a) => {
+              return a
+                ? {
+                    attributeType: a.attribute.attributeType,
+                    value: a.attribute.value,
+                  }
+                : null;
+            });
           for (const card of cd.deck.cards) {
             const cardWithDeck = { ...card, deckName, tags };
             selectedCards.push(cardWithDeck);
@@ -360,6 +371,7 @@ export default function App() {
             deckNames={["French"]}
             dispatch={dispatch}
             cards={selectedCards}
+            attributes={attributes}
           ></Session>
         );
       }
