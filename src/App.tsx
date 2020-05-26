@@ -275,7 +275,12 @@ export default function App() {
         return <Session dispatch={dispatch} cards={selectedCards}></Session>;
       }
       case View.STATS: {
-        return <Statistics></Statistics>;
+        return (
+          <Statistics
+            database={db}
+            complexCommandParams={complexCommandParams}
+          ></Statistics>
+        );
       }
       case View.DECK_DETAIL: {
         console.log(deckToViewDetail);
