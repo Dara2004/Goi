@@ -327,7 +327,7 @@ export default function App() {
       <div className="navbar">
         <NavBar></NavBar>
       </div>
-      <div className="container" style={{ backgroundColor: "#FAFAFA" }}>
+      <div className="container" style={{ backgroundColor: "#fafafa" }}>
         {/*gives CardEditor the ability to change Deck view */}
         <CardEditor
           dispatch={dispatch}

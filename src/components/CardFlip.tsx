@@ -13,9 +13,16 @@ const useStyles = makeStyles({
   },
 });
 
-export default function CardFlip({ front, back }) {
+type Props = {
+  front: string;
+  back: string;
+  attributes?: Array<{ attributeType: string; value: string }>;
+};
+
+export default function CardFlip(props: Props) {
   const [isFlipped, setIsFlipped] = useState(false);
   const classes = useStyles();
+  const { front, back, attributes } = props;
   const handleClick = (e) => {
     e.preventDefault();
     setIsFlipped((curState) => {
@@ -28,11 +35,15 @@ export default function CardFlip({ front, back }) {
       <div className={classes.root}>
         <ReactCardFlip isFlipped={isFlipped} flipDirection="vertical">
           <div onClick={handleClick}>
-            <SingleCard content={front}></SingleCard>
+            <SingleCard content={front} attributes={attributes}></SingleCard>
           </div>
 
           <div onClick={handleClick}>
-            <SingleCard content={back} onClick={handleClick}></SingleCard>
+            <SingleCard
+              content={back}
+              onClick={handleClick}
+              attributes={attributes}
+            ></SingleCard>
           </div>
         </ReactCardFlip>
       </div>
