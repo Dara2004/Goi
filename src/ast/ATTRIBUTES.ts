@@ -4,9 +4,11 @@ import ATTRIBUTE from "./ATTRIBUTE";
 export default class ATTRIBUTES extends NODE {
   attributes: ATTRIBUTE[] = [];
   parse() {
-    const areAttributes = this.tokenizer.checkToken(
-      "add color|add alignment|add direction"
-    );
+    const nextToken = this.tokenizer.checkNext().toLowerCase();
+    const areAttributes =
+      nextToken === "add color" ||
+      nextToken === "add alignment" ||
+      nextToken === "add direction";
     if (areAttributes) {
       while (
         this.tokenizer.moreTokens() &&

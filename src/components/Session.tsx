@@ -35,6 +35,7 @@ export type FlashCard = {
   back: string;
   deckName: string;
   tags?: string[];
+  attributes?: Array<{attributeType: string, value: string}>
 };
 
 export type FlashCardWithTags = {
@@ -335,6 +336,7 @@ export default function Session(props: Props) {
             <CardFlip
               front={sessionMaterials.cards[nextCardIndex].front}
               back={sessionMaterials.cards[nextCardIndex].back}
+              attributes={sessionMaterials.cards[nextCardIndex].attributes}
             ></CardFlip>
             <div style={{ textAlign: "center", marginTop: "3em" }}>
               <input
