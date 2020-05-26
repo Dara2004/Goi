@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import StatisticsTable from "./StatisticsTable";
 import StatisticsOverview from "./StatisticsOverview";
 import { ColumnType } from "./StatisticsTable";
 import { createCardData } from "../lib/utils";
-import { Subject } from "../App";
+import { Subject, ComplexCommandParams } from "../App";
 import { getSelectedDecks, getCardsFromSelectedDecks } from "../model/query";
+import { Database } from "@nozbe/watermelondb";
+import { CircularProgress } from "@material-ui/core";
 
-type Props = { complexCommandParams; database };
+type Props = { complexCommandParams: ComplexCommandParams; database: Database };
 
 function getStatsObject() {
   // temp return object for testing:
@@ -43,7 +45,32 @@ function getStatsObject() {
   };
 }
 
+enum View {
+  LOADING,
+  READY,
+  ERROR,
+}
+
+type StatsObject = any; // can add typing here
+
+type StatsState =
+  | {
+      view: View.LOADING;
+    }
+  | {
+      view: View.READY;
+      statsObject: StatsObject;
+    }
+  | {
+      view: View.ERROR;
+      error: Error;
+    };
+
 export default function Statistics(props: Props) {
+  // Initialize the view to be "Loading" since we need to do asynchronous operation before showing data
+  const initialState: StatsState = { view: View.LOADING };
+  const [state, setState] = useState<StatsState>(initialState);
+
   const {
     limit,
     filter,
@@ -126,17 +153,44 @@ export default function Statistics(props: Props) {
     }
   }
 
-  const statsObject = await createStatsObject();
-  return (
-    <>
-      <div className="right-side-container">
-        <h1> Statistics</h1>
-        <StatisticsOverview overview={statsObject.overview} />
-        <StatisticsTable
-          rows={statsObject.details}
-          columnType={statsObject.columns}
-        />
-      </div>
-    </>
-  );
+  // Asynchronously load the data and change the state when done
+  useEffect(() => {
+    const setStatsObject = async () => {
+      try {
+        const statsObject = await createStatsObject();
+
+        setState({ view: View.READY, statsObject });
+      } catch (err) {
+        setState({ view: View.ERROR, error: err });
+      }
+    };
+
+    setStatsObject();
+  }, []);
+
+  // Conditionally render loading screen, error message, or the actual data
+  // Feel free to change this however you'd like, this is just some placeholder
+  if (state.view === View.LOADING) {
+    return <CircularProgress style={{ margin: "auto" }}></CircularProgress>;
+  } else if (state.view === View.ERROR) {
+    console.log(state.error);
+    return (
+      <h1 style={{ margin: "auto" }}>
+        Something went wrong when trying to fetch the stats
+      </h1>
+    );
+  } else {
+    return (
+      <>
+        <div className="right-side-container">
+          <h1> Statistics</h1>
+          <StatisticsOverview overview={state.statsObject.overview} />
+          <StatisticsTable
+            rows={state.statsObject.details}
+            columnType={state.statsObject.columns}
+          />
+        </div>
+      </>
+    );
+  }
 }
