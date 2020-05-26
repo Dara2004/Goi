@@ -5,6 +5,8 @@ export const keywords = [
   "list",
   "export decks",
   "load decks",
+  "quit",
+  "back to home",
   ",",
   "past sessions",
   "cards from",
