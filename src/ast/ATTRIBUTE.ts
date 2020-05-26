@@ -9,10 +9,10 @@ export default class ATTRIBUTE extends NODE {
   attribute: AttributeObj = { attributeType: "", value: "" };
 
   parse() {
-    const currentAttribute = this.tokenizer.getNext();
+    const currentAttribute = this.tokenizer.getNext().toLowerCase();
     this.tokenizer.getAndCheckToken(":");
     switch (currentAttribute) {
-      case "add Alignment":
+      case "add alignment":
         this.attribute.attributeType = "alignment";
         if (this.tokenizer.checkToken("center|right|left")) {
           this.attribute.value = this.tokenizer.getNext();
@@ -20,7 +20,7 @@ export default class ATTRIBUTE extends NODE {
           throw new Error("Alignment Attribute is not valid");
         }
         break;
-      case "add Direction":
+      case "add direction":
         this.attribute.attributeType = "direction";
         if (this.tokenizer.checkToken("horizontal|vertical")) {
           this.attribute.value = this.tokenizer.getNext();
@@ -28,7 +28,7 @@ export default class ATTRIBUTE extends NODE {
           throw new Error("Direction Attribute is not valid");
         }
         break;
-      case "add Color":
+      case "add color":
         this.attribute.attributeType = "color";
         if (
           this.tokenizer.checkToken("red|blue|yellow|purple|green|grey|brown")

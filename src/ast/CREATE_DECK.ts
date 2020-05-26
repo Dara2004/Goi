@@ -19,7 +19,12 @@ export default class CREATE_DECK extends NODE {
   }
 
   checkForAndParseAttributes() {
-    if (this.tokenizer.checkToken("add color|add alignment|add direction")) {
+    const nextToken = this.tokenizer.checkNext().toLowerCase();
+    if (
+      nextToken === "add color" ||
+      nextToken === "add alignment" ||
+      nextToken === "add direction"
+    ) {
       this.attributes = new ATTRIBUTES();
       this.attributes.parse();
     }
