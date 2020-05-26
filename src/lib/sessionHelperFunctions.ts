@@ -61,14 +61,14 @@ export type FlashCard =
       deckId: string;
     };
 
-function getCardsFromDecksUnfiltered(
+function getCardsFromDecksNoFilter(
   program,
   requestedDeckNames,
   isLimitAppliedToCards,
   limit
-): FlashCard[] {
+): SessionMaterials {
   // TODO
-  return [];
+  return null;
 }
 
 async function getCardsFromDecks(
@@ -78,9 +78,9 @@ async function getCardsFromDecks(
   filter?: Filter,
   isLimitAppliedToCards?: boolean,
   limit?: number
-): Promise<FlashCard[]> {
+): Promise<SessionMaterials> {
   if (!filter) {
-    return getCardsFromDecksUnfiltered(
+    return getCardsFromDecksNoFilter(
       program,
       requestedDeckNames,
       isLimitAppliedToCards,
@@ -103,6 +103,11 @@ async function getCardsFromSessions(
   return flashCards;
 }
 
+export type SessionMaterials = {
+  deckNames?: string[];
+  cards: FlashCard[];
+};
+
 /**
  * Returns the cards chosen by the user for their "Start session" command (in a promise)
  *
@@ -114,7 +119,7 @@ export async function getCardsForSession(
   program: PROGRAM,
   complexCommandParams: ComplexCommandParams,
   db: Database
-): Promise<FlashCard[]> {
+): Promise<SessionMaterials> {
   const {
     subject,
     filter,
@@ -132,6 +137,7 @@ export async function getCardsForSession(
       limit
     );
   } else if (subject === "sessions") {
+    return null; // TODO
     return getCardsFromSessions(filter, isLimitAppliedToCards, limit);
   }
 }

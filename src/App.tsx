@@ -22,6 +22,7 @@ import {
   FlashCard,
 } from "./lib/sessionHelperFunctions";
 import PostSessionSummary from "./components/PostSessionSummary";
+import { CircularProgress } from "@material-ui/core";
 
 const CustomListView = ({ program, dispatch }) => {
   return (
@@ -55,6 +56,7 @@ export enum View {
   LIST,
   DECK_DETAIL,
   ERROR,
+  LOADING,
 }
 
 export enum Subject {
@@ -85,6 +87,7 @@ export enum ActionType {
   SetCardEditor = "set card editor",
   CardEditorParseSuccess = "card editor parse success",
   StartSession = "start session",
+  SessionIsReady = "session is ready",
   PostSession = "post session",
   List = "list",
   ViewDeckDetail = "view deck detail",
@@ -109,6 +112,11 @@ export type Action =
       isLimitAppliedToCards?: boolean;
       deckNames?: string[];
       subject: Subject;
+    }
+  | {
+      type: ActionType.SessionIsReady;
+      deckNames?: string[];
+      cards: FlashCard[];
     }
   | {
       type: ActionType.List;
@@ -227,7 +235,6 @@ export default function App() {
     createOrUpdateAllDecks(initialProgram, db);
   }
 
-  // TODO: Resume session from local storage
   const initialState: State = {
     view: View.DECK,
     program: initialProgram, // The "source of truth" until Goi gives user more card management
@@ -292,7 +299,6 @@ export default function App() {
             deckName: "French",
           },
         ];
-        getCardsForSession(program, complexCommandParams, db);
 
         return (
           <Session
@@ -322,6 +328,9 @@ export default function App() {
         return (
           <ErrorMessage message="Command not found. Type 'Help'"></ErrorMessage>
         );
+      }
+      case View.LOADING: {
+        return <CircularProgress style={{ margin: "auto" }} />;
       }
     }
   };
