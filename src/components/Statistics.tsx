@@ -4,7 +4,11 @@ import StatisticsOverview from "./StatisticsOverview";
 import { ColumnType } from "./StatisticsTable";
 import { createCardData } from "../lib/utils";
 import { Subject, ComplexCommandParams } from "../App";
-import { getSelectedDecks, getCardsFromSelectedDecks } from "../model/query";
+import {
+  getSelectedDecks,
+  getCardsFromSelectedDecks,
+  cardFilter,
+} from "../model/query";
 import { Database } from "@nozbe/watermelondb";
 import { CircularProgress } from "@material-ui/core";
 
@@ -41,7 +45,7 @@ function getStatsObject() {
       createCardData(2, "Aurevoir", "Bye", 11, 10, "French"),
       createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
     ],
-    columns: ColumnType.CARD_COLUMNS,
+    columnType: ColumnType.CARD_COLUMNS,
   };
 }
 
@@ -98,6 +102,8 @@ export default function Statistics(props: Props) {
   }
 
   async function getDetails() {
+    let deckNameMap = new Map();
+    let cardArray = [];
     let rows = [];
     let highestScore = null;
     let lowestScore = null;
@@ -105,33 +111,38 @@ export default function Statistics(props: Props) {
       let decks = await getSelectedDecks(props.database, deckNames);
       for (let deck of decks) {
         let cards = await deck.cards.fetch();
-        let index = 1;
         cards.forEach((card) => {
-          const score = card.right / (card.wrong + card.right);
+          const score: number = card.right / (card.wrong + card.right);
           highestScore =
             highestScore === null || score > highestScore
               ? score
               : highestScore;
           lowestScore =
             lowestScore === null || score < lowestScore ? score : lowestScore;
-          rows = rows.concat(
-            createCardData(
-              index,
-              card.front,
-              card.back,
-              card.right,
-              card.wrong,
-              deck.name
-            )
-          );
-          index += 1;
+          deckNameMap.set(card.front, deck.name);
+          cardArray = cardArray.concat(card);
         });
       }
+      cardArray = cardFilter(cardArray, filter, limit);
+      let index = 1;
+      cardArray.forEach((card) => {
+        rows = rows.concat(
+          createCardData(
+            index,
+            card.front,
+            card.back,
+            card.right,
+            card.wrong,
+            deckNameMap.get(card.front)
+          )
+        );
+        index += 1;
+      });
     }
     const averageScore =
-      rows.reduce(function (sum, a) {
+      cardArray.reduce(function (sum, a) {
         return sum + a.score;
-      }, 0) / (rows.length || 1);
+      }, 0) / (cardArray.length || 1);
 
     return { rows, highestScore, lowestScore, averageScore };
   }
@@ -158,13 +169,11 @@ export default function Statistics(props: Props) {
     const setStatsObject = async () => {
       try {
         const statsObject = await createStatsObject();
-
         setState({ view: View.READY, statsObject });
       } catch (err) {
         setState({ view: View.ERROR, error: err });
       }
     };
-
     setStatsObject();
   }, []);
 
@@ -187,7 +196,7 @@ export default function Statistics(props: Props) {
           <StatisticsOverview overview={state.statsObject.overview} />
           <StatisticsTable
             rows={state.statsObject.details}
-            columnType={state.statsObject.columns}
+            columnType={state.statsObject.columnType}
           />
         </div>
       </>

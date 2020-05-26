@@ -107,6 +107,7 @@ export function cardFilter(
   n: number = 1
 ): Array<Card> {
   let result = [];
+  filter = filter === undefined ? Filter.BEST : filter;
 
   switch (filter) {
     case Filter.BEST:

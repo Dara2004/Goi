@@ -4,7 +4,7 @@ import * as constants from "../lib/constants";
 export default class SUBJECT_MODIFIER extends NODE {
   type: string = "";
   filter: string = "";
-  limit: number = 5;
+  limit: number = 100;
   selectCards: boolean = false;
 
   parse() {
