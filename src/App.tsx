@@ -71,6 +71,12 @@ const updateViewReducer = (state, action) => {
         view: View.LIST,
       };
     }
+    case "post session": {
+      return {
+        ...state,
+        view: View.POST_SESSION,
+      };
+    }
     case "view deck detail": {
       console.log(action.deckName);
       return {
@@ -166,12 +172,15 @@ export default function App() {
   ] = useReducer(updateViewReducer, initialState);
 
   const showView = (view: View) => {
-    if (view !== View.SESSION) {
+    if (view !== View.SESSION && view !== View.POST_SESSION) {
       localStorage.removeItem("sessionData");
     }
     switch (view) {
       case View.DECK: {
         return <DeckView program={program} dispatch={dispatch}></DeckView>;
+      }
+      case View.POST_SESSION: {
+        return <PostSessionSummary />;
       }
       case View.LIST: {
         return (
@@ -213,7 +222,11 @@ export default function App() {
           }
         }
         return (
-          <Session deckNames={from.deckNames} cards={selectedCards}></Session>
+          <Session
+            deckNames={from.deckNames}
+            cards={selectedCards}
+            dispatch={dispatch}
+          ></Session>
         );
       }
       case View.STATS: {

@@ -141,6 +141,6 @@ body {
   background-color: black;
   height: 100%;
   color: transparent;
-  text-shadow: 0 0 5px #ffffff;
+  text-shadow: 0 0 10px #ffffff;
   white-space: pre-wrap;
 }
