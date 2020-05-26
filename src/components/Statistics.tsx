@@ -8,9 +8,11 @@ import {
   getSelectedDecks,
   getCardsFromSelectedDecks,
   cardFilter,
+  getCardsFromSelectedSessions,
 } from "../model/query";
 import { Database } from "@nozbe/watermelondb";
 import { CircularProgress } from "@material-ui/core";
+import Card from "../model/Card";
 
 type Props = { complexCommandParams: ComplexCommandParams; database: Database };
 
@@ -102,30 +104,35 @@ export default function Statistics(props: Props) {
   }
 
   async function getDetails() {
-    let deckNameMap = new Map();
-    let cardArray = [];
     let rows = [];
-    let highestScore = null;
-    let lowestScore = null;
+    let highestScore: number = NaN;
+    let lowestScore: number = NaN;
+    let averageScore: number = NaN;
     if (isLimitAppliedToCards) {
-      let decks = await getSelectedDecks(props.database, deckNames);
-      for (let deck of decks) {
-        let cards = await deck.cards.fetch();
-        cards.forEach((card) => {
-          const score: number = card.right / (card.wrong + card.right);
-          highestScore =
-            highestScore === null || score > highestScore
-              ? score
-              : highestScore;
-          lowestScore =
-            lowestScore === null || score < lowestScore ? score : lowestScore;
-          deckNameMap.set(card.front, deck.name);
-          cardArray = cardArray.concat(card);
-        });
+      let retrievedCards: Array<Card>;
+      if (subject === Subject.Decks) {
+        retrievedCards = await getCardsFromSelectedDecks(
+          props.database,
+          deckNames
+        );
+      } else if (subject === Subject.Sessions) {
+        retrievedCards = await getCardsFromSelectedSessions(
+          props.database,
+          limit
+        );
+      } else {
+        throw new Error(
+          `Retrieving stats for cards from ${subject} is not supported`
+        );
       }
-      cardArray = cardFilter(cardArray, filter, limit);
+      const filteredCards = cardFilter(retrievedCards, filter, limit);
       let index = 1;
-      cardArray.forEach((card) => {
+      for (let card of filteredCards) {
+        const score: number = card.right / (card.wrong + card.right);
+        highestScore =
+          highestScore === NaN || score > highestScore ? score : highestScore;
+        lowestScore =
+          lowestScore === NaN || score < lowestScore ? score : lowestScore;
         rows = rows.concat(
           createCardData(
             index,
@@ -133,16 +140,16 @@ export default function Statistics(props: Props) {
             card.back,
             card.right,
             card.wrong,
-            deckNameMap.get(card.front)
+            "INSERT DECK NAME HERE"
           )
         );
         index += 1;
-      });
+      }
+      averageScore =
+        rows.reduce(function (sum, a) {
+          return sum + a.score;
+        }, 0) / (rows.length || 1);
     }
-    const averageScore =
-      cardArray.reduce(function (sum, a) {
-        return sum + a.score;
-      }, 0) / (cardArray.length || 1);
 
     return { rows, highestScore, lowestScore, averageScore };
   }
