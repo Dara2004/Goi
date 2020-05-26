@@ -1,6 +1,7 @@
 import PROGRAM from "../ast/PROGRAM";
 import { ComplexCommandParams } from "../App";
-import { Filter } from "../model/query";
+import { Filter, getSelectedDecks } from "../model/query";
+import { Database } from "@nozbe/watermelondb";
 
 type SessionCommandError = {
   message: string;
@@ -48,23 +49,46 @@ export function checkSessionCommandError(
   return false;
 }
 
-export type FlashCard = {
-  front: string;
-  back: string;
-  deckName?: string;
-  deckId?: string; // TODO: change to union type
-};
+export type FlashCard =
+  | {
+      front: string;
+      back: string;
+      deckName: string;
+    }
+  | {
+      front: string;
+      back: string;
+      deckId: string;
+    };
 
-function getCardsFromDecks(
+function getCardsFromDecksUnfiltered(
+  program,
+  requestedDeckNames,
+  isLimitAppliedToCards,
+  limit
+): FlashCard[] {
+  // TODO
+}
+
+async function getCardsFromDecks(
+  db: Database,
   program: PROGRAM,
   requestedDeckNames: string[],
   filter?: Filter,
   isLimitAppliedToCards?: boolean,
   limit?: number
-): FlashCard[] {
-  const flashCards: FlashCard[] = [];
-  // TODO
-  return flashCards;
+): Promise<FlashCard[]> {
+  if (!filter) {
+    return getCardsFromDecksUnfiltered(
+      program,
+      requestedDeckNames,
+      isLimitAppliedToCards,
+      limit
+    );
+  } else {
+    const decks = await getSelectedDecks(db, requestedDeckNames);
+    // TODO
+  }
 }
 
 async function getCardsFromSessions(
@@ -87,7 +111,8 @@ async function getCardsFromSessions(
  */
 export async function getCardsForSession(
   program: PROGRAM,
-  complexCommandParams: ComplexCommandParams
+  complexCommandParams: ComplexCommandParams,
+  db: Database
 ): Promise<FlashCard[]> {
   const {
     subject,
@@ -97,14 +122,13 @@ export async function getCardsForSession(
     deckNames: requestedDeckNames,
   } = complexCommandParams;
   if (subject === "decks") {
-    return Promise.resolve(
-      getCardsFromDecks(
-        program,
-        requestedDeckNames,
-        filter,
-        isLimitAppliedToCards,
-        limit
-      )
+    return await getCardsFromDecks(
+      db,
+      program,
+      requestedDeckNames,
+      filter,
+      isLimitAppliedToCards,
+      limit
     );
   } else if (subject === "sessions") {
     return getCardsFromSessions(filter, isLimitAppliedToCards, limit);
