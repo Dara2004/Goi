@@ -18,6 +18,7 @@ export default function ProgressBar({
   setNextCard,
   addCardDataToLocalStorage,
   currentCard,
+  currentResult,
 }) {
   const classes = useStyles();
   const theme = useTheme();
@@ -29,11 +30,14 @@ export default function ProgressBar({
     if (activeStep == cards.length - 1) {
       dispatch(true);
     }
-    addCardDataToLocalStorage(currentCard, activeStep, undefined);
+    if (!currentResult) {
+      addCardDataToLocalStorage(currentCard, activeStep, undefined);
+    }
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setNextCard(activeStep - 1);
   };
 
   return (
