@@ -5,12 +5,12 @@ export default class ATTRIBUTES extends NODE {
   attributes: ATTRIBUTE[] = [];
   parse() {
     const areAttributes = this.tokenizer.checkToken(
-      "add Color|add Alignment|add Direction"
+      "add color|add alignment|add direction"
     );
     if (areAttributes) {
       while (
         this.tokenizer.moreTokens() &&
-        !this.tokenizer.checkToken("add Tags") &&
+        !this.tokenizer.checkToken("add tags") &&
         !this.tokenizer.checkToken("\\(")
       ) {
         let attribute = new ATTRIBUTE();

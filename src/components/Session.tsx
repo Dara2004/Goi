@@ -5,6 +5,14 @@ import WrongBtn from "../assets/wrongBtn.svg";
 import CorrectBtn from "../assets/correctBtn.svg";
 import Timer from "react-compound-timer";
 import PostSessionSummary from "./PostSessionSummary";
+import { Action, ActionType } from "../App";
+import { FlashCard } from "../lib/sessionHelperFunctions";
+
+type Props = {
+  deckNames: string[];
+  cards: FlashCard[];
+  dispatch: React.Dispatch<Action>;
+};
 
 function addCardDataToLocalStorage(
   card: any,
@@ -60,7 +68,6 @@ function addEndTimeToSessionDataInLocalStorage() {
   }
 }
 
-type Props = { deckNames; cards; dispatch };
 export default function Session(props: Props) {
   const [result, setResult] = useState("");
   const [isDone, setIsDone] = useState(false);
@@ -68,7 +75,7 @@ export default function Session(props: Props) {
 
   if (isDone) {
     addEndTimeToSessionDataInLocalStorage();
-    props.dispatch({ type: "post session" });
+    props.dispatch({ type: ActionType.PostSession });
   }
   return (
     <>
@@ -115,6 +122,7 @@ export default function Session(props: Props) {
           ></CardFlip>
           <div style={{ textAlign: "center", marginTop: "3em" }}>
             <input
+              alt="correct"
               type="image"
               src={CorrectBtn}
               style={{ width: "3em", marginRight: "4em" }}
@@ -128,6 +136,7 @@ export default function Session(props: Props) {
               }}
             />
             <input
+              alt="wrong"
               type="image"
               src={WrongBtn}
               style={{ width: "3em" }}

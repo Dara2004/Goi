@@ -1,26 +1,33 @@
-import React, { useRef, useEffect, useState, useReducer } from "react";
+import React, { useReducer } from "react";
 import "./App.css";
 import NavBar from "./components/NavBar";
 import DeckView from "./components/DeckView";
-import { UnControlled as CodeMirror } from "react-codemirror2";
 import CardEditor from "./components/CardEditor";
 import CommandEditor from "./components/CommandEditor";
 import Session from "./components/Session";
 import Statistics from "./components/Statistics";
-import Deck from "./model/Deck";
-import PostSessionSummary from "./components/PostSessionSummary";
 import ListView from "./components/ListView";
 import PROGRAM from "./ast/PROGRAM";
+import { getInitialData } from "./lib/getIintialData";
+import { createOrUpdateAllDecks } from "./lib/reconciler";
+
 import DeckViewDetails from "./components/DeckViewDetails";
 import ErrorMessage from "./components/ErrorMessage";
 import { useDatabase } from "@nozbe/watermelondb/hooks";
+import {
+  checkSessionCommandError,
+  getCardsForSession,
+  FlashCard,
+} from "./lib/sessionHelperFunctions";
+import PostSessionSummary from "./components/PostSessionSummary";
+import { CircularProgress } from "@material-ui/core";
 import {
   getSelectedDecks,
   deckFilter,
   Filter,
   getCardsFromSelectedDecks,
 } from "./model/query";
-import { randomizeCards } from "./lib/utils";
+import { debug, randomizeCards } from "./lib/utils";
 
 const CustomListView = ({ program, dispatch }) => {
   return (
@@ -44,13 +51,120 @@ const CustomListView = ({ program, dispatch }) => {
     </div>
   );
 };
-export const cardEditorStrKey = "cardEditorStrKey";
-const updateViewReducer = (state, action) => {
+
+// What screen the UI should be showing
+export enum View {
+  DECK,
+  STATS,
+  SESSION,
+  POST_SESSION,
+  LIST,
+  DECK_DETAIL,
+  ERROR,
+  LOADING,
+}
+
+export enum Subject {
+  Decks = "decks",
+  Sessions = "sessions",
+  Tags = "tags", // not supported yet
+  Undefined = "undefined",
+}
+
+export type ComplexCommandParams = {
+  limit?: number;
+  filter?: Filter;
+  isLimitAppliedToCards?: boolean;
+  deckNames?: string[];
+  subject: Subject;
+};
+
+type State = {
+  view: View;
+  program: PROGRAM;
+  cardEditor?: CodeMirror.Editor;
+  subjectToList: Subject;
+  deckToViewDetail?: string;
+  complexCommandParams?: ComplexCommandParams;
+};
+
+export enum ActionType {
+  SetCardEditor = "set card editor",
+  CardEditorParseSuccess = "card editor parse success",
+  StartSession = "start session",
+  SessionIsReady = "session is ready",
+  PostSession = "post session",
+  List = "list",
+  ViewDeckDetail = "view deck detail",
+  ShowStats = "show stats",
+  LoadDecks = "load decks",
+  CommandNotFound = "command not found",
+}
+
+export type Action =
+  | {
+      type: ActionType.SetCardEditor; // Enables "Load decks" to work
+      cardEditor: CodeMirror.Editor;
+    }
+  | {
+      type: ActionType.CardEditorParseSuccess;
+      program: PROGRAM;
+    }
+  | {
+      type: ActionType.StartSession;
+      limit?: number;
+      filter?: Filter;
+      isLimitAppliedToCards?: boolean;
+      deckNames?: string[];
+      subject: Subject;
+    }
+  | {
+      type: ActionType.SessionIsReady;
+      deckNames?: string[];
+      cards: FlashCard[];
+    }
+  | {
+      type: ActionType.List;
+      listOption: "decks" | "tags";
+      // tags not implemented
+    }
+  | {
+      type: ActionType.ViewDeckDetail;
+      deckName: string;
+    }
+  | {
+      type: ActionType.ShowStats;
+      limit: number;
+      filter?: Filter;
+      isLimitAppliedToCards?: boolean;
+      deckNames?: string[];
+      subject: Subject;
+    }
+  | {
+      type: ActionType.LoadDecks;
+      createDSLValue: string;
+    }
+  | {
+      type: ActionType.CommandNotFound;
+    }
+  | {
+      type: ActionType.PostSession;
+    }; // Add actions here
+
+const reducer = (state: State, action: Action): State => {
+  debug("Dispatched to App: ", action);
   switch (action.type) {
+    // Add action handlers here
+    case "set card editor": {
+      return {
+        ...state,
+        cardEditor: action.cardEditor,
+      };
+    }
     case "card editor parse success": {
       return {
         ...state,
-        program: { ...action.program },
+        program: action.program,
         view: View.DECK,
       };
     }
@@ -58,11 +172,25 @@ const updateViewReducer = (state, action) => {
       return {
         ...state,
         view: View.SESSION,
-        from: {
+        complexCommandParams: {
           limit: action.limit,
           filter: action.filter,
-          selectedCards: action.selectedCards, // determines whether limit applies to cards or SUBJECT (decks/sessions)
-          deckNames: action.deckNames, // if deckNames is null then it is from past sessions
+          isLimitAppliedToCards: action.isLimitAppliedToCards,
+          deckNames: action.deckNames,
+          subject: action.subject,
+        },
+      };
+    }
+    case "show stats": {
+      return {
+        ...state,
+        view: View.STATS,
+        complexCommandParams: {
+          limit: action.limit,
+          filter: action.filter,
+          isLimitAppliedToCards: action.isLimitAppliedToCards,
+          deckNames: action.deckNames,
+          subject: action.subject, // if deckNames is null then it is from past sessions
         },
       };
     }
@@ -79,33 +207,17 @@ const updateViewReducer = (state, action) => {
       };
     }
     case "view deck detail": {
-      console.log(action.deckName);
       return {
         ...state,
         view: View.DECK_DETAIL,
         deckToViewDetail: action.deckName,
       };
     }
-    case "show stats": {
-      return {
-        ...state,
-        view: View.STATS,
-        from: {
-          limit: action.limit,
-          filter: action.filter,
-          selectedCards: action.selectedCards, // determines whether limit applies to cards or SUBJECT (decks/sessions)
-          deckNames: action.deckNames, // if deckNames is null then it is from past sessions
-        },
-      };
-    }
-
     case "load decks": {
-      return {
-        ...state,
-        createDSLValue: action.createDSLValue,
-      };
+      state.cardEditor.getDoc().setValue(action.createDSLValue);
+      return state;
     }
-    case "command": {
+    case "command not found": {
       return {
         ...state,
         view: View.ERROR,
@@ -114,63 +226,40 @@ const updateViewReducer = (state, action) => {
     default:
       break;
   }
+  debug("Unexpected end of reducer dispatch!");
   return state;
 };
 
-export enum View {
-  DECK,
-  STATS,
-  SESSION,
-  POST_SESSION,
-  LIST,
-  DECK_DETAIL,
-  ERROR,
-}
-
-const initialProgram = {
-  create_decks: [
-    {
-      name: "Practice Final",
-      deck: {
-        cards: [
-          { front: "Foo", back: "Bar" },
-          { front: "Evan", back: "You" },
-        ],
-      },
-    },
-  ],
-};
-
-const initialState = {
-  view: View.DECK,
-  program:
-    JSON.parse(localStorage.getItem("programAST")) ||
-    (initialProgram as PROGRAM),
-  deckToViewDetail: "",
-  from: {
-    limit: 0,
-    filter: "",
-    selectedCards: false, // determines whether limit applies to cards or SUBJECT (decks/sessions)
-    deckNames: [], // if deckNames is null then it is from past sessions
-  },
-};
-
 export default function App() {
-  const database = useDatabase();
+  // Get initial data once from localStorage
+  const { isFirstTimeUser, initialText, initialProgram } = getInitialData(); // TODO: Also find session information from localStorage
 
-  // const decks = ["deck1", "deck2", "deck3", "deck4", "deck5", "deck6"];
-  // getSelectedDecks(database, decks).then((decks) => {
-  //   const worst5Decks = deckFilter(decks, Filter.WORST, 5);
-  //   getCardsFromSelectedDecks(
-  //     database,
-  //     worst5Decks.map((d) => d.name)
-  //   ).then((cards) => {});
-  // });
+  const db = useDatabase();
+
+  if (isFirstTimeUser) {
+    createOrUpdateAllDecks(initialProgram, db);
+  }
+
+  const initialState: State = {
+    view: View.DECK,
+    program: initialProgram, // The "source of truth" until Goi gives user more card management
+
+    cardEditor: undefined,
+    deckToViewDetail: undefined,
+    subjectToList: undefined,
+    complexCommandParams: {
+      limit: undefined,
+      filter: undefined,
+      isLimitAppliedToCards: undefined, // SUBJECT_MODIFIER::selectedCards boolean attribute
+      deckNames: undefined,
+      subject: Subject.Undefined, // if deckNames is null then it is from past sessions
+    },
+  };
 
   const [
-    { view, program, deckToViewDetail, createDSLValue, from },
+    { view, program, deckToViewDetail, complexCommandParams },
     dispatch,
-  ] = useReducer(updateViewReducer, initialState);
+  ] = useReducer(reducer, initialState);
 
   const showView = (view: View) => {
     if (view !== View.SESSION && view !== View.POST_SESSION) {
@@ -194,6 +283,15 @@ export default function App() {
         );
       }
       case View.SESSION: {
+        const sessionQueryError = checkSessionCommandError(
+          program,
+          complexCommandParams
+        );
+        if (sessionQueryError) {
+          return (
+            <ErrorMessage message={sessionQueryError.message}></ErrorMessage>
+          );
+        }
         const nowString = new Date().toString();
         const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
         const initialDataString = JSON.stringify(initialData);
@@ -208,7 +306,7 @@ export default function App() {
           );
         }
         const selectedCreateDecks = program.create_decks.filter((cd) => {
-          return from.deckNames?.includes(cd.name);
+          return complexCommandParams.deckNames?.includes(cd.name);
         });
         if (selectedCreateDecks.length === 0) {
           return (
@@ -223,11 +321,12 @@ export default function App() {
           }
         }
         selectedCards = randomizeCards(selectedCards);
+
         return (
           <Session
-            deckNames={from.deckNames}
-            cards={selectedCards}
+            deckNames={["French"]}
             dispatch={dispatch}
+            cards={selectedCards}
           ></Session>
         );
       }
@@ -252,6 +351,9 @@ export default function App() {
           <ErrorMessage message="Command not found. Type 'Help'"></ErrorMessage>
         );
       }
+      case View.LOADING: {
+        return <CircularProgress style={{ margin: "auto" }} />;
+      }
     }
   };
 
@@ -264,9 +366,10 @@ export default function App() {
         {/*gives CardEditor the ability to change Deck view */}
         <CardEditor
           dispatch={dispatch}
-          createDSLValue={createDSLValue}
+          program={program}
+          initialText={initialText}
           isInSession={view === View.SESSION}
-        ></CardEditor>{" "}
+        ></CardEditor>
         <CommandEditor dispatch={dispatch}></CommandEditor>
         {showView(view)}
       </div>

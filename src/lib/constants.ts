@@ -1,17 +1,17 @@
 export const keywords = [
-  "Show stats for",
-  "Start Session from",
-  "Help",
-  "List",
-  "Export decks",
-  "Load decks",
+  "show stats for",
+  "start session from",
+  "help",
+  "list",
+  "export decks",
+  "load decks",
   ",",
-  "Past Sessions",
+  "past sessions",
   "cards from",
 ];
 export const validCardFilter = ["best", "worst", "random", "oldest", "newest"];
-export const subjectKeywords = ["Decks:", "Tags:", "Sessions"];
+export const subjectKeywords = ["decks:", "tags:", "sessions"];
 
 export const allTokens = [...validCardFilter, ...keywords, ...subjectKeywords];
 
-export const deckCreationLiterals = ["Create Deck", ":", "\\(", "\\)", ","];
+export const deckCreationLiterals = ["create deck", ":", "\\(", "\\)", ","];

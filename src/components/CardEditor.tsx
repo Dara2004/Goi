@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/ayu-mirage.css";
 import "codemirror/mode/xml/xml";
@@ -6,50 +6,30 @@ import { UnControlled as CodeMirror } from "react-codemirror2";
 import PROGRAM from "../ast/PROGRAM";
 import Tokenizer from "../lib/tokenizer";
 import { deckCreationLiterals } from "../lib/constants";
-import { cardEditorStrKey } from "../App";
-import { initialCodeEditorStr } from "../";
-import { getHighlights } from "../lib/highlighter";
+import { highlight } from "../lib/highlighter";
+import { useDatabase } from "@nozbe/watermelondb/hooks";
+import reconcile from "../lib/reconciler";
+import { debug, debugDB } from "../lib/utils";
+import { astStrKey, cardEditorStrKey } from "../lib/getIintialData";
+import { Action, ActionType } from "../App";
 
-type Props = { dispatch; createDSLValue: string; isInSession: boolean };
-
-const getInitialState = () => {
-  const cardStr = localStorage.getItem(cardEditorStrKey);
-  if (cardStr) {
-    return cardStr;
-  } else {
-    const initialVal = `Create Deck Practice Final:
-(1) Foo : Bar
-(2) Bill : Gates
-(3) Steve : Jobs
-(4) Justin : Trudeau 
-(5) Evan : You
-`;
-    localStorage.setItem(cardEditorStrKey, initialVal);
-    return initialVal;
-  }
+// for syntax highlighting
+const literals = ["create deck", "(", ":", ")"];
+type Props = {
+  dispatch: React.Dispatch<Action>;
+  initialText: string;
+  isInSession: boolean;
+  program: PROGRAM;
 };
 
 export default function CardEditor(props: Props) {
-  const [stateVal, setValue] = useState(getInitialState);
-  const { createDSLValue, isInSession } = props;
+  const db = useDatabase();
 
-  useEffect(() => {
-    if (createDSLValue) {
-      setValue(createDSLValue);
-      localStorage.setItem(cardEditorStrKey, stateVal);
-    }
-  }, [createDSLValue]);
+  const { initialText, isInSession } = props;
 
   const handleChange = (editor: CodeMirror.Editor, data, value) => {
-    const highlights = getHighlights(value, ["create deck", "(", ":", ")"]);
-    const doc = editor.getDoc();
-    highlights.forEach((highlight) => {
-      doc.markText(
-        { line: highlight.lineNumber, ch: highlight.charStart },
-        { line: highlight.lineNumber, ch: highlight.charEnd },
-        { className: "syntax-highlight" }
-      );
-    });
+    highlight(editor, literals);
+
     localStorage.setItem(cardEditorStrKey, value);
     // Parse it
     try {
@@ -61,13 +41,17 @@ export default function CardEditor(props: Props) {
         program.create_decks.length !== 0 &&
         program.create_decks[program.create_decks.length - 1].deck === null
       ) {
-        console.log("last deck is null, not sending dispatch");
+        debug("last deck is null, not sending dispatch");
       } else {
-        localStorage.setItem("programAST", JSON.stringify(program));
-        props.dispatch({ type: "card editor parse success", program });
+        localStorage.setItem(astStrKey, JSON.stringify(program));
+        // Trigger background reconciliation with DB
+        reconcile(props.program, program, db)
+          .then(() => debugDB("Background DB update complete!"))
+          .catch((err) => debugDB("Error during reconciliation!", err));
+        props.dispatch({ type: ActionType.CardEditorParseSuccess, program });
       }
     } catch (err) {
-      console.log(err);
+      debug(err);
     }
   };
 
@@ -75,14 +59,21 @@ export default function CardEditor(props: Props) {
     <>
       <div className="card-editor">
         {isInSession ? (
-          <div className="card-editor-codemirror card-hider">{stateVal}</div>
+          <div className="card-editor-codemirror card-hider">{initialText}</div>
         ) : (
           <CodeMirror
-            value={stateVal || initialCodeEditorStr}
+            value={initialText}
             options={{
               mode: "xml",
               theme: "ayu-mirage",
               lineNumbers: true,
+            }}
+            editorDidMount={(editor, value) => {
+              highlight(editor, literals);
+              props.dispatch({
+                type: ActionType.SetCardEditor,
+                cardEditor: editor,
+              });
             }}
             onChange={handleChange}
             className="card-editor-codemirror"
