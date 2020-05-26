@@ -88,16 +88,6 @@ export default function CardEditor(props: Props) {
             className="card-editor-codemirror"
           />
         )}
-        {/*<CodeMirror*/}
-        {/*  value={stateVal || initialCodeEditorStr}*/}
-        {/*  options={{*/}
-        {/*    mode: "xml",*/}
-        {/*    theme: "ayu-mirage",*/}
-        {/*    lineNumbers: true,*/}
-        {/*  }}*/}
-        {/*  onChange={handleChange}*/}
-        {/*  className={"card-editor-codemirror"}*/}
-        {/*/>*/}
       </div>
     </>
   );
