@@ -56,6 +56,7 @@ export default function PostSessionSummary() {
   const [score, isAllCorrect]: [string, boolean] = getSessionScore(
     sessionCards.details
   );
+
   return (
     <div className="right-side-container">
       <h1>Summary</h1>

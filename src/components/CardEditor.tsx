@@ -10,7 +10,7 @@ import { cardEditorStrKey } from "../App";
 import { initialCodeEditorStr } from "../";
 import { getHighlights } from "../lib/highlighter";
 
-type Props = { dispatch; createDSLValue: string };
+type Props = { dispatch; createDSLValue: string; isInSession: boolean };
 
 const getInitialState = () => {
   const cardStr = localStorage.getItem(cardEditorStrKey);
@@ -31,7 +31,7 @@ const getInitialState = () => {
 
 export default function CardEditor(props: Props) {
   const [stateVal, setValue] = useState(getInitialState);
-  const { createDSLValue } = props;
+  const { createDSLValue, isInSession } = props;
 
   useEffect(() => {
     if (createDSLValue) {
@@ -74,16 +74,30 @@ export default function CardEditor(props: Props) {
   return (
     <>
       <div className="card-editor">
-        <CodeMirror
-          value={stateVal || initialCodeEditorStr}
-          options={{
-            mode: "xml",
-            theme: "ayu-mirage",
-            lineNumbers: true,
-          }}
-          onChange={handleChange}
-          className="card-editor-codemirror"
-        />
+        {isInSession ? (
+          <div className="card-editor-codemirror card-hider">{stateVal}</div>
+        ) : (
+          <CodeMirror
+            value={stateVal || initialCodeEditorStr}
+            options={{
+              mode: "xml",
+              theme: "ayu-mirage",
+              lineNumbers: true,
+            }}
+            onChange={handleChange}
+            className="card-editor-codemirror"
+          />
+        )}
+        {/*<CodeMirror*/}
+        {/*  value={stateVal || initialCodeEditorStr}*/}
+        {/*  options={{*/}
+        {/*    mode: "xml",*/}
+        {/*    theme: "ayu-mirage",*/}
+        {/*    lineNumbers: true,*/}
+        {/*  }}*/}
+        {/*  onChange={handleChange}*/}
+        {/*  className={"card-editor-codemirror"}*/}
+        {/*/>*/}
       </div>
     </>
   );

@@ -166,12 +166,7 @@ export default function App() {
   ] = useReducer(updateViewReducer, initialState);
 
   const showView = (view: View) => {
-    if (view === View.SESSION) {
-      const nowString = new Date().toString();
-      const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
-      const initialDataString = JSON.stringify(initialData);
-      localStorage.setItem("sessionData", initialDataString);
-    } else {
+    if (view !== View.SESSION) {
       localStorage.removeItem("sessionData");
     }
     switch (view) {
@@ -189,6 +184,11 @@ export default function App() {
         );
       }
       case View.SESSION: {
+        const nowString = new Date().toString();
+        const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
+        const initialDataString = JSON.stringify(initialData);
+        localStorage.setItem("sessionData", initialDataString);
+
         // `from` contains all the parameters needed to select the cards
         // TODO
         let selectedCards = [];
@@ -250,6 +250,7 @@ export default function App() {
         <CardEditor
           dispatch={dispatch}
           createDSLValue={createDSLValue}
+          isInSession={view === View.SESSION}
         ></CardEditor>{" "}
         <CommandEditor dispatch={dispatch}></CommandEditor>
         {showView(view)}
