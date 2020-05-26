@@ -107,6 +107,7 @@ export default function Session(props: Props) {
             addCardDataToLocalStorage={addCardDataToLocalStorage}
             currentCard={props.cards[nextCardIndex]}
             currentResult={result}
+            setResult={setResult}
           ></ProgressBar>
           <CardFlip
             front={props.cards[nextCardIndex].front}
