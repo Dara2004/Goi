@@ -130,7 +130,7 @@ export default function CommandEditor(props: Props) {
               isLimitAppliedToCards: modifier.selectCards,
               deckNames: ((command.command as COMPLEX_COMMAND).subject
                 .subject as DECKS).decks,
-              subject: Subject.Decks,
+              subject: (command.command as COMPLEX_COMMAND).subject.subjectType,
             });
           }
         }
@@ -152,7 +152,7 @@ export default function CommandEditor(props: Props) {
     <>
       <div className="command-editor">
         <CodeMirror
-          value={"> Start Session from Decks: Practice Final"}
+          value={"> Show stats for Decks: Practice Final"}
           options={{
             mode: "xml",
             theme: "yonce",

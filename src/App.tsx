@@ -331,7 +331,12 @@ export default function App() {
         );
       }
       case View.STATS: {
-        return <Statistics></Statistics>;
+        return (
+          <Statistics
+            database={db}
+            complexCommandParams={complexCommandParams}
+          ></Statistics>
+        );
       }
       case View.DECK_DETAIL: {
         console.log(deckToViewDetail);
