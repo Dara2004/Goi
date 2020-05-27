@@ -29,41 +29,6 @@ import SessionCard from "../model/SessionCard";
 
 type Props = { complexCommandParams: ComplexCommandParams; database: Database };
 
-function getStatsObject() {
-  // temp return object for testing:
-  return {
-    overview: {
-      "average score": "5",
-      "highest score": "10",
-      "lowest score": "10",
-    },
-    details: [
-      createCardData(1, "Bonjour", "Hello", 1, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 11, 10, "French"),
-      createCardData(2, "Aurevoir", "Bye", 5, 10, "French"),
-    ],
-    columnType: ColumnType.CARD_COLUMNS,
-  };
-}
-
 enum View {
   LOADING,
   READY,
