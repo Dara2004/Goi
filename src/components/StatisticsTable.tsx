@@ -54,8 +54,8 @@ const sessionColumns = [
   { id: "dateString", label: "Date", minWidth: 80, align: "center" },
   { id: "count", label: "Card Count", minWidth: 80, align: "center" },
   { id: "score", label: "Score", minWidth: 80, align: "center" },
-  { id: "duration", label: "Time Spent", minWidth: 80, align: "center" },
-  { id: "decks", label: "Decks", minWidth: 80, align: "center" },
+  { id: "duration", label: "Duration(secs)", minWidth: 80, align: "center" },
+  { id: "decksString", label: "Decks", minWidth: 80, align: "center" },
 ];
 type Props = { rows: any[]; columnType: ColumnType };
 

@@ -78,12 +78,17 @@ export function createSessionData(
   const score = correct.toString() + "/" + count.toString();
   const decksString = decks.join(", ");
   const indexString = index.toString() + ".)";
-  const startDateConverted = +new Date(startDate);
-  const endDateConverted = +new Date(endDate);
-  const dateString = startDateConverted.toString();
+  const duration = (endDate - startDate) / 1000;
+  const date = new Date(startDate);
+  var options = {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "numeric",
+    minute: "numeric",
+  };
 
-  const diffMs = startDateConverted - endDateConverted;
-  let duration = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+  const dateString = date.toLocaleDateString("en-US", options);
 
   return { indexString, dateString, count, score, duration, decksString };
 }

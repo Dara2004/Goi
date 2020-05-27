@@ -50,23 +50,16 @@ export async function getUniqueDeckNamesFromSessions(
   session: Session
 ): Promise<Array<string>> {
   let deckIds = [];
-  const cardsCollection = db.collections.get(TableName.CARDS);
-  const sessionCards: Array<SessionCard> = (await session.cards) as Array<
-    SessionCard
-  >;
+  const sessionCards: Array<Card> = (await session.cards) as Array<Card>;
   for (let sessionCard of sessionCards) {
-    const foundDeckIds = {}; // set
-    let card = ((await cardsCollection
-      .query(Q.where("id", sessionCard.card_id))
-      .fetch()) as Array<Card>)[0];
-    if (!foundDeckIds[card.deck_id]) {
-      foundDeckIds[card.deck_id] = true;
-      deckIds.push(card.deck_id);
+    if (!deckIds[sessionCard.deck_id]) {
+      deckIds[sessionCard.deck_id] = true;
+      deckIds.push(sessionCard.deck_id);
     }
   }
   let deckNames: Array<string> = [];
   for (let deckId of deckIds) {
-    deckNames.push(await getDeckNameFromID(db, deckId));
+    deckNames = deckNames.concat(await getDeckNameFromID(db, deckId));
   }
   return deckNames;
 }
@@ -161,10 +154,10 @@ export function cardFilter(
         .slice(0, n);
       break;
     case Filter.NEWEST:
-      result = cards.sort((a, b) => a.created_at - b.created_at).slice(0, n);
+      result = cards.sort((a, b) => b.created_at - a.created_at).slice(0, n);
       break;
     case Filter.OLDEST:
-      result = cards.sort((a, b) => b.created_at - a.created_at).slice(0, n);
+      result = cards.sort((a, b) => a.created_at - b.created_at).slice(0, n);
       break;
     case Filter.RANDOM:
       result = shuffle(cards).slice(0, n);
@@ -201,10 +194,10 @@ export async function deckFilter(
         .slice(0, n);
       break;
     case Filter.NEWEST:
-      result = decks.sort((a, b) => a.created_at - b.created_at).slice(0, n);
+      result = decks.sort((a, b) => b.created_at - a.created_at).slice(0, n);
       break;
     case Filter.OLDEST:
-      result = decks.sort((a, b) => b.created_at - a.created_at).slice(0, n);
+      result = decks.sort((a, b) => a.created_at - b.created_at).slice(0, n);
       break;
     case Filter.RANDOM:
       result = shuffle(decks).slice(0, n);
@@ -232,21 +225,20 @@ export async function sessionFilter(
 
   switch (filter) {
     case Filter.BEST:
-      result.sort(
-        (a, b) =>
-          sessionsScoreMap.get(b.id) - sessionsScoreMap.get(a.id).slice(0, n)
-      );
+      result = sessions
+        .sort((a, b) => sessionsScoreMap.get(b.id) - sessionsScoreMap.get(a.id))
+        .slice(0, n);
       break;
     case Filter.WORST:
-      result
+      result = sessions
         .sort((a, b) => sessionsScoreMap.get(a.id) - sessionsScoreMap.get(b.id))
         .slice(0, n);
       break;
     case Filter.NEWEST:
-      result = sessions.sort((a, b) => a.started_at - b.started_at).slice(0, n);
+      result = sessions.sort((a, b) => b.started_at - a.started_at).slice(0, n);
       break;
     case Filter.OLDEST:
-      result = sessions.sort((a, b) => b.started_at - a.started_at).slice(0, n);
+      result = sessions.sort((a, b) => a.started_at - b.started_at).slice(0, n);
       break;
     case Filter.RANDOM:
       result = shuffle(sessions).slice(0, n);
