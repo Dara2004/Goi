@@ -171,7 +171,7 @@ export default function Statistics(props: Props) {
         >;
         let numberCorrect = 0;
         sessionCards.forEach((c) => {
-          numberCorrect = c.is_correct ? numberCorrect + 1 : numberCorrect;
+          numberCorrect += c.is_correct ? 1 : 0;
         });
         let score = Number((numberCorrect / sessionCards.length).toFixed(2));
         score = isNaN(score) ? 0 : score;

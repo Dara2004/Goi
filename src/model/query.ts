@@ -273,7 +273,7 @@ export async function getSessionScore(
   const totalCards = sessionCards.length;
   let numberCorrect = 0;
   sessionCards.forEach((c) => {
-    numberCorrect = c.is_correct ? numberCorrect + 1 : numberCorrect;
+    numberCorrect += c.is_correct ? 1 : 0;
   });
 
   return numberCorrect / totalCards;

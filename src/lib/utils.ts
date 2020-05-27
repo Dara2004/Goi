@@ -80,7 +80,7 @@ export function createSessionData(
   const indexString = index.toString() + ".)";
   const duration = (endDate - startDate) / 1000;
   const date = new Date(startDate);
-  var options = {
+  const options = {
     year: "2-digit",
     month: "2-digit",
     day: "2-digit",
