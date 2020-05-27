@@ -1,13 +1,27 @@
 import PROGRAM from "../ast/PROGRAM";
 import { ComplexCommandParams } from "../App";
-import { Filter, getSelectedDecks, deckFilter } from "../model/query";
-import { Database } from "@nozbe/watermelondb";
+import {
+  Filter,
+  getSelectedDecks,
+  deckFilter,
+  getPastSessions,
+  getAllSessions,
+  sessionFilter,
+  getCardsFromSelectedSessions,
+  uniqueCards,
+  cardFilter,
+} from "../model/query";
+import { Database, Collection } from "@nozbe/watermelondb";
 import { SessionMaterials } from "../components/Session";
-import { randomize } from "./utils";
+import { randomize, shuffle } from "./utils";
 import FILTER from "../ast/FILTER";
 import CREATE_DECK from "../ast/CREATE_DECK";
 import CARD from "../ast/CARD";
 import { TableName } from "../model/constants";
+import Session from "../model/Session";
+import Card from "../model/Card";
+import Deck from "../model/Deck";
+import { Q } from "@nozbe/watermelondb";
 
 type SessionCommandError = {
   message: string;
@@ -282,14 +296,60 @@ async function getCardsFromDecks(
 }
 
 async function getCardsFromSessions(
+  db: Database,
   filter?: Filter,
   isLimitAppliedToCards?: boolean,
-  limit?: number
-) {
-  const flashCards: FlashCard[] = [];
-  if (!filter && !limit) {
+  limit: number = 5
+): Promise<SessionMaterials> {
+  let sessions: Session[];
+
+  if (isLimitAppliedToCards) {
+    sessions = await getAllSessions(db);
+  } else {
+    if (filter) {
+      sessions = await getAllSessions(db);
+      sessions = await sessionFilter(db, sessions, filter, limit);
+    } else {
+      sessions = await getPastSessions(db, limit);
+    }
   }
-  return flashCards;
+
+  let cards: Array<Card> = [];
+  for (const session of sessions) {
+    const cards = await session.cards;
+    cards.concat(cards as Array<Card>);
+  }
+
+  cards = uniqueCards(cards);
+
+  if (isLimitAppliedToCards && cards.length > limit) {
+    if (filter) {
+      cards = cardFilter(cards, filter, limit);
+    } else {
+      cards = shuffle(cards).splice(limit);
+    }
+  }
+
+  shuffle(cards);
+
+  const decks: Collection<Deck> = db.collections.get(TableName.DECKS);
+  const deckIdToDeckName = {}; // deck id -> deck name
+  const flashCards: FlashCard[] = [];
+  for (const card of cards) {
+    if (!deckIdToDeckName[card.deck_id]) {
+      deckIdToDeckName[card.deck_id] = (
+        await decks.query(Q.where("id", Q.eq(card.deck_id))).fetch()
+      )[0].name;
+    }
+    const deckName = deckIdToDeckName[card.deck_id];
+    flashCards.push({
+      deckName,
+      front: card.front,
+      back: card.back,
+    });
+  }
+
+  return { cards: flashCards };
 }
 
 /**
@@ -321,9 +381,8 @@ export async function getSessionMaterials(
       limit
     );
   } else if (subject === "sessions") {
-    return null; // TODO
-    // return getCardsFromSessions(filter, isLimitAppliedToCards, limit);
+    return await getCardsFromSessions(db, filter, isLimitAppliedToCards, limit);
   } else {
-    return null;
+    throw new Error("Not supported!");
   }
 }
