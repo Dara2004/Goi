@@ -5,11 +5,11 @@ import WrongBtn from "../assets/wrongBtn.svg";
 import CorrectBtn from "../assets/correctBtn.svg";
 import Timer from "react-compound-timer";
 import PostSessionSummary from "./PostSessionSummary";
-import { Action, ActionType, ComplexCommandParams, Subject } from "../App";
+import { Action, ActionType, ComplexCommandParams } from "../App";
+import { SubjectType as Subject } from "../ast/SUBJECT";
 import {
-  FlashCard,
   checkSessionCommandError,
-  getSessionMaterials,
+  getSessionMaterialsWithTags,
 } from "../lib/sessionHelperFunctions";
 import PROGRAM from "../ast/PROGRAM";
 import { CircularProgress } from "@material-ui/core";
@@ -30,12 +30,31 @@ type Props = {
   dispatch: React.Dispatch<Action>;
 };
 
+export type FlashCard = {
+  front: string;
+  back: string;
+  deckName: string;
+  tags?: string[];
+};
+
+export type FlashCardWithTags = {
+  front: string;
+  back: string;
+  deckName: string;
+  tags: string[];
+};
+
 /**
  * A list of cards, and optionally, a list of deck names
  */
 export type SessionMaterials = {
   deckNames?: string[];
   cards: FlashCard[];
+};
+
+export type SessionMaterialsWithTags = {
+  deckNames?: string[];
+  cards: FlashCardWithTags[];
 };
 
 function addCardDataToLocalStorage(
@@ -206,13 +225,12 @@ export default function Session(props: Props) {
 
     const _getSessionMaterials = async () => {
       try {
-        const sessionMaterials = await getSessionMaterials(
+        const sessionMaterials = await getSessionMaterialsWithTags(
           props.program,
           props.complexCommandParams,
           db
         );
         debug(sessionMaterials);
-        // const sessionMaterials = dummySessionMaterials;
         const nowString = new Date().toString();
         const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
         const initialDataString = JSON.stringify(initialData);
@@ -239,7 +257,10 @@ export default function Session(props: Props) {
   }, [isDone]);
 
   const showDecksOrPastSessionsHeader = () => {
-    if (props.complexCommandParams.subject === Subject.Decks) {
+    if (
+      props.complexCommandParams.subject === Subject.Decks ||
+      props.complexCommandParams.subject === Subject.Tags
+    ) {
       return (
         <>
           <h3 className="decks">DECKS: </h3>

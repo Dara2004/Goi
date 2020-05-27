@@ -12,7 +12,12 @@ import {
   cardFilter,
 } from "../model/query";
 import { Database, Collection } from "@nozbe/watermelondb";
-import { SessionMaterials } from "../components/Session";
+import {
+  SessionMaterials,
+  FlashCard,
+  SessionMaterialsWithTags,
+  FlashCardWithTags,
+} from "../components/Session";
 import { randomize, shuffle } from "./utils";
 import FILTER from "../ast/FILTER";
 import CREATE_DECK from "../ast/CREATE_DECK";
@@ -97,12 +102,6 @@ export function checkSessionCommandError(
   return false;
 }
 
-export type FlashCard = {
-  front: string;
-  back: string;
-  deckName: string;
-};
-
 /*
  * Returns a list of case sensitive deck names matching the requested deck names, removing duplicates
  */
@@ -128,11 +127,11 @@ function getValidDeckNames(
 }
 
 function getCardsFromSelectedDecks(selectedCreateDecks: CREATE_DECK[]) {
-  let selectedCards = [];
+  let selectedCards: FlashCard[] = [];
   for (const cd of selectedCreateDecks) {
     const deckName = cd.name;
     for (const card of cd.deck.cards) {
-      const cardWithDeck = { ...card, deckName };
+      const cardWithDeck = { front: card.front, back: card.back, deckName };
       selectedCards.push(cardWithDeck);
     }
   }
@@ -323,6 +322,36 @@ async function getCardsFromDecks(
   }
 }
 
+async function getCardsFromTags(
+  db: Database,
+  program: PROGRAM,
+  tagNames: string[],
+  filter?: Filter,
+  isLimitAppliedToCards?: boolean,
+  limit?: number
+): Promise<SessionMaterials> {
+  const selectedCreateDecks = program.create_decks.filter((cd) => {
+    const createDeckTags = cd.tags && cd.tags.tags.map((t) => t.tagName);
+    let hasASelectedTag = false;
+    if (createDeckTags) {
+      createDeckTags.forEach((t) => {
+        if (tagNames.includes(t)) {
+          hasASelectedTag = true;
+        }
+      });
+    }
+    return hasASelectedTag;
+  });
+  // TODO implement filtering for tags
+  const deckNames = selectedCreateDecks.map((cd) => cd.name);
+  return await getCardsFromDecksNoFilter(
+    deckNames,
+    selectedCreateDecks,
+    limit,
+    isLimitAppliedToCards
+  );
+}
+
 async function getCardsFromSessions(
   db: Database,
   filter?: Filter,
@@ -380,6 +409,30 @@ async function getCardsFromSessions(
   return { cards: flashCards };
 }
 
+function addTagsToFlashCard(program: PROGRAM, card: FlashCard) {
+  const cd: CREATE_DECK = program.create_decks.find(
+    (cd) => cd.name === card.deckName
+  );
+  card.tags = cd.tags && cd.tags.tags.map((t) => t && t.tagName);
+}
+
+export async function getSessionMaterialsWithTags(
+  program: PROGRAM,
+  complexCommandParams: ComplexCommandParams,
+  db: Database
+): Promise<SessionMaterialsWithTags> {
+  const sessionMaterials = await getSessionMaterials(
+    program,
+    complexCommandParams,
+    db
+  );
+  sessionMaterials.cards.forEach((flashCard) => {
+    return addTagsToFlashCard(program, flashCard);
+  });
+
+  return sessionMaterials as SessionMaterialsWithTags;
+}
+
 /**
  * Returns the cards chosen by the user for their "Start session" command (in a promise)
  *
@@ -390,20 +443,29 @@ export async function getSessionMaterials(
   complexCommandParams: ComplexCommandParams,
   db: Database
 ): Promise<SessionMaterials> {
-  console.log(complexCommandParams);
-
   const {
     subject,
     filter,
     isLimitAppliedToCards,
     limit,
     deckNames: requestedDeckNames,
+    tagNames,
   } = complexCommandParams;
+
   if (subject === "decks") {
     return await getCardsFromDecks(
       db,
       program,
       requestedDeckNames,
+      filter,
+      isLimitAppliedToCards,
+      limit
+    );
+  } else if (subject === "tags") {
+    return await getCardsFromTags(
+      db,
+      program,
+      tagNames,
       filter,
       isLimitAppliedToCards,
       limit

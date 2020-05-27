@@ -7,7 +7,8 @@ import {
   createDeckData,
   createSessionData,
 } from "../lib/utils";
-import { Subject, ComplexCommandParams } from "../App";
+import { ComplexCommandParams } from "../App";
+import { SubjectType as Subject } from "../ast/SUBJECT";
 import {
   getSelectedDecks,
   getCardsFromSelectedDecks,
