@@ -81,7 +81,7 @@ export async function getPastSessions(
   n: number = 5
 ): Promise<Array<Session>> {
   const allSessions = await getAllSessions(db);
-  return allSessions.sort((a, b) => b.created_at - a.created_at).slice(0, n);
+  return allSessions.sort((a, b) => b.started_at - a.started_at).slice(0, n);
 }
 
 export async function getCardsFromSelectedSessions(
@@ -199,10 +199,10 @@ export function sessionFilter(
       result = temp.map((item) => item.session).slice(0, n);
       break;
     case Filter.NEWEST:
-      result = sessions.sort((a, b) => a.created_at - b.created_at).slice(0, n);
+      result = sessions.sort((a, b) => a.started_at - b.started_at).slice(0, n);
       break;
     case Filter.OLDEST:
-      result = sessions.sort((a, b) => b.created_at - a.created_at).slice(0, n);
+      result = sessions.sort((a, b) => b.started_at - a.started_at).slice(0, n);
       break;
     case Filter.RANDOM:
       result = shuffle(sessions).slice(0, n);
