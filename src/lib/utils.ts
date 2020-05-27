@@ -51,32 +51,33 @@ export function createSummaryData(
 
 export function createDeckData(
   index: number,
+  name: string,
   count: number,
-  correct: number,
-  incorrect: number,
-  duration: number,
-  tags: string[]
+  score: number
 ) {
-  const score = correct.toString() + "/" + (incorrect + correct).toString();
-  const tagsString = tags.join(", ");
   const indexString = index.toString() + ".)";
-  return { indexString, count, score, duration, tagsString };
+  return { indexString, name, count, score };
 }
 
 export function createSessionData(
   index: number,
   count: number,
   correct: number,
-  incorrect: number,
-  duration: number,
-  decks: string[],
-  tags: string[]
+  startDate: number,
+  endDate: number,
+  decks: string[]
 ) {
-  const score = correct.toString() + "/" + (incorrect + correct).toString();
+  const score = correct.toString() + "/" + count.toString();
   const decksString = decks.join(", ");
-  const tagsString = tags.join(", ");
   const indexString = index.toString() + ".)";
-  return { indexString, count, score, duration, decksString, tagsString };
+  const startDateConverted = +new Date(startDate);
+  const endDateConverted = +new Date(endDate);
+  const dateString = startDateConverted.toString();
+
+  const diffMs = startDateConverted - endDateConverted;
+  let duration = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+
+  return { indexString, dateString, count, score, duration, decksString };
 }
 
 // shuffle function from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array

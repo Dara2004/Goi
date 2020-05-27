@@ -10,7 +10,6 @@ export default class Deck extends Model {
     [TableName.CARDS]: { type: "has_many", foreignKey: "deck_id" },
   };
 
-  @field("score") score;
   @field("name") name;
   @date("created_at") created_at;
   @children(TableName.CARDS) cards: Query<Card>;
