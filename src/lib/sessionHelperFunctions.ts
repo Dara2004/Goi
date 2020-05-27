@@ -414,6 +414,16 @@ function addTagsToFlashCard(program: PROGRAM, card: FlashCard) {
     (cd) => cd.name === card.deckName
   );
   card.tags = cd.tags && cd.tags.tags.map((t) => t && t.tagName);
+  card.attributes =
+    cd.attributes &&
+    cd.attributes.attributes.map((a) => {
+      return a
+        ? {
+            attributeType: a.attribute.attributeType,
+            value: a.attribute.value,
+          }
+        : null;
+    });
 }
 
 export async function getSessionMaterialsWithTags(
