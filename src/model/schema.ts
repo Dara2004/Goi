@@ -50,8 +50,8 @@ export default appSchema({
     tableSchema({
       name: TableName.SESSIONS,
       columns: [
-        columnSchema("created_at", "number"), // automatic
-        columnSchema("ended_at", "number"), // must manually update (with Unix timestamp integer Date::valueOf)
+        columnSchema("started_at", "number"), // manual
+        columnSchema("ended_at", "number"), // manual
       ],
     }),
     tableSchema({

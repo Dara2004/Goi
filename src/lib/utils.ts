@@ -89,8 +89,8 @@ export function createSessionData(
 }
 
 // shuffle function from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-export function randomizeCards(cards: any[]): any[] {
-  let shuffledCards = cards;
+export function randomize(subjects: any[]): any[] {
+  let shuffledCards = subjects;
   for (let i = shuffledCards.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     const temp = shuffledCards[i];

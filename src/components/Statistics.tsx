@@ -7,7 +7,8 @@ import {
   createDeckData,
   createSessionData,
 } from "../lib/utils";
-import { Subject, ComplexCommandParams } from "../App";
+import { ComplexCommandParams } from "../App";
+import { SubjectType as Subject } from "../ast/SUBJECT";
 import {
   getSelectedDecks,
   getCardsFromSelectedDecks,
@@ -139,7 +140,7 @@ export default function Statistics(props: Props) {
       }
     } else if (subject === Subject.Sessions) {
       const retrievedSessions = await getPastSessions(database, limit);
-      let filteredSessions: Array<Session> = sessionFilter(
+      let filteredSessions: Array<Session> = await sessionFilter(
         database,
         retrievedSessions,
         filter,
@@ -164,7 +165,7 @@ export default function Statistics(props: Props) {
             index,
             sessionCards.length,
             numberCorrect,
-            session.created_at,
+            session.started_at,
             session.ended_at,
             deckNames
           )
