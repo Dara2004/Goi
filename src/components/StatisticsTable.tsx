@@ -31,7 +31,6 @@ const cardColumns = [
   { id: "back", label: "Back", minWidth: 80, align: "center" },
   { id: "score", label: "Score", minWidth: 80, align: "center" },
   { id: "deck", label: "Deck", minWidth: 80, align: "center" },
-  { id: "tagsString", label: "Tag", minWidth: 80, align: "center" },
 ];
 
 const summaryColumns = [
@@ -44,19 +43,18 @@ const summaryColumns = [
 
 const deckColumns = [
   { id: "indexString", label: "", minWidth: 20, align: "center" },
-  { id: "cardCount", label: "Card Count", minWidth: 80, align: "center" },
+  { id: "name", label: "Name", minWidth: 20, align: "center" },
+  { id: "count", label: "Card Count", minWidth: 80, align: "center" },
   { id: "score", label: "Score", minWidth: 80, align: "center" },
-  { id: "duration", label: "Time Spent", minWidth: 80, align: "center" },
-  { id: "tagsString", label: "Tag", minWidth: 80, align: "center" },
 ];
 
 const sessionColumns = [
   { id: "indexString", label: "", minWidth: 20, align: "center" },
+  { id: "dateString", label: "Date", minWidth: 80, align: "center" },
+  { id: "count", label: "Card Count", minWidth: 80, align: "center" },
   { id: "score", label: "Score", minWidth: 80, align: "center" },
-  { id: "cardCount", label: "Card Count", minWidth: 80, align: "center" },
   { id: "duration", label: "Time Spent", minWidth: 80, align: "center" },
   { id: "decks", label: "Decks", minWidth: 80, align: "center" },
-  { id: "tagsString", label: "Tags", minWidth: 80, align: "center" },
 ];
 type Props = { rows: any[]; columnType: ColumnType };
 

@@ -1,4 +1,4 @@
-import { Model } from "@nozbe/watermelondb";
+import { Model, Query } from "@nozbe/watermelondb";
 import { children, date, field, action } from "@nozbe/watermelondb/decorators";
 import { Associations } from "@nozbe/watermelondb/Model";
 import { TableName } from "./constants";
@@ -12,7 +12,7 @@ export default class Deck extends Model {
 
   @field("name") name;
   @date("created_at") created_at;
-  @children(TableName.CARDS) cards;
+  @children(TableName.CARDS) cards: Query<Card>;
 
   @action async addCard(front: string, back: string) {
     return await this.collections.get(TableName.CARDS).create((card: Card) => {
