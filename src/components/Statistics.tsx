@@ -164,7 +164,7 @@ export default function Statistics(props: Props) {
             index,
             sessionCards.length,
             numberCorrect,
-            session.created_at,
+            session.started_at,
             session.ended_at,
             deckNames
           )
