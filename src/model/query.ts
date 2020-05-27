@@ -146,7 +146,6 @@ export function cardFilter(
   n: number = 1
 ): Array<Card> {
   let result = [];
-  filter = filter === undefined ? Filter.BEST : filter;
 
   switch (filter) {
     case Filter.BEST:
@@ -187,7 +186,6 @@ export async function deckFilter(
     const score = calculateDeckScore(cards);
     deckScoreMap.set(deck.id, score);
   }
-  filter = filter === undefined ? Filter.BEST : filter;
 
   switch (filter) {
     case Filter.BEST:
@@ -224,8 +222,6 @@ export function sessionFilter(
 ): Array<Session> {
   let result = [];
   let sessionsScoreMap = new Map();
-
-  filter = filter === undefined ? Filter.BEST : filter;
 
   sessions.forEach((session) => {
     const score = getSessionScore(db, session);

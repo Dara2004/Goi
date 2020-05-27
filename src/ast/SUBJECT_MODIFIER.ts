@@ -3,7 +3,7 @@ import * as constants from "../lib/constants";
 
 export default class SUBJECT_MODIFIER extends NODE {
   type: string = "";
-  filter: string = "";
+  filter: string = "newest";
   limit: number = 100;
   selectCards: boolean = false;
 
@@ -11,7 +11,6 @@ export default class SUBJECT_MODIFIER extends NODE {
     const actionToken = this.tokenizer.getNext();
     if (actionToken === "show stats for") {
       this.type = "show stats";
-      console.log(this.type);
     } else if (actionToken === "start session from") {
       this.type = "start session";
     } else {

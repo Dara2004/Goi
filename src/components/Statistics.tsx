@@ -210,7 +210,7 @@ export default function Statistics(props: Props) {
       }
     };
     setStatsObject();
-  }, []);
+  }, [props.complexCommandParams]);
 
   // Conditionally render loading screen, error message, or the actual data
   // Feel free to change this however you'd like, this is just some placeholder
