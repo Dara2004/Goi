@@ -133,22 +133,32 @@ export function cardFilter(
   return result;
 }
 
-export function deckFilter(
+type DeckWithScore = Deck & {
+  score: number;
+};
+
+export async function deckFilter(
   decks: Array<Deck>,
   filter: Filter,
   n: number = 1
-): Array<Deck> {
+): Promise<Array<Deck>> {
   let result = [];
 
   switch (filter) {
     case Filter.BEST:
+      for (const deck of decks) {
+        (deck as DeckWithScore).score = await getDeckScore(deck);
+      }
       result = decks
-        .sort((a, b) => getDeckScore(b) - getDeckScore(a))
+        .sort((a, b) => (b as DeckWithScore).score - (a as DeckWithScore).score)
         .slice(0, n);
       break;
     case Filter.WORST:
+      for (const deck of decks) {
+        (deck as DeckWithScore).score = await getDeckScore(deck);
+      }
       result = decks
-        .sort((a, b) => getDeckScore(a) - getDeckScore(b))
+        .sort((a, b) => (a as DeckWithScore).score - (b as DeckWithScore).score)
         .slice(0, n);
       break;
     case Filter.NEWEST:
@@ -204,9 +214,10 @@ export function sessionFilter(
   return result;
 }
 
-function getDeckScore(deck: Deck): number {
+async function getDeckScore(deck: Deck): Promise<number> {
   let result = 0;
-  deck.cards.forEach((card) => (result += card.right - card.wrong));
+  const cards = await deck.cards.fetch();
+  cards.forEach((card) => (result += card.right - card.wrong));
   return result;
 }
 
