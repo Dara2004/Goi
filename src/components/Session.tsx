@@ -35,6 +35,7 @@ function addCardDataToLocalStorage(
       is_correct: gotCorrect,
       card_index: nextCardIndex,
       deck: card.deckName,
+      tags: card.tags,
     };
     const alreadyAdded = cardDataArray.filter(
       (o) => o.card_id === currentCardID

@@ -12,7 +12,8 @@ export default class CREATE_DECK extends NODE {
   name: string = "";
 
   checkForAndParseTags() {
-    if (this.tokenizer.checkToken("add tags")) {
+    const nextToken = this.tokenizer.checkNext().toLowerCase();
+    if (nextToken === "add tags") {
       this.tags = new TAGS();
       this.tags.parse();
     }

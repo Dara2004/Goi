@@ -24,7 +24,8 @@ function getSessionCards() {
         c["front"],
         c["back"],
         c["is_correct"],
-        c["deck"]
+        c["deck"],
+        c["tags"]
       );
     });
   return {

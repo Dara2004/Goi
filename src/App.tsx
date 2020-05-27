@@ -28,6 +28,7 @@ import {
   getCardsFromSelectedDecks,
 } from "./model/query";
 import { debug, randomizeCards } from "./lib/utils";
+import CREATE_DECK from "./ast/CREATE_DECK";
 
 const CustomListView = ({ program, dispatch }) => {
   return (
@@ -77,6 +78,7 @@ export type ComplexCommandParams = {
   isLimitAppliedToCards?: boolean;
   deckNames?: string[];
   subject: Subject;
+  tagNames?: string[];
 };
 
 type State = {
@@ -118,6 +120,7 @@ export type Action =
       isLimitAppliedToCards?: boolean;
       deckNames?: string[];
       subject: Subject;
+      tagNames?: string[];
     }
   | {
       type: ActionType.SessionIsReady;
@@ -182,6 +185,7 @@ const reducer = (state: State, action: Action): State => {
           isLimitAppliedToCards: action.isLimitAppliedToCards,
           deckNames: action.deckNames,
           subject: action.subject,
+          tagNames: action.tagNames,
         },
       };
     }
@@ -315,18 +319,37 @@ export default function App() {
             <ErrorMessage message="You haven't created any deck!"></ErrorMessage>
           );
         }
-        const selectedCreateDecks = program.create_decks.filter((cd) => {
-          return complexCommandParams.deckNames?.includes(cd.name);
-        });
+        let selectedCreateDecks: CREATE_DECK[];
+        if (complexCommandParams.deckNames) {
+          selectedCreateDecks = program.create_decks.filter((cd) => {
+            return complexCommandParams.deckNames?.includes(cd.name);
+          });
+        } else if (complexCommandParams.tagNames) {
+          selectedCreateDecks = program.create_decks.filter((cd) => {
+            const createDeckTags =
+              cd.tags && cd.tags.tags.map((t) => t.tagName);
+            let hasASelectedTag = false;
+            if (createDeckTags) {
+              createDeckTags.forEach((t) => {
+                if (complexCommandParams.tagNames.includes(t)) {
+                  hasASelectedTag = true;
+                }
+              });
+            }
+            return hasASelectedTag;
+          });
+        }
         if (selectedCreateDecks.length === 0) {
           return (
             <ErrorMessage message="Please select one of the decks on the card editor"></ErrorMessage>
           );
         }
         for (const cd of selectedCreateDecks) {
+          const tags = cd.tags && cd.tags.tags.map((t) => t && t.tagName);
+
           const deckName = cd.name;
           for (const card of cd.deck.cards) {
-            const cardWithDeck = { ...card, deckName };
+            const cardWithDeck = { ...card, deckName, tags };
             selectedCards.push(cardWithDeck);
           }
         }
