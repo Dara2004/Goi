@@ -127,7 +127,7 @@ export default function CommandEditor(props: Props) {
             .subjectModfier as SUBJECT_MODIFIER;
           if (modifier) {
             const isTagsSubject =
-              (command.command as COMPLEX_COMMAND).subject.subject.type ===
+              (command.command as COMPLEX_COMMAND).subject.subjectType ===
               "tags";
             props.dispatch({
               type:
@@ -137,10 +137,10 @@ export default function CommandEditor(props: Props) {
               limit: modifier.limit,
               filter: modifier.filter as Filter,
               isLimitAppliedToCards: modifier.selectCards,
-              deckNames: !isTagsSubject &&
-                ((command.command as COMPLEX_COMMAND).subject
-                .subject as DECKS).decks,
-              // check if tags for subject
+              deckNames:
+                !isTagsSubject &&
+                ((command.command as COMPLEX_COMMAND).subject.subject as DECKS)
+                  .decks,
               subject: (command.command as COMPLEX_COMMAND).subject.subjectType,
               tagNames:
                 isTagsSubject &&
