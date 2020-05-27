@@ -21,6 +21,7 @@ import SessionModel from "../model/Session";
 import CardModel from "../model/Card";
 import DeckModel from "../model/Deck";
 import { Q } from "@nozbe/watermelondb";
+import SessionCard from "../model/SessionCard";
 
 type Props = {
   complexCommandParams: ComplexCommandParams;
@@ -97,44 +98,53 @@ async function saveSessionDataToDB(
     TableName.SESSIONS
   );
 
-  const cardsTable: Collection<CardModel> = db.collections.get(TableName.CARDS);
-  const decksTable: Collection<DeckModel> = db.collections.get(TableName.DECKS);
+  const cardTable: Collection<CardModel> = db.collections.get(TableName.CARDS);
+  const deckTable: Collection<DeckModel> = db.collections.get(TableName.DECKS);
+  const sessionCardTable: Collection<SessionCard> = db.collections.get(
+    TableName.SESSIONS_CARDS
+  );
 
   //any db modification needs to be wrapped in action
   await db.action(async () => {
     //get cards in session from db
     const deckNameToDeckModel = {}; // deck name -> deck Model
+    //put new session in db
     const createdSession = await sessionsTable.create((session) => {
       session.started_at = new Date(data.created_at);
       session.ended_at = new Date(data.ended_at);
     });
     for (const c of data.cardDataArray) {
-      if (!deckNameToDeckModel[c.deck]) {
-        deckNameToDeckModel[c.deck] = (
-          await decksTable.query(Q.where("deck_name", Q.eq(c.deck))).fetch()
-        )[0];
-      }
-      const deckId = deckNameToDeckModel[c.deck].id;
-      const matchedCards = await cardsTable
-        .query(
-          Q.where("deck_id", Q.eq(deckId)),
-          Q.where("front", Q.eq(c.front)),
-          Q.where("back", Q.eq(c.back))
-        )
-        .fetch();
-      let cardModel: CardModel;
-      if (matchedCards.length === 0) {
-        //if cards were not saved properly, just in case, save it to cards
-        const deckModel: DeckModel = deckNameToDeckModel[c.deck];
-        //use subaction to run an action inside an action
-        await deckModel.subAction(async () => {
-          cardModel = (await deckModel.addCard(c.front, c.back)) as CardModel;
-        });
-      } else {
-        cardModel = matchedCards[0];
-      }
       if (c.is_correct === true || c.is_correct === false) {
-        //not skipped
+        // if card was not skipped
+        //save deckId from deckname in session, used to find the cards
+        if (!deckNameToDeckModel[c.deck]) {
+          deckNameToDeckModel[c.deck] = (
+            await deckTable.query(Q.where("name", Q.eq(c.deck))).fetch()
+          )[0];
+        }
+        const deckId = deckNameToDeckModel[c.deck].id;
+        //find card in db which matches session card
+        const matchedCards = await cardTable
+          .query(
+            Q.where("deck_id", Q.eq(deckId)),
+            Q.where("front", Q.eq(c.front)),
+            Q.where("back", Q.eq(c.back))
+          )
+          .fetch();
+        //get matched cards from db
+        let cardModel: CardModel;
+        if (matchedCards.length === 0) {
+          //if cards were not saved properly, save it to cards
+          const deckModel: DeckModel = deckNameToDeckModel[c.deck];
+          //use subaction to run an action inside an action
+          await deckModel.subAction(async () => {
+            cardModel = (await deckModel.addCard(c.front, c.back)) as CardModel;
+          });
+        } else {
+          //if card is found in db, save in cardModel (should be a single card)
+          cardModel = matchedCards[0];
+        }
+        //update the card with its stat obtained from session
         await cardModel.update((cm) => {
           if (c.is_correct) {
             cm.right++;
@@ -142,6 +152,13 @@ async function saveSessionDataToDB(
             cm.wrong++;
           }
           cm.last_tested_at = new Date(data.ended_at);
+        });
+
+        //add card to join table of cards and sessions
+        await sessionCardTable.create((sessionCard) => {
+          sessionCard.card_id = cardModel.id;
+          sessionCard.session_id = createdSession.id;
+          sessionCard.is_correct = c.is_correct;
         });
       }
     }
