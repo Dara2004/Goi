@@ -78,6 +78,7 @@ HELP ::= “Help”
 LIST ::= “List“ (“tags” | “decks”)
 EXPORT_DECKS ::= "Export decks"
 LOAD_DECKS ::= "Load decks"
+QUIT_TO_HOME ::= ("Quit" | "Back to home")
 ```
 
 ## Misc
