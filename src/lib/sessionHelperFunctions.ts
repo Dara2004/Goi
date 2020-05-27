@@ -110,8 +110,8 @@ function getValidDeckNames(
   program: PROGRAM,
   requestedDeckNames: string[]
 ): string[] {
-  const validDeckNames = {}; // mapping of actual (case sensitive) deck name -> boolean (i.e. a set of case sensitive deck names)
-  const deckNamesInProgram = {}; // mapping of lower case name -> case sensitive name
+  const validDeckNames: { [key: string]: boolean } = {}; // a set
+  const deckNamesInProgram: { [key: string]: string } = {}; // mapping of lower case name -> case sensitive name
   program.create_decks.forEach((cd) => {
     if (cd.deck?.cards?.length > 0) {
       deckNamesInProgram[cd.name.toLowerCase()] = cd.name;
@@ -180,7 +180,7 @@ async function getCardStatsFromDB(
   deckNames: string[],
   selectedCards: FlashCard[]
 ): Promise<CardWithStats[]> {
-  const selectedCardsSet = {}; // selectedCards.deckName:front:back -> bool
+  const selectedCardsSet: { [key: string]: boolean } = {}; // selectedCards.deckName:front:back
   selectedCards.forEach(({ deckName, front, back }) => {
     selectedCardsSet[`${deckName}:${front}:${back}`] = true;
   });
@@ -274,7 +274,7 @@ async function getCardsFromDecksWithFilter(
     // e.g. best 5 decks
     const decksFromDB = await getSelectedDecks(db, validDeckNames);
     const filteredDecks = await deckFilter(decksFromDB, filter, limit);
-    const filteredDecksSet = {}; // deckName -> boolean
+    const filteredDecksSet: { [key: string]: boolean } = {};
     filteredDecks.forEach((deck) => {
       filteredDecksSet[deck.name] = true;
     });
@@ -390,7 +390,7 @@ async function getCardsFromSessions(
   shuffle(cards);
 
   const decks: Collection<Deck> = db.collections.get(TableName.DECKS);
-  const deckIdToDeckName = {}; // deck id -> deck name
+  const deckIdToDeckName: { [key: string]: string } = {}; // deck id -> deck name (watermelonDB ids are strings)
   const flashCards: FlashCard[] = [];
   for (const card of cards) {
     if (!deckIdToDeckName[card.deck_id]) {
@@ -426,6 +426,10 @@ function addTagsToFlashCard(program: PROGRAM, card: FlashCard) {
     });
 }
 
+/**
+ * Returns the necessary information to start a session
+ * (Currently not implementing tags with filtering)
+ */
 export async function getSessionMaterialsWithTags(
   program: PROGRAM,
   complexCommandParams: ComplexCommandParams,
@@ -440,15 +444,21 @@ export async function getSessionMaterialsWithTags(
     return addTagsToFlashCard(program, flashCard);
   });
 
+  // Bug fix to remove filtered out deckNames (replaces sessionMaterials.deckNames with filtered deck names)
+  if (sessionMaterials.deckNames) {
+    const filteredDeckNamesSet: { [key: string]: boolean } = {};
+    sessionMaterials.cards.forEach((card) => {
+      filteredDeckNamesSet[card.deckName] = true;
+    });
+    // set sessionMaterials.deckNames
+    sessionMaterials.deckNames = Object.keys(filteredDeckNamesSet);
+  }
+
   return sessionMaterials as SessionMaterialsWithTags;
 }
 
-/**
- * Returns the cards chosen by the user for their "Start session" command (in a promise)
- *
- * @returns a list of cards with front, back and deckName, maybe requiring an asynchronous stats fetch from the DB first
- */
-export async function getSessionMaterials(
+// Do not export (use getSessionMaterialsWithTags instead)
+async function getSessionMaterials(
   program: PROGRAM,
   complexCommandParams: ComplexCommandParams,
   db: Database
