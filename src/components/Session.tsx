@@ -12,7 +12,6 @@ type Props = {
   deckNames: string[];
   cards: FlashCard[];
   dispatch: React.Dispatch<Action>;
-  attributes: Array<{ attributeType: string; value: string }>;
 };
 
 function addCardDataToLocalStorage(
@@ -121,7 +120,7 @@ export default function Session(props: Props) {
           <CardFlip
             front={props.cards[nextCardIndex].front}
             back={props.cards[nextCardIndex].back}
-            attributes={props.attributes}
+            attributes={props.cards[nextCardIndex].attributes}
           ></CardFlip>
           <div style={{ textAlign: "center", marginTop: "3em" }}>
             <input

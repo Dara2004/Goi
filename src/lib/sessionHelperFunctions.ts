@@ -82,11 +82,13 @@ export type FlashCard =
       front: string;
       back: string;
       deckName: string;
+      attributes?: Array<{ attributeType: string; value: string }>;
     }
   | {
       front: string;
       back: string;
       deckId: string;
+      attributes?: Array<{ attributeType: string; value: string }>;
     };
 
 function getCardsFromDecksNoFilter(
