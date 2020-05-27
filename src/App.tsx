@@ -14,11 +14,7 @@ import { createOrUpdateAllDecks } from "./lib/reconciler";
 import DeckViewDetails from "./components/DeckViewDetails";
 import ErrorMessage from "./components/ErrorMessage";
 import { useDatabase } from "@nozbe/watermelondb/hooks";
-import {
-  checkSessionCommandError,
-  getCardsForSession,
-  FlashCard,
-} from "./lib/sessionHelperFunctions";
+
 import PostSessionSummary from "./components/PostSessionSummary";
 import { CircularProgress } from "@material-ui/core";
 import {
@@ -27,7 +23,7 @@ import {
   Filter,
   getCardsFromSelectedDecks,
 } from "./model/query";
-import { debug, randomizeCards } from "./lib/utils";
+import { debug, randomize } from "./lib/utils";
 
 const CustomListView = ({ program, dispatch }) => {
   return (
@@ -92,7 +88,6 @@ export enum ActionType {
   SetCardEditor = "set card editor",
   CardEditorParseSuccess = "card editor parse success",
   StartSession = "start session",
-  SessionIsReady = "session is ready",
   PostSession = "post session",
   List = "list",
   ViewDeckDetail = "view deck detail",
@@ -117,11 +112,6 @@ export type Action =
       isLimitAppliedToCards?: boolean;
       deckNames?: string[];
       subject: Subject;
-    }
-  | {
-      type: ActionType.SessionIsReady;
-      deckNames?: string[];
-      cards: FlashCard[];
     }
   | {
       type: ActionType.List;
@@ -169,9 +159,9 @@ const reducer = (state: State, action: Action): State => {
       };
     }
     case "start session": {
+      console.log("Start session action received");
       return {
         ...state,
-        view: View.SESSION,
         complexCommandParams: {
           limit: action.limit,
           filter: action.filter,
@@ -179,6 +169,7 @@ const reducer = (state: State, action: Action): State => {
           deckNames: action.deckNames,
           subject: action.subject,
         },
+        view: View.SESSION,
       };
     }
     case "show stats": {
@@ -283,50 +274,12 @@ export default function App() {
         );
       }
       case View.SESSION: {
-        const sessionQueryError = checkSessionCommandError(
-          program,
-          complexCommandParams
-        );
-        if (sessionQueryError) {
-          return (
-            <ErrorMessage message={sessionQueryError.message}></ErrorMessage>
-          );
-        }
-        const nowString = new Date().toString();
-        const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
-        const initialDataString = JSON.stringify(initialData);
-        localStorage.setItem("sessionData", initialDataString);
-
-        // `from` contains all the parameters needed to select the cards
-        // TODO
-        let selectedCards = [];
-        if (program.create_decks.length === 0) {
-          return (
-            <ErrorMessage message="You haven't created any deck!"></ErrorMessage>
-          );
-        }
-        const selectedCreateDecks = program.create_decks.filter((cd) => {
-          return complexCommandParams.deckNames?.includes(cd.name);
-        });
-        if (selectedCreateDecks.length === 0) {
-          return (
-            <ErrorMessage message="Please select one of the decks on the card editor"></ErrorMessage>
-          );
-        }
-        for (const cd of selectedCreateDecks) {
-          const deckName = cd.name;
-          for (const card of cd.deck.cards) {
-            const cardWithDeck = { ...card, deckName };
-            selectedCards.push(cardWithDeck);
-          }
-        }
-        selectedCards = randomizeCards(selectedCards);
-
+        console.log("Rendering session...");
         return (
           <Session
-            deckNames={["French"]}
             dispatch={dispatch}
-            cards={selectedCards}
+            complexCommandParams={complexCommandParams}
+            program={program}
           ></Session>
         );
       }
