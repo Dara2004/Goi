@@ -22,6 +22,7 @@ import CardModel from "../model/Card";
 import DeckModel from "../model/Deck";
 import { Q } from "@nozbe/watermelondb";
 import SessionCard from "../model/SessionCard";
+import { debug } from "../lib/utils";
 
 type Props = {
   complexCommandParams: ComplexCommandParams;
@@ -209,7 +210,7 @@ export default function Session(props: Props) {
           props.complexCommandParams,
           db
         );
-        console.log(sessionMaterials);
+        debug(sessionMaterials);
         // const sessionMaterials = dummySessionMaterials;
         const nowString = new Date().toString();
         const initialData = { created_at: nowString, session_id: nowString }; // redundant :/
@@ -220,7 +221,7 @@ export default function Session(props: Props) {
         setIsLoading(false);
         setError(null);
       } catch (err) {
-        console.log(err);
+        debug(err);
         setError(err);
         setIsLoading(false);
       }
@@ -335,7 +336,7 @@ export default function Session(props: Props) {
                 style={{ width: "3em" }}
                 onClick={() => {
                   setResult("Try again!");
-                  console.log(result);
+                  debug(result);
                   addCardDataToLocalStorage(
                     { ...sessionMaterials.cards[nextCardIndex], nextCardIndex },
                     nextCardIndex,
