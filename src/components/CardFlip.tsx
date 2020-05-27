@@ -1,8 +1,7 @@
 import ReactCardFlip from "react-card-flip";
 import React, { useState } from "react";
-import { Paper, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import SingleCard from "./SingleCard";
-import { AutoComplete } from "material-ui";
 
 const useStyles = makeStyles({
   root: {

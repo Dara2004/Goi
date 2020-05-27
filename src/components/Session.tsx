@@ -1,10 +1,9 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ProgressBar from "./ProgressBar";
 import CardFlip from "./CardFlip";
 import WrongBtn from "../assets/wrongBtn.svg";
 import CorrectBtn from "../assets/correctBtn.svg";
 import Timer from "react-compound-timer";
-import PostSessionSummary from "./PostSessionSummary";
 import { Action, ActionType, ComplexCommandParams } from "../App";
 import { SubjectType as Subject } from "../ast/SUBJECT";
 import {

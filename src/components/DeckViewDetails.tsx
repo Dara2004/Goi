@@ -1,8 +1,5 @@
 import React from "react";
-import ProgressBar from "./ProgressBar";
 import CardFlip from "./CardFlip";
-import WrongBtn from "../assets/wrongBtn.svg";
-import CorrectBtn from "../assets/correctBtn.svg";
 
 export default function DeckViewDetails(props) {
   return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/ayu-mirage.css";
 import "codemirror/mode/xml/xml";
