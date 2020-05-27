@@ -82,15 +82,8 @@ export default function ProgressBar({
         position="static"
         activeStep={activeStep}
         className={classes.root}
-        nextButton={
-          <Button
-            onClick={handleNext}
-            disabled={activeStep === cards.length - 1}
-          ></Button>
-        }
-        backButton={
-          <Button onClick={handleBack} disabled={activeStep === 0}></Button>
-        }
+        nextButton={null}
+        backButton={null}
       />
     </>
   );

@@ -55,16 +55,18 @@ export async function getUniqueDeckNamesFromSessions(
     SessionCard
   >;
   for (let sessionCard of sessionCards) {
+    const foundDeckIds = {}; // set
     let card = ((await cardsCollection
       .query(Q.where("id", sessionCard.card_id))
       .fetch()) as Array<Card>)[0];
-    deckIds = deckIds.includes(card.deck_id)
-      ? deckIds
-      : deckIds.concat(card.deck_id);
+    if (!foundDeckIds[card.deck_id]) {
+      foundDeckIds[card.deck_id] = true;
+      deckIds.push(card.deck_id);
+    }
   }
   let deckNames: Array<string> = [];
   for (let deckId of deckIds) {
-    deckNames = deckNames.concat(await getDeckNameFromID(db, deckId));
+    deckNames.push(await getDeckNameFromID(db, deckId));
   }
   return deckNames;
 }
@@ -122,7 +124,7 @@ export async function getPastSessions(
   n: number = 5
 ): Promise<Array<Session>> {
   const allSessions = await getAllSessions(db);
-  return allSessions.sort((a, b) => b.created_at - a.created_at).slice(0, n);
+  return allSessions.sort((a, b) => b.started_at - a.started_at).slice(0, n);
 }
 
 export async function getCardsFromSelectedSessions(
@@ -214,19 +216,19 @@ export async function deckFilter(
   return result;
 }
 
-export function sessionFilter(
+export async function sessionFilter(
   db: Database,
   sessions: Array<Session>,
   filter: Filter,
   n: number = 1
-): Array<Session> {
+): Promise<Array<Session>> {
   let result = [];
   let sessionsScoreMap = new Map();
 
-  sessions.forEach((session) => {
-    const score = getSessionScore(db, session);
+  for (const session of sessions) {
+    const score = await getSessionScore(db, session);
     sessionsScoreMap.set(session.id, score);
-  });
+  }
 
   switch (filter) {
     case Filter.BEST:
@@ -241,10 +243,10 @@ export function sessionFilter(
         .slice(0, n);
       break;
     case Filter.NEWEST:
-      result = sessions.sort((a, b) => a.created_at - b.created_at).slice(0, n);
+      result = sessions.sort((a, b) => a.started_at - b.started_at).slice(0, n);
       break;
     case Filter.OLDEST:
-      result = sessions.sort((a, b) => b.created_at - a.created_at).slice(0, n);
+      result = sessions.sort((a, b) => b.started_at - a.started_at).slice(0, n);
       break;
     case Filter.RANDOM:
       result = shuffle(sessions).slice(0, n);
@@ -278,7 +280,7 @@ export async function getSessionScore(
   return sessionCards.map((sc) => sc.is_correct).length / totalCards;
 }
 
-function uniqueCards(cards: Array<Card>): Array<Card> {
+export function uniqueCards(cards: Array<Card>): Array<Card> {
   let result = [];
   const cardIds = new Set();
   for (const card of cards) {

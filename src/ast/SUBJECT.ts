@@ -2,23 +2,29 @@ import NODE from "./NODE";
 import TAGS from "./TAGS";
 import DECKS from "./DECKS";
 import SESSIONS from "./SESSIONS";
-import { Subject } from "../App";
+
+export enum SubjectType {
+  Decks = "decks",
+  Sessions = "sessions",
+  Tags = "tags", // not supported yet
+  Undefined = "undefined",
+}
 
 export default class SUBJECT extends NODE {
   subject: TAGS | DECKS | SESSIONS | null = null;
-  subjectType: Subject = Subject.Undefined;
+  subjectType: SubjectType = SubjectType.Undefined;
 
   parse() {
     const nextToken = this.tokenizer.checkNext();
     if (nextToken === "past sessions") {
       this.subject = new SESSIONS();
-      this.subjectType = Subject.Sessions;
+      this.subjectType = SubjectType.Sessions;
     } else if (nextToken === "decks:") {
       this.subject = new DECKS();
-      this.subjectType = Subject.Decks;
+      this.subjectType = SubjectType.Decks;
     } else if (nextToken === "tags:") {
       this.subject = new TAGS();
-      this.subjectType = Subject.Tags;
+      this.subjectType = SubjectType.Tags;
     } else {
       throw new Error(
         "Invalid Subject, must be 'Decks:', 'Tags:', or 'Past Sessions'"

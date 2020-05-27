@@ -9,7 +9,7 @@ export default class Session extends Model {
     [TableName.SESSIONS_CARDS]: { type: "has_many", foreignKey: "session_id" },
   };
 
-  @date("created_at") created_at;
+  @date("started_at") started_at;
   @date("ended_at") ended_at;
 
   @lazy cards = this.collections
