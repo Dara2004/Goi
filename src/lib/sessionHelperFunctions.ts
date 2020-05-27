@@ -21,7 +21,6 @@ import {
 import { randomize, shuffle } from "./utils";
 import FILTER from "../ast/FILTER";
 import CREATE_DECK from "../ast/CREATE_DECK";
-import CARD from "../ast/CARD";
 import { TableName } from "../model/constants";
 import Session from "../model/Session";
 import Card from "../model/Card";

@@ -1,9 +1,5 @@
 import React from "react";
 import NewCard from "./NewCard";
-
-// import React from 'react';
-import CenteredTabs from "./CenteredTabs";
-import { Paper } from "@material-ui/core";
 import ListView from "./ListView";
 import PROGRAM from "../ast/PROGRAM";
 import DECK from "../ast/DECK";

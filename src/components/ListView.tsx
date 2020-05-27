@@ -1,6 +1,5 @@
 import React from "react";
 import { Paper } from "@material-ui/core";
-import CenteredTabs from "./CenteredTabs";
 
 type DeckProps = { name: string; dispatch?; key: number };
 type ListProps = { deckNames: string[]; dispatch? };
