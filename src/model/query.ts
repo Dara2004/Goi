@@ -219,7 +219,8 @@ export async function sessionFilter(
   let sessionsScoreMap = new Map();
 
   for (const session of sessions) {
-    const score = await getSessionScore(db, session);
+    let score = await getSessionScore(db, session);
+    score = isNaN(score) ? 0 : score;
     sessionsScoreMap.set(session.id, score);
   }
 
@@ -247,6 +248,7 @@ export async function sessionFilter(
       throw new Error(`Unknown CARD_MODIFIER: ${filter}`);
   }
 
+  console.log(result);
   return result;
 }
 
@@ -269,7 +271,12 @@ export async function getSessionScore(
     .query(Q.where("session_id", session.id))
     .fetch()) as Array<SessionCard>;
   const totalCards = sessionCards.length;
-  return sessionCards.map((sc) => sc.is_correct).length / totalCards;
+  let numberCorrect = 0;
+  sessionCards.forEach((c) => {
+    numberCorrect = c.is_correct ? numberCorrect + 1 : numberCorrect;
+  });
+
+  return numberCorrect / totalCards;
 }
 
 export function uniqueCards(cards: Array<Card>): Array<Card> {

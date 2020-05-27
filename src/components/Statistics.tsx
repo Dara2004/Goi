@@ -166,10 +166,13 @@ export default function Statistics(props: Props) {
           database,
           session
         );
-        const sessionCards: Array<SessionCard> = (await session.cards) as Array<
+        const sessionCards: Array<SessionCard> = (await session.sessionCards) as Array<
           SessionCard
         >;
-        const numberCorrect = sessionCards.map((sc) => sc.is_correct).length;
+        let numberCorrect = 0;
+        sessionCards.forEach((c) => {
+          numberCorrect = c.is_correct ? numberCorrect + 1 : numberCorrect;
+        });
         let score = Number((numberCorrect / sessionCards.length).toFixed(2));
         score = isNaN(score) ? 0 : score;
         highestScore =
