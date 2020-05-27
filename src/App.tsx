@@ -10,6 +10,7 @@ import ListView from "./components/ListView";
 import PROGRAM from "./ast/PROGRAM";
 import { getInitialData } from "./lib/getIintialData";
 import { createOrUpdateAllDecks } from "./lib/reconciler";
+import { SubjectType as Subject } from "./ast/SUBJECT";
 
 import DeckViewDetails from "./components/DeckViewDetails";
 import ErrorMessage from "./components/ErrorMessage";
@@ -23,7 +24,11 @@ import {
   Filter,
   getCardsFromSelectedDecks,
 } from "./model/query";
+
 import { debug, randomize } from "./lib/utils";
+
+import CREATE_DECK from "./ast/CREATE_DECK";
+import { checkSessionCommandError } from "./lib/sessionHelperFunctions";
 
 const CustomListView = ({ program, dispatch }) => {
   return (
@@ -60,19 +65,13 @@ export enum View {
   LOADING,
 }
 
-export enum Subject {
-  Decks = "decks",
-  Sessions = "sessions",
-  Tags = "tags", // not supported yet
-  Undefined = "undefined",
-}
-
 export type ComplexCommandParams = {
   limit?: number;
   filter?: Filter;
   isLimitAppliedToCards?: boolean;
   deckNames?: string[];
   subject: Subject;
+  tagNames?: string[];
 };
 
 type State = {
@@ -113,6 +112,7 @@ export type Action =
       isLimitAppliedToCards?: boolean;
       deckNames?: string[];
       subject: Subject;
+      tagNames?: string[];
     }
   | {
       type: ActionType.List;
@@ -172,6 +172,7 @@ const reducer = (state: State, action: Action): State => {
           isLimitAppliedToCards: action.isLimitAppliedToCards,
           deckNames: action.deckNames,
           subject: action.subject,
+          tagNames: action.tagNames,
         },
         view: View.SESSION,
       };
@@ -284,7 +285,6 @@ export default function App() {
         );
       }
       case View.SESSION: {
-        console.log("Rendering session...");
         return (
           <Session
             dispatch={dispatch}

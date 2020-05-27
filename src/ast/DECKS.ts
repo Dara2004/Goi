@@ -2,6 +2,7 @@ import NODE from "./NODE";
 
 export default class DECKS extends NODE {
   decks: string[] = [];
+  type = "decks";
 
   parseInteractivePrompt() {
     this.tokenizer.getAndCheckToken("decks:");

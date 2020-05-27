@@ -28,7 +28,10 @@ type SessionCommandError = {
 };
 
 const deckSelectionErrorMessage =
-  "Please select one of the decks on the card editor";
+  "Please select one or more of the decks on the card editor";
+
+const tagSelectionErrorMessage =
+  "Please select one or more of the tags on the card editor";
 
 /**
  * Checks whether the user's complex command makes sense (currently checks the deck names), add more logic here
@@ -39,7 +42,12 @@ export function checkSessionCommandError(
   program: PROGRAM,
   complexCommandParams: ComplexCommandParams
 ): SessionCommandError | false {
-  const { subject, deckNames: requestedDeckNames } = complexCommandParams;
+  const {
+    subject,
+    deckNames: requestedDeckNames,
+    tagNames,
+  } = complexCommandParams;
+
   if (subject === "decks") {
     if (!requestedDeckNames) {
       return {
@@ -62,10 +70,30 @@ export function checkSessionCommandError(
         message: deckSelectionErrorMessage,
       };
     }
+  } else if (subject === "tags") {
+    if (tagNames.length === 0) {
+      return {
+        message: tagSelectionErrorMessage,
+      };
+    }
+    let possibleTags = [];
+    program.create_decks.forEach((cd) => {
+      cd.tags && cd.tags.tags.forEach((t) => possibleTags.push(t.tagName));
+    });
+    let giveError = false;
+    tagNames.forEach((t) => {
+      if (!possibleTags.includes(t)) {
+        giveError = true;
+      }
+    });
+    if (giveError) {
+      return {
+        message: tagSelectionErrorMessage,
+      };
+    }
   }
 
   // Add more checks here as we add features, for instance, of tags
-
   return false;
 }
 

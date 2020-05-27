@@ -37,7 +37,8 @@ export function createSummaryData(
   front: string,
   back: string,
   isCorrect: boolean,
-  deck: string
+  deck: string,
+  tags?: string[]
 ) {
   let results;
   if (isCorrect === undefined) {
@@ -45,8 +46,15 @@ export function createSummaryData(
   } else {
     results = isCorrect ? "correct" : "incorrect";
   }
+
+  let tagsString;
+  if (tags && tags.length > 0) {
+    tagsString = tags.join(", ");
+  } else {
+    tagsString = "none";
+  }
   const indexString = index.toString() + ".)";
-  return { indexString, front, back, results, deck };
+  return { indexString, front, back, results, deck, tagsString };
 }
 
 export function createDeckData(

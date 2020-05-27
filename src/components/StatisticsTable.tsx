@@ -39,6 +39,7 @@ const summaryColumns = [
   { id: "back", label: "Back", minWidth: 80, align: "center" },
   { id: "results", label: "Results", minWidth: 80, align: "center" },
   { id: "deck", label: "Deck", minWidth: 80, align: "center" },
+  { id: "tagsString", label: "Tags", minWidth: 80, align: "center" }, // if we delete the tags column for stats, it would still be nice to leave it in for summary
 ];
 
 const deckColumns = [
