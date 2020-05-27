@@ -1,7 +1,7 @@
 import NODE from "./NODE";
 import DECK from "./DECK";
 import TAGS from "./TAGS";
-import ATTRIBUTES from "./ATTRIBUTES";
+import ATTRIBUTES, { isNextTokenIsAttribute } from "./ATTRIBUTES";
 
 const invalidNameTokens = [":", "(", ")", ",", "NULLTOKEN"];
 
@@ -20,12 +20,7 @@ export default class CREATE_DECK extends NODE {
   }
 
   checkForAndParseAttributes() {
-    const nextToken = this.tokenizer.checkNext().toLowerCase();
-    if (
-      nextToken === "add color" ||
-      nextToken === "add alignment" ||
-      nextToken === "add direction"
-    ) {
+    if (isNextTokenIsAttribute()) {
       this.attributes = new ATTRIBUTES();
       this.attributes.parse();
     }
