@@ -20,14 +20,14 @@ import {
   sessionFilter,
   getUniqueDeckNamesFromSessions,
 } from "../model/query";
-import { Database } from "@nozbe/watermelondb";
 import { CircularProgress } from "@material-ui/core";
 import Card from "../model/Card";
 import Deck from "../model/Deck";
 import Session from "../model/Session";
 import SessionCard from "../model/SessionCard";
+import { useDatabase } from "@nozbe/watermelondb/hooks";
 
-type Props = { complexCommandParams: ComplexCommandParams; database: Database };
+type Props = { complexCommandParams: ComplexCommandParams };
 
 enum View {
   LOADING,
@@ -54,6 +54,7 @@ export default function Statistics(props: Props) {
   // Initialize the view to be "Loading" since we need to do asynchronous operation before showing data
   const initialState: StatsState = { view: View.LOADING };
   const [state, setState] = useState<StatsState>(initialState);
+  const database = useDatabase();
 
   const {
     limit,
@@ -90,15 +91,9 @@ export default function Statistics(props: Props) {
     if (isLimitAppliedToCards) {
       let retrievedCards: Array<Card>;
       if (subject === Subject.Decks) {
-        retrievedCards = await getCardsFromSelectedDecks(
-          props.database,
-          deckNames
-        );
+        retrievedCards = await getCardsFromSelectedDecks(database, deckNames);
       } else if (subject === Subject.Sessions) {
-        retrievedCards = await getCardsFromSelectedSessions(
-          props.database,
-          limit
-        );
+        retrievedCards = await getCardsFromSelectedSessions(database, limit);
       } else {
         throw new Error(
           `Retrieving stats for cards from ${subject} is not supported`
@@ -118,13 +113,13 @@ export default function Statistics(props: Props) {
             card.back,
             card.right,
             card.wrong,
-            await getDeckNameFromID(props.database, card.deck_id)
+            await getDeckNameFromID(database, card.deck_id)
           )
         );
         index += 1;
       }
     } else if (subject === Subject.Decks) {
-      const retrievedDecks = await getSelectedDecks(props.database, deckNames);
+      const retrievedDecks = await getSelectedDecks(database, deckNames);
       let filteredDecks: Array<Deck> = await deckFilter(
         retrievedDecks,
         filter,
@@ -143,17 +138,16 @@ export default function Statistics(props: Props) {
         index += 1;
       }
     } else if (subject === Subject.Sessions) {
-      let decks = new Set();
-      const retrievedSessions = await getPastSessions(props.database, limit);
+      const retrievedSessions = await getPastSessions(database, limit);
       let filteredSessions: Array<Session> = sessionFilter(
-        props.database,
+        database,
         retrievedSessions,
         filter,
         limit
       );
       for (let session of filteredSessions) {
         const deckNames = await getUniqueDeckNamesFromSessions(
-          props.database,
+          database,
           session
         );
         const sessionCards: Array<SessionCard> = (await session.cards) as Array<

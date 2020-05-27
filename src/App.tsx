@@ -332,10 +332,7 @@ export default function App() {
       }
       case View.STATS: {
         return (
-          <Statistics
-            database={db}
-            complexCommandParams={complexCommandParams}
-          ></Statistics>
+          <Statistics complexCommandParams={complexCommandParams}></Statistics>
         );
       }
       case View.DECK_DETAIL: {
