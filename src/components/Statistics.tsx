@@ -139,7 +139,7 @@ export default function Statistics(props: Props) {
       }
     } else if (subject === Subject.Sessions) {
       const retrievedSessions = await getPastSessions(database, limit);
-      let filteredSessions: Array<Session> = sessionFilter(
+      let filteredSessions: Array<Session> = await sessionFilter(
         database,
         retrievedSessions,
         filter,
