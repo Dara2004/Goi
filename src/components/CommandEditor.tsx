@@ -14,6 +14,7 @@ import DECKS from "../ast/DECKS";
 import { Action, Subject, ActionType } from "../App";
 import LIST from "../ast/LIST";
 import { Filter } from "../model/query";
+import TAGS from "../ast/TAGS";
 
 const helpMsg = (
   <div
@@ -125,6 +126,9 @@ export default function CommandEditor(props: Props) {
           const modifier = (command.command as COMPLEX_COMMAND)
             .subjectModfier as SUBJECT_MODIFIER;
           if (modifier) {
+            const isTagsSubject =
+              (command.command as COMPLEX_COMMAND).subject.subject.type ===
+              "tags";
             props.dispatch({
               type:
                 startSessionOrStats === "start session"
@@ -133,9 +137,15 @@ export default function CommandEditor(props: Props) {
               limit: modifier.limit,
               filter: modifier.filter as Filter,
               isLimitAppliedToCards: modifier.selectCards,
-              deckNames: ((command.command as COMPLEX_COMMAND).subject
+              deckNames: !isTagsSubject &&
+                ((command.command as COMPLEX_COMMAND).subject
                 .subject as DECKS).decks,
+              // check if tags for subject
               subject: (command.command as COMPLEX_COMMAND).subject.subjectType,
+              tagNames:
+                isTagsSubject &&
+                ((command.command as COMPLEX_COMMAND).subject
+                  .subject as TAGS).tags.map((t) => t.tagName),
             });
           }
         }
