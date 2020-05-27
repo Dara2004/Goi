@@ -4,6 +4,7 @@ import HELP from "./HELP";
 import LIST from "./LIST";
 import EXPORT_DECKS from "./EXPORT_DECKS";
 import LOAD_DECKS from "./LOAD_DECKS";
+import QUIT_TO_HOME from "./QUIT_TO_HOME";
 
 export default class COMMAND extends NODE {
   type: string = "";
@@ -13,6 +14,7 @@ export default class COMMAND extends NODE {
     | LIST
     | EXPORT_DECKS
     | LOAD_DECKS
+    | QUIT_TO_HOME
     | null = null;
 
   parse() {
@@ -29,6 +31,9 @@ export default class COMMAND extends NODE {
     } else if (nextToken === "load decks") {
       this.command = new LOAD_DECKS();
       this.type = "load decks";
+    } else if (nextToken === "quit" || nextToken === "back to home") {
+      this.command = new QUIT_TO_HOME();
+      this.type = "quit to home";
     } else {
       this.command = new COMPLEX_COMMAND();
       this.type = "complex command";

@@ -30,13 +30,54 @@ export async function getSelectedDecks(
     .fetch()) as Array<Deck>;
 }
 
+export async function getDeckNameFromID(
+  db: Database,
+  id: number
+): Promise<string> {
+  // TODO: Add caching
+  const decksCollection = db.collections.get(TableName.DECKS);
+  const decks = (await decksCollection
+    .query(Q.where("id", id))
+    .fetch()) as Array<Deck>;
+  if (decks.length < 1) {
+    throw new Error(`Unable to retrieve deck name for ID ${id}`);
+  }
+  return decks[0].name;
+}
+
+export async function getUniqueDeckNamesFromSessions(
+  db: Database,
+  session: Session
+): Promise<Array<string>> {
+  let deckIds = [];
+  const cardsCollection = db.collections.get(TableName.CARDS);
+  const sessionCards: Array<SessionCard> = (await session.cards) as Array<
+    SessionCard
+  >;
+  for (let sessionCard of sessionCards) {
+    let card = ((await cardsCollection
+      .query(Q.where("id", sessionCard.card_id))
+      .fetch()) as Array<Card>)[0];
+    deckIds = deckIds.includes(card.deck_id)
+      ? deckIds
+      : deckIds.concat(card.deck_id);
+  }
+  let deckNames: Array<string> = [];
+  for (let deckId of deckIds) {
+    deckNames = deckNames.concat(await getDeckNameFromID(db, deckId));
+  }
+  return deckNames;
+}
+
 export async function getCardsFromSelectedDecks(
   db: Database,
   deckNames: Array<string>
 ): Promise<Array<Card>> {
   let result = [];
   const decks = await getSelectedDecks(db, deckNames);
-  decks.forEach((deck) => result.concat(deck.cards));
+  for (let deckId of decks) {
+    result = result.concat(await deckId.cards.fetch());
+  }
   return result;
 }
 
@@ -133,22 +174,28 @@ export function cardFilter(
   return result;
 }
 
-export function deckFilter(
+export async function deckFilter(
   decks: Array<Deck>,
   filter: Filter,
   n: number = 1
-): Array<Deck> {
+): Promise<Array<Deck>> {
   let result = [];
+  let deckScoreMap = new Map();
+  for (let deck of decks) {
+    const cards = await deck.cards.fetch();
+    const score = calculateDeckScore(cards);
+    deckScoreMap.set(deck.id, score);
+  }
 
   switch (filter) {
     case Filter.BEST:
       result = decks
-        .sort((a, b) => getDeckScore(b) - getDeckScore(a))
+        .sort((a, b) => deckScoreMap.get(b.id) - deckScoreMap.get(a.id))
         .slice(0, n);
       break;
     case Filter.WORST:
       result = decks
-        .sort((a, b) => getDeckScore(a) - getDeckScore(b))
+        .sort((a, b) => deckScoreMap.get(a.id) - deckScoreMap.get(b.id))
         .slice(0, n);
       break;
     case Filter.NEWEST:
@@ -168,25 +215,30 @@ export function deckFilter(
 }
 
 export function sessionFilter(
+  db: Database,
   sessions: Array<Session>,
-  scores: Array<number>,
   filter: Filter,
   n: number = 1
 ): Array<Session> {
   let result = [];
+  let sessionsScoreMap = new Map();
 
-  let temp = sessions.map((session, idx) => ({
-    session: session,
-    score: scores[idx],
-  }));
+  sessions.forEach((session) => {
+    const score = getSessionScore(db, session);
+    sessionsScoreMap.set(session.id, score);
+  });
+
   switch (filter) {
     case Filter.BEST:
-      temp.sort((a, b) => b.score - a.score).slice(0, n);
-      result = temp.map((item) => item.session).slice(0, n);
+      result.sort(
+        (a, b) =>
+          sessionsScoreMap.get(b.id) - sessionsScoreMap.get(a.id).slice(0, n)
+      );
       break;
     case Filter.WORST:
-      temp.sort((a, b) => a.score - b.score).slice(0, n);
-      result = temp.map((item) => item.session).slice(0, n);
+      result
+        .sort((a, b) => sessionsScoreMap.get(a.id) - sessionsScoreMap.get(b.id))
+        .slice(0, n);
       break;
     case Filter.NEWEST:
       result = sessions.sort((a, b) => a.started_at - b.started_at).slice(0, n);
@@ -204,10 +256,14 @@ export function sessionFilter(
   return result;
 }
 
-function getDeckScore(deck: Deck): number {
-  let result = 0;
-  deck.cards.forEach((card) => (result += card.right - card.wrong));
-  return result;
+export function calculateDeckScore(cards: Array<Card>): number {
+  let rightCount = 0;
+  let wrongCount = 0;
+  cards.forEach((card) => {
+    rightCount += card.right;
+    wrongCount += card.wrong;
+  });
+  return rightCount / (rightCount + wrongCount);
 }
 
 export async function getSessionScore(
@@ -218,7 +274,8 @@ export async function getSessionScore(
   const sessionCards = (await sessionCardsCollection
     .query(Q.where("session_id", session.id))
     .fetch()) as Array<SessionCard>;
-  return sessionCards.map((sc) => sc.is_correct).length;
+  const totalCards = sessionCards.length;
+  return sessionCards.map((sc) => sc.is_correct).length / totalCards;
 }
 
 function uniqueCards(cards: Array<Card>): Array<Card> {

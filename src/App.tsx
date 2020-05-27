@@ -94,6 +94,7 @@ export enum ActionType {
   ShowStats = "show stats",
   LoadDecks = "load decks",
   CommandNotFound = "command not found",
+  QuitToHome = "quit to home",
 }
 
 export type Action =
@@ -133,6 +134,9 @@ export type Action =
   | {
       type: ActionType.LoadDecks;
       createDSLValue: string;
+    }
+  | {
+      type: ActionType.QuitToHome;
     }
   | {
       type: ActionType.CommandNotFound;
@@ -195,6 +199,12 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         view: View.POST_SESSION,
+      };
+    }
+    case "quit to home": {
+      return {
+        ...state,
+        view: View.DECK,
       };
     }
     case "view deck detail": {
@@ -284,7 +294,9 @@ export default function App() {
         );
       }
       case View.STATS: {
-        return <Statistics></Statistics>;
+        return (
+          <Statistics complexCommandParams={complexCommandParams}></Statistics>
+        );
       }
       case View.DECK_DETAIL: {
         console.log(deckToViewDetail);

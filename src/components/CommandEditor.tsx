@@ -31,6 +31,9 @@ const helpMsg = (
     <h4>To show stats:</h4> Show stats for [choose one or more ‘best scores
     for’, ‘average time spent on’, ‘worst scores for’] Decks: [choose 1 or more
     deck names]
+    <h4>To download your decks:</h4> Enter 'export decks'
+    <h4>To load decks from your computer:</h4> Enter 'load decks'
+    <h4>To go back to Home:</h4> Enter 'quit' or 'back to home'
   </div>
 );
 
@@ -98,6 +101,8 @@ export default function CommandEditor(props: Props) {
           isHelpCommand = true;
         } else if (command.type === "export decks") {
           command.evaluate();
+        } else if (command.type === "quit to home") {
+          props.dispatch({ type: ActionType.QuitToHome });
         } else if (command.type === "load decks") {
           const fakeInput = document.createElement("input");
           fakeInput.type = "file";
@@ -126,11 +131,11 @@ export default function CommandEditor(props: Props) {
                   ? ActionType.StartSession
                   : ActionType.ShowStats,
               limit: modifier.limit,
-              filter: Filter[modifier.filter as keyof typeof Filter],
+              filter: modifier.filter as Filter,
               isLimitAppliedToCards: modifier.selectCards,
               deckNames: ((command.command as COMPLEX_COMMAND).subject
                 .subject as DECKS).decks,
-              subject: Subject.Decks,
+              subject: (command.command as COMPLEX_COMMAND).subject.subjectType,
             });
           }
         }
@@ -152,7 +157,7 @@ export default function CommandEditor(props: Props) {
     <>
       <div className="command-editor">
         <CodeMirror
-          value={"> Start Session from Decks: Practice Final"}
+          value={"> Show stats for cards from Decks: Practice Final"}
           options={{
             mode: "xml",
             theme: "yonce",
