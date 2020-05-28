@@ -58,9 +58,14 @@ export default function CardEditor(props: Props) {
         program.create_decks[program.create_decks.length - 1].deck === null
       ) {
         debug("last deck is null, not sending dispatch");
+        setSnackbarState({
+          open: true,
+          message: "Please add some cards to your deck!",
+          severity: "info",
+        });
       } else {
         // Successfully parsed, turn off error state
-        if (snackbarState.open && snackbarState.severity === "error") {
+        if (snackbarState.open) {
           setSnackbarState({
             open: true,
             message: "Hooray!",
@@ -76,13 +81,11 @@ export default function CardEditor(props: Props) {
       }
     } catch (err) {
       debug(err);
-      if (err.message) {
-        setSnackbarState({
-          open: true,
-          message: err.message,
-          severity: "error",
-        });
-      }
+      setSnackbarState({
+        open: true,
+        message: "Please double check your input!",
+        severity: "info",
+      });
     }
   };
 
