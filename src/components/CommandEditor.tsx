@@ -20,8 +20,8 @@ import TAGS from "../ast/TAGS";
 const helpMsg = (
   <div
     style={{
-      fontSize: "14px",
-      lineHeight: "9px",
+      fontSize: "13px",
+      lineHeight: "3px",
     }}
   >
     <h4>To start a session from decks:</h4>
@@ -183,7 +183,7 @@ export default function CommandEditor(props: Props) {
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left",
+          horizontal: "center",
         }}
         open={openHelp}
         autoHideDuration={180000}
