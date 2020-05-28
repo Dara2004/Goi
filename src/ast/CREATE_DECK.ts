@@ -42,11 +42,16 @@ export default class CREATE_DECK extends NODE {
     }
     this.name = name;
     this.tokenizer.getAndCheckToken(":");
-    while (this.tokenizer.moreTokens()) {
+    let nextAttributeOrTag = true;
+    while (this.tokenizer.moreTokens() && nextAttributeOrTag) {
       this.checkForAndParseTags();
       this.checkForAndParseAttributes();
+      nextAttributeOrTag =
+        isNextTokenIsAttribute() ||
+        this.tokenizer.checkNext().toLowerCase() === "add tags";
+    }
+    if (this.tokenizer.moreTokens()) {
       this.checkForAndParseDeck();
-      break;
     }
   }
 }

@@ -14,7 +14,17 @@ import { astStrKey, cardEditorStrKey } from "../lib/getIintialData";
 import { Action, ActionType } from "../App";
 
 // for syntax highlighting
-const literals = ["create deck", "(", ":", ")"];
+const literals = [
+  "create deck",
+  "(",
+  ":",
+  ")",
+  "add",
+  "tags",
+  "color",
+  "direction",
+  "alignment",
+];
 type Props = {
   dispatch: React.Dispatch<Action>;
   initialText: string;
