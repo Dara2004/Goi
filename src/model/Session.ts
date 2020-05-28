@@ -16,4 +16,9 @@ export default class Session extends Model {
     .get(TableName.CARDS)
     .query(Q.on(TableName.SESSIONS_CARDS, "session_id", this.id))
     .fetch();
+
+  @lazy sessionCards = this.collections
+    .get(TableName.SESSIONS_CARDS)
+    .query(Q.where("session_id", this.id))
+    .fetch();
 }

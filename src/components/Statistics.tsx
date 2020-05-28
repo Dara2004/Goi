@@ -100,9 +100,15 @@ export default function Statistics(props: Props) {
           `Retrieving stats for cards from ${subject} is not supported`
         );
       }
-      const filteredCards = cardFilter(retrievedCards, filter, limit);
+      const filteredCards: Array<Card> = cardFilter(
+        retrievedCards,
+        filter,
+        limit
+      );
+      let totalScore = 0;
       for (let card of filteredCards) {
         const score: number = card.right / (card.wrong + card.right);
+        totalScore += score;
         highestScore =
           isNaN(highestScore) || score > highestScore ? score : highestScore;
         lowestScore =
@@ -119,6 +125,7 @@ export default function Statistics(props: Props) {
         );
         index += 1;
       }
+      averageScore = Number((totalScore / filteredCards.length).toFixed(2));
     } else if (subject === Subject.Decks) {
       const retrievedDecks = await getSelectedDecks(database, deckNames);
       let filteredDecks: Array<Deck> = await deckFilter(
@@ -128,7 +135,7 @@ export default function Statistics(props: Props) {
       );
       for (let deck of filteredDecks) {
         const cards = await deck.cards.fetch();
-        const score = calculateDeckScore(cards);
+        const score = Number(calculateDeckScore(cards).toFixed(2));
         rows = rows.concat(
           createDeckData(index, deck.name, cards.length, score)
         );
@@ -138,6 +145,13 @@ export default function Statistics(props: Props) {
           isNaN(lowestScore) || score < lowestScore ? score : lowestScore;
         index += 1;
       }
+      averageScore = Number(
+        (
+          rows.reduce(function (sum, a) {
+            return sum + a.score;
+          }, 0) / (rows.length || 1)
+        ).toFixed(2)
+      );
     } else if (subject === Subject.Sessions) {
       const retrievedSessions = await getPastSessions(database, limit);
       let filteredSessions: Array<Session> = await sessionFilter(
@@ -146,16 +160,21 @@ export default function Statistics(props: Props) {
         filter,
         limit
       );
+      let totalScore = 0;
       for (let session of filteredSessions) {
         const deckNames = await getUniqueDeckNamesFromSessions(
           database,
           session
         );
-        const sessionCards: Array<SessionCard> = (await session.cards) as Array<
+        const sessionCards: Array<SessionCard> = (await session.sessionCards) as Array<
           SessionCard
         >;
-        const numberCorrect = sessionCards.map((sc) => sc.is_correct).length;
-        const score = numberCorrect / sessionCards.length;
+        let numberCorrect = 0;
+        sessionCards.forEach((c) => {
+          numberCorrect += c.is_correct ? 1 : 0;
+        });
+        let score = Number((numberCorrect / sessionCards.length).toFixed(2));
+        score = isNaN(score) ? 0 : score;
         highestScore =
           isNaN(highestScore) || score > highestScore ? score : highestScore;
         lowestScore =
@@ -170,16 +189,15 @@ export default function Statistics(props: Props) {
             deckNames
           )
         );
+        index += 1;
+        totalScore += score;
       }
+      averageScore = Number((totalScore / filteredSessions.length).toFixed(2));
     } else {
       throw new Error(
         "Command not currently supported: " + props.complexCommandParams
       );
     }
-    averageScore =
-      rows.reduce(function (sum, a) {
-        return sum + a.score;
-      }, 0) / (rows.length || 1);
     return { rows, highestScore, lowestScore, averageScore };
   }
 
