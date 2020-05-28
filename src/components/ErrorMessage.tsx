@@ -1,6 +1,6 @@
 import React from "react";
 import Snackbar, { SnackbarOrigin } from "@material-ui/core/Snackbar";
-import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import MuiAlert, { AlertProps, Color } from "@material-ui/lab/Alert";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 
 function Alert(props: AlertProps) {
@@ -19,7 +19,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default function ErrorMessage({ message }) {
+type Props = {
+  message: string;
+  severity?: Color;
+};
+
+export default function ErrorMessage({ message, severity }: Props) {
   const classes = useStyles();
   const [state, setState] = React.useState<State>({
     open: true,
@@ -31,6 +36,11 @@ export default function ErrorMessage({ message }) {
     setState({ ...state, open: false });
   };
 
+  if (!severity) {
+    // error by default
+    severity = "error";
+  }
+
   return (
     <div className={classes.root}>
       <Snackbar
@@ -38,7 +48,7 @@ export default function ErrorMessage({ message }) {
         open={open}
         onClose={handleClose}
       >
-        <Alert onClose={handleClose} severity="error">
+        <Alert onClose={handleClose} severity={severity}>
           {message}
         </Alert>
       </Snackbar>
