@@ -24,10 +24,10 @@ type Props = {
   program: PROGRAM;
 };
 
-const debounceMillis = 1000;
+const debounceMillis = 5000;
 
 function enoughTimeHasPassedSince(thenUnix: number): boolean {
-  return Date.now() - thenUnix > 5000;
+  return Date.now() - thenUnix > debounceMillis;
 }
 
 const successMessage = "Hooray!";
