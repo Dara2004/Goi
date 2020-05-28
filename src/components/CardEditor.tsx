@@ -24,21 +24,61 @@ type Props = {
   program: PROGRAM;
 };
 
+const debounceMillis = 1000;
+
+function enoughTimeHasPassedSince(thenUnix: number): boolean {
+  return Date.now() - thenUnix > 5000;
+}
+
+const successMessage = "Hooray!";
+
 type SnackbarState =
   | {
       open: false;
+      lastOpenedUnix: number;
     }
   | {
       open: true;
       severity: Color;
       message: string;
+      lastOpenedUnix: number;
     };
+
+function flipSnackbarState(
+  setState: React.Dispatch<React.SetStateAction<SnackbarState>>,
+  message: string,
+  severity: Color
+) {
+  const lastOpenedUnix = Date.now();
+  setState({
+    open: false,
+    lastOpenedUnix,
+  });
+  setState({
+    open: true,
+    lastOpenedUnix,
+    message,
+    severity,
+  });
+}
+
+function handleSnackbar(
+  state: SnackbarState,
+  setState: React.Dispatch<React.SetStateAction<SnackbarState>>,
+  message: string,
+  severity: Color
+) {
+  if (enoughTimeHasPassedSince(state.lastOpenedUnix)) {
+    flipSnackbarState(setState, message, severity);
+  }
+}
 
 export default function CardEditor(props: Props) {
   const db = useDatabase();
 
   const [snackbarState, setSnackbarState] = useState<SnackbarState>({
     open: false,
+    lastOpenedUnix: 0,
   });
 
   const { initialText, isInSession } = props;
@@ -58,20 +98,28 @@ export default function CardEditor(props: Props) {
         program.create_decks[program.create_decks.length - 1].deck === null
       ) {
         debug("last deck is null, not sending dispatch");
-        setSnackbarState({
-          open: true,
-          message:
-            "Please add some cards to your deck! Do so like this: '(1) front : back'",
-          severity: "info",
-        });
+
+        handleSnackbar(
+          snackbarState,
+          setSnackbarState,
+          "Add some cards to your deck like this: '(1) front : back'",
+          "info"
+        );
       } else {
-        // Successfully parsed, turn off error state
-        if (snackbarState.open) {
+        if (snackbarState.open && snackbarState.severity !== "success") {
           setSnackbarState({
-            open: true,
-            message: "Hooray!",
+            lastOpenedUnix: Date.now(),
+            message: successMessage,
             severity: "success",
+            open: true,
           });
+        } else {
+          handleSnackbar(
+            snackbarState,
+            setSnackbarState,
+            successMessage,
+            "success"
+          );
         }
         localStorage.setItem(astStrKey, JSON.stringify(program));
         // Trigger background reconciliation with DB
@@ -82,11 +130,12 @@ export default function CardEditor(props: Props) {
       }
     } catch (err) {
       debug(err);
-      setSnackbarState({
-        open: true,
-        message: "Please double check your input!",
-        severity: "info",
-      });
+      handleSnackbar(
+        snackbarState,
+        setSnackbarState,
+        "Double check your input! Perhaps you're missing a colon (:)",
+        "info"
+      );
     }
   };
 
