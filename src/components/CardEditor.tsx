@@ -60,7 +60,8 @@ export default function CardEditor(props: Props) {
         debug("last deck is null, not sending dispatch");
         setSnackbarState({
           open: true,
-          message: "Please add some cards to your deck!",
+          message:
+            "Please add some cards to your deck! Do so like this: '(1) front : back'",
           severity: "info",
         });
       } else {
