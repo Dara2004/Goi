@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/ayu-mirage.css";
 import "codemirror/mode/xml/xml";
@@ -12,6 +12,8 @@ import reconcile from "../lib/reconciler";
 import { debug, debugDB } from "../lib/utils";
 import { astStrKey, cardEditorStrKey } from "../lib/getIintialData";
 import { Action, ActionType } from "../App";
+import ErrorMessage from "./ErrorMessage";
+import { Color } from "@material-ui/lab/Alert";
 
 // for syntax highlighting
 const literals = ["create deck", "(", ":", ")"];
@@ -22,8 +24,62 @@ type Props = {
   program: PROGRAM;
 };
 
+const debounceMillis = 5000;
+
+function enoughTimeHasPassedSince(thenUnix: number): boolean {
+  return Date.now() - thenUnix > debounceMillis;
+}
+
+const successMessage = "Hooray!";
+
+type SnackbarState =
+  | {
+      open: false;
+      lastOpenedUnix: number;
+    }
+  | {
+      open: true;
+      severity: Color;
+      message: string;
+      lastOpenedUnix: number;
+    };
+
+function flipSnackbarState(
+  setState: React.Dispatch<React.SetStateAction<SnackbarState>>,
+  message: string,
+  severity: Color
+) {
+  const lastOpenedUnix = Date.now();
+  setState({
+    open: false,
+    lastOpenedUnix,
+  });
+  setState({
+    open: true,
+    lastOpenedUnix,
+    message,
+    severity,
+  });
+}
+
+function handleSnackbar(
+  state: SnackbarState,
+  setState: React.Dispatch<React.SetStateAction<SnackbarState>>,
+  message: string,
+  severity: Color
+) {
+  if (enoughTimeHasPassedSince(state.lastOpenedUnix)) {
+    flipSnackbarState(setState, message, severity);
+  }
+}
+
 export default function CardEditor(props: Props) {
   const db = useDatabase();
+
+  const [snackbarState, setSnackbarState] = useState<SnackbarState>({
+    open: false,
+    lastOpenedUnix: 0,
+  });
 
   const { initialText, isInSession } = props;
 
@@ -42,7 +98,29 @@ export default function CardEditor(props: Props) {
         program.create_decks[program.create_decks.length - 1].deck === null
       ) {
         debug("last deck is null, not sending dispatch");
+
+        handleSnackbar(
+          snackbarState,
+          setSnackbarState,
+          "Add some cards to your deck like this: '(1) front : back'",
+          "info"
+        );
       } else {
+        if (snackbarState.open && snackbarState.severity !== "success") {
+          setSnackbarState({
+            lastOpenedUnix: Date.now(),
+            message: successMessage,
+            severity: "success",
+            open: true,
+          });
+        } else {
+          handleSnackbar(
+            snackbarState,
+            setSnackbarState,
+            successMessage,
+            "success"
+          );
+        }
         localStorage.setItem(astStrKey, JSON.stringify(program));
         // Trigger background reconciliation with DB
         reconcile(props.program, program, db)
@@ -52,6 +130,12 @@ export default function CardEditor(props: Props) {
       }
     } catch (err) {
       debug(err);
+      handleSnackbar(
+        snackbarState,
+        setSnackbarState,
+        "Double check your input! Perhaps you're missing a colon (:)",
+        "info"
+      );
     }
   };
 
@@ -80,6 +164,12 @@ export default function CardEditor(props: Props) {
           />
         )}
       </div>
+      {snackbarState.open && (
+        <ErrorMessage
+          message={snackbarState.message}
+          severity={snackbarState.severity}
+        ></ErrorMessage>
+      )}
     </>
   );
 }
