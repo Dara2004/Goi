@@ -168,7 +168,7 @@ export default function CommandEditor(props: Props) {
     <>
       <div className="command-editor">
         <CodeMirror
-          value={"> Show stats for cards from Decks: Practice Final"}
+          value={"> Help"}
           options={{
             mode: "xml",
             theme: "yonce",
