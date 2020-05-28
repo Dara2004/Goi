@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useReducer } from "react";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/ayu-mirage.css";
 import "codemirror/mode/xml/xml";
@@ -12,6 +12,8 @@ import reconcile from "../lib/reconciler";
 import { debug, debugDB } from "../lib/utils";
 import { astStrKey, cardEditorStrKey } from "../lib/getIintialData";
 import { Action, ActionType } from "../App";
+import ErrorMessage from "./ErrorMessage";
+import { Color } from "@material-ui/lab/Alert";
 
 // for syntax highlighting
 const literals = ["create deck", "(", ":", ")"];
@@ -22,8 +24,22 @@ type Props = {
   program: PROGRAM;
 };
 
+type SnackbarState =
+  | {
+      open: false;
+    }
+  | {
+      open: true;
+      severity: Color;
+      message: string;
+    };
+
 export default function CardEditor(props: Props) {
   const db = useDatabase();
+
+  const [snackbarState, setSnackbarState] = useState<SnackbarState>({
+    open: false,
+  });
 
   const { initialText, isInSession } = props;
 
@@ -43,6 +59,14 @@ export default function CardEditor(props: Props) {
       ) {
         debug("last deck is null, not sending dispatch");
       } else {
+        // Successfully parsed, turn off error state
+        if (snackbarState.open && snackbarState.severity === "error") {
+          setSnackbarState({
+            open: true,
+            message: "Hooray!",
+            severity: "success",
+          });
+        }
         localStorage.setItem(astStrKey, JSON.stringify(program));
         // Trigger background reconciliation with DB
         reconcile(props.program, program, db)
@@ -52,6 +76,13 @@ export default function CardEditor(props: Props) {
       }
     } catch (err) {
       debug(err);
+      if (err.message) {
+        setSnackbarState({
+          open: true,
+          message: err.message,
+          severity: "error",
+        });
+      }
     }
   };
 
@@ -80,6 +111,12 @@ export default function CardEditor(props: Props) {
           />
         )}
       </div>
+      {snackbarState.open && (
+        <ErrorMessage
+          message={snackbarState.message}
+          severity={snackbarState.severity}
+        ></ErrorMessage>
+      )}
     </>
   );
 }
