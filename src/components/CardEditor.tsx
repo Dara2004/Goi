@@ -16,7 +16,17 @@ import ErrorMessage from "./ErrorMessage";
 import { Color } from "@material-ui/lab/Alert";
 
 // for syntax highlighting
-const literals = ["create deck", "(", ":", ")"];
+const literals = [
+  "create deck",
+  "(",
+  ":",
+  ")",
+  "add",
+  "tags",
+  "color",
+  "direction",
+  "alignment",
+];
 type Props = {
   dispatch: React.Dispatch<Action>;
   initialText: string;
