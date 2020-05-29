@@ -104,17 +104,20 @@ Where add Tags, add Color, add Alignment, and add Direction are optional.
 #### Help message
 
 ```
-To start a session from decks:
-Start Session from [choose ‘random card’, ect ] from Decks: [choose 1 or more deck names]
+To start a session from decks, tags or past sessions:
+Enter “start session from [enter a number][choose one of ”best" |  "worst" | "random" | "oldest" | "newest"
+] cards from [“decks” | “tags” | “past sessions”]: [enter a list of deck or tag names]”
+Or “start session from [enter a number][choose one of ”best" |  "worst" | "random" | "oldest" | "newest"
+] decks: [enter a list of deck names]”
 
-To start a session from tags:
-Start Session from [choose ‘random card’, ect ] from Tags: [choose 1 or more tag names]
-
-To show stats:
-Show stats for [choose one or more ‘best scores for’, ‘average time spent on’, ‘worst scores for’] Decks: [choose 1 or more deck names]
+To show stats from decks, tags or past sessions:
+Enter “show stats for [enter a number][choose one of ”best" |  "worst" | "random" | "oldest" | "newest"
+] cards from [“decks” | “tags” | “past sessions”]: [enter a list of deck or tag names]”
+Or “show stats for [enter a number][choose one of ”best" |  "worst" | "random" | "oldest" | "newest"
+] decks: [enter a list of deck names]”
 
 To download your decks:
-Enter 'export decks'
+Enter “export decks”
 
 To load decks from your computer:
 Enter 'load decks'
