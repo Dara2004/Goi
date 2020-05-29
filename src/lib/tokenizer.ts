@@ -40,12 +40,13 @@ export function tokenize(program: string, literals: string[]): void {
 
 export function checkNextToken(): string {
   const tokens = getTokensFromLocalStorage();
-  return tokens.length > 0 ? tokens[0] : "no more tokens to check";
+  return tokens.length > 0 ? tokens[0] : "no more tokens from checkNextToken";
 }
 
 export function getNextToken(): string {
   const tokens = getTokensFromLocalStorage();
-  let retToken = tokens.length > 0 ? tokens[0] : "no more tokens to get";
+  let retToken =
+    tokens.length > 0 ? tokens[0] : "no more tokens from getNextToken";
   tokens.shift();
   setTokensInLocalStorage(tokens);
   return retToken;
@@ -55,7 +56,7 @@ export function nextTokenMatchesRegex(regexp: string): boolean {
   const nextToken = checkNextToken();
   const re = new RegExp(regexp);
   debug(
-    `Check token is now comparing: the token |${nextToken}|  to  the regexp |${regexp}|`
+    `nextTokenMatchesRegex is now comparing: the token |${nextToken}|  to  the regexp |${regexp}|`
   );
   return !!nextToken.match(re);
 }
@@ -65,7 +66,9 @@ export function getAndCheckToken(regexp: string): string {
   const re = new RegExp(regexp);
 
   if (!nextToken.match(re)) {
-    throw Error(`Expected the regexp ${regexp} but got the token ${nextToken}`);
+    throw Error(
+      `getAndCheckToken expected the regexp ${regexp} but got the token ${nextToken}`
+    );
   }
   debug(`matched the token ${nextToken}  to  the regexp ${regexp}`);
   return nextToken;
