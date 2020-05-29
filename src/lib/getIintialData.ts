@@ -1,6 +1,6 @@
-import Tokenizer from "./tokenizer";
 import { deckCreationLiterals } from "./constants";
 import PROGRAM from "../ast/PROGRAM";
+import { tokenize } from "./tokenizer";
 
 // Local storage keys
 export const astStrKey = "programAST";
@@ -35,7 +35,7 @@ export function getInitialData(): InitialData {
     };
   } else {
     // Parse the example into an AST
-    Tokenizer.makeTokenizer(defaultText, deckCreationLiterals);
+    tokenize(defaultText, deckCreationLiterals);
     const program = new PROGRAM();
     program.parse();
     localStorage.setItem(cardEditorStrKey, defaultText);

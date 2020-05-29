@@ -1,7 +1,8 @@
 import NODE from "./NODE";
+import { getAndCheckToken } from "../lib/tokenizer";
 
 export default class QUIT_TO_HOME extends NODE {
   parse() {
-    this.tokenizer.getAndCheckToken("^quit$|^back to home$");
+    getAndCheckToken("^quit$|^back to home$");
   }
 }

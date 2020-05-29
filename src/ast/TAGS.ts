@@ -1,37 +1,44 @@
 import NODE from "./NODE";
 import TAG from "./TAG";
+import {
+  checkNextToken,
+  nextTokenMatchesRegex,
+  getAndCheckToken,
+  getNextToken,
+  isMoreTokens,
+} from "../lib/tokenizer";
 
 export default class TAGS extends NODE {
   tags: TAG[] = [];
   type = "tags";
 
   parseInteractivePrompt() {
-    this.tokenizer.getAndCheckToken("tags:");
-    while (this.tokenizer.moreTokens()) {
+    getAndCheckToken("tags:");
+    while (isMoreTokens()) {
       let tag = new TAG();
       tag.parse();
       this.tags.push(tag);
-      if (this.tokenizer.checkNext() === ",") {
-        this.tokenizer.getNext();
+      if (checkNextToken() === ",") {
+        getNextToken();
       }
     }
   }
 
   parse() {
-    const nextToken = this.tokenizer.checkNext().toLowerCase();
+    const nextToken = checkNextToken().toLowerCase();
     if (nextToken === "add tags") {
-      this.tokenizer.getNext();
+      getNextToken();
     }
-    this.tokenizer.getAndCheckToken(":");
+    getAndCheckToken(":");
     while (
-      this.tokenizer.moreTokens() &&
-      !this.tokenizer.checkToken("add color") &&
-      !this.tokenizer.checkToken("add direction") &&
-      !this.tokenizer.checkToken("add alignment") &&
-      !this.tokenizer.checkToken("\\(")
+      isMoreTokens() &&
+      !nextTokenMatchesRegex("add color") &&
+      !nextTokenMatchesRegex("add direction") &&
+      !nextTokenMatchesRegex("add alignment") &&
+      !nextTokenMatchesRegex("\\(")
     ) {
-      if (this.tokenizer.checkNext() === ",") {
-        this.tokenizer.getNext();
+      if (checkNextToken() === ",") {
+        getNextToken();
       }
       let tag = new TAG();
       tag.parse();

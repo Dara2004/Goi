@@ -2,6 +2,7 @@ import NODE from "./NODE";
 import TAGS from "./TAGS";
 import DECKS from "./DECKS";
 import SESSIONS from "./SESSIONS";
+import { checkNextToken } from "../lib/tokenizer";
 
 export enum SubjectType {
   Decks = "decks",
@@ -15,7 +16,7 @@ export default class SUBJECT extends NODE {
   subjectType: SubjectType = SubjectType.Undefined;
 
   parse() {
-    const nextToken = this.tokenizer.checkNext();
+    const nextToken = checkNextToken();
     if (nextToken === "past sessions") {
       this.subject = new SESSIONS();
       this.subjectType = SubjectType.Sessions;

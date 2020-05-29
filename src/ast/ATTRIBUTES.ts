@@ -1,10 +1,13 @@
 import NODE from "./NODE";
 import ATTRIBUTE from "./ATTRIBUTE";
-import Tokenizer from "../lib/tokenizer";
+import {
+  checkNextToken,
+  nextTokenMatchesRegex,
+  isMoreTokens,
+} from "../lib/tokenizer";
 
 export function isNextTokenIsAttribute(): boolean {
-  const tokenizer = Tokenizer.getTokenizer();
-  const nextToken = tokenizer.checkNext().toLowerCase();
+  const nextToken = checkNextToken().toLowerCase();
   return (
     nextToken === "add color" ||
     nextToken === "add alignment" ||
@@ -16,9 +19,9 @@ export default class ATTRIBUTES extends NODE {
   parse() {
     if (isNextTokenIsAttribute()) {
       while (
-        this.tokenizer.moreTokens() &&
-        !this.tokenizer.checkToken("add tags") &&
-        !this.tokenizer.checkToken("\\(")
+        isMoreTokens() &&
+        !nextTokenMatchesRegex("add tags") &&
+        !nextTokenMatchesRegex("\\(")
       ) {
         let attribute = new ATTRIBUTE();
         attribute.parse();

@@ -3,7 +3,7 @@ import { highlight } from "../lib/highlighter";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/yonce.css";
 import { UnControlled as CodeMirror } from "react-codemirror2";
-import Tokenizer from "../lib/tokenizer";
+import { tokenize } from "../lib/tokenizer";
 import { allTokens as literals } from "../lib/constants";
 import COMMAND from "../ast/COMMAND";
 import COMPLEX_COMMAND from "../ast/COMPLEX_COMMAND";
@@ -154,7 +154,7 @@ export default function CommandEditor(props: Props) {
       //after user hits enter, reset the cursor
       // Parse the value
       try {
-        Tokenizer.makeTokenizer(valueToParse, literals);
+        tokenize(valueToParse, literals);
         const command = new COMMAND();
         command.parse(); //commands = COMPLEX_COMMAND | HELP | LIST
         console.log(command.command);
