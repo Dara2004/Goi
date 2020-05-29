@@ -1,11 +1,11 @@
 import NODE from "./NODE";
 import TAG from "./TAG";
 import {
-  checkNext,
-  checkToken,
+  checkNextToken,
+  nextTokenMatchesRegex,
   getAndCheckToken,
-  getNext,
-  moreTokens,
+  getNextToken,
+  isMoreTokens,
 } from "../lib/tokenizer";
 
 export default class TAGS extends NODE {
@@ -14,31 +14,31 @@ export default class TAGS extends NODE {
 
   parseInteractivePrompt() {
     getAndCheckToken("tags:");
-    while (moreTokens()) {
+    while (isMoreTokens()) {
       let tag = new TAG();
       tag.parse();
       this.tags.push(tag);
-      if (checkNext() === ",") {
-        getNext();
+      if (checkNextToken() === ",") {
+        getNextToken();
       }
     }
   }
 
   parse() {
-    const nextToken = checkNext().toLowerCase();
+    const nextToken = checkNextToken().toLowerCase();
     if (nextToken === "add tags") {
-      getNext();
+      getNextToken();
     }
     getAndCheckToken(":");
     while (
-      moreTokens() &&
-      !checkToken("add color") &&
-      !checkToken("add direction") &&
-      !checkToken("add alignment") &&
-      !checkToken("\\(")
+      isMoreTokens() &&
+      !nextTokenMatchesRegex("add color") &&
+      !nextTokenMatchesRegex("add direction") &&
+      !nextTokenMatchesRegex("add alignment") &&
+      !nextTokenMatchesRegex("\\(")
     ) {
-      if (checkNext() === ",") {
-        getNext();
+      if (checkNextToken() === ",") {
+        getNextToken();
       }
       let tag = new TAG();
       tag.parse();

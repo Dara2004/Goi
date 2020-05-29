@@ -1,6 +1,6 @@
 import NODE from "./NODE";
 import * as constants from "../lib/constants";
-import { checkNext, getNext } from "../lib/tokenizer";
+import { checkNextToken, getNextToken } from "../lib/tokenizer";
 
 export default class SUBJECT_MODIFIER extends NODE {
   type: string = "";
@@ -9,7 +9,7 @@ export default class SUBJECT_MODIFIER extends NODE {
   selectCards: boolean = false;
 
   parse() {
-    const actionToken = getNext();
+    const actionToken = getNextToken();
     if (actionToken === "show stats for") {
       this.type = "show stats";
     } else if (actionToken === "start session from") {
@@ -19,18 +19,18 @@ export default class SUBJECT_MODIFIER extends NODE {
         "Command must either start with 'Show stats for' or 'Start Session from'"
       );
     }
-    let nextToken = checkNext();
+    let nextToken = checkNextToken();
     if (!isNaN(Number(nextToken))) {
-      this.limit = Math.round(Number(getNext()));
-      nextToken = checkNext();
+      this.limit = Math.round(Number(getNextToken()));
+      nextToken = checkNextToken();
     }
     if (constants.validCardFilter.includes(nextToken)) {
-      this.filter = getNext();
-      nextToken = checkNext();
+      this.filter = getNextToken();
+      nextToken = checkNextToken();
     }
     if (nextToken === "cards from") {
       this.selectCards = true;
-      getNext();
+      getNextToken();
     }
   }
 }

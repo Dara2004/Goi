@@ -1,9 +1,9 @@
 import NODE from "./NODE";
 import {
-  checkNext,
+  checkNextToken,
   getAndCheckToken,
-  getNext,
-  moreTokens,
+  getNextToken,
+  isMoreTokens,
 } from "../lib/tokenizer";
 
 export default class DECKS extends NODE {
@@ -12,10 +12,10 @@ export default class DECKS extends NODE {
 
   parseInteractivePrompt() {
     getAndCheckToken("decks:");
-    while (moreTokens()) {
-      this.decks.push(getNext());
-      if (checkNext() === ",") {
-        getNext();
+    while (isMoreTokens()) {
+      this.decks.push(getNextToken());
+      if (checkNextToken() === ",") {
+        getNextToken();
       }
     }
   }

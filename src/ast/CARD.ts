@@ -1,5 +1,9 @@
 import NODE from "./NODE";
-import { checkToken, getAndCheckToken, getNext } from "../lib/tokenizer";
+import {
+  nextTokenMatchesRegex,
+  getAndCheckToken,
+  getNextToken,
+} from "../lib/tokenizer";
 
 export default class CARD extends NODE {
   cardNumber: number = 0;
@@ -7,13 +11,13 @@ export default class CARD extends NODE {
   back: string = "";
   parse() {
     getAndCheckToken("\\(");
-    const isIntString = checkToken("^[1-9]+[0-9]*$");
+    const isIntString = nextTokenMatchesRegex("^[1-9]+[0-9]*$");
     if (isIntString) {
-      this.cardNumber = parseInt(getNext());
+      this.cardNumber = parseInt(getNextToken());
       getAndCheckToken("\\)");
-      this.front = getNext();
+      this.front = getNextToken();
       getAndCheckToken(":");
-      this.back = getNext();
+      this.back = getNextToken();
     } else {
       throw new Error("Card number incorrect in Card");
     }

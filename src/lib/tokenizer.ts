@@ -1,11 +1,11 @@
 import { debug } from "./utils";
 
-export function setTokens(tokens: string[]) {
+export function setTokensInLocalStorage(tokens: string[]) {
   const stringifiedTokens = JSON.stringify(tokens);
   localStorage.setItem("tokens", stringifiedTokens);
 }
 
-export function getTokens(): string[] {
+export function getTokensFromLocalStorage(): string[] {
   const stringifiedTokens = localStorage.getItem("tokens");
   return JSON.parse(stringifiedTokens);
 }
@@ -33,25 +33,25 @@ export function tokenize(program: string, literals: string[]): void {
   const temparray = tokenizedProgram.split("RESERVEDWORD");
   const slicedArray = temparray.slice(1);
   const tokens = slicedArray.map((t) => t.trim()).filter((t) => t !== "");
-  setTokens(tokens);
+  setTokensInLocalStorage(tokens);
   debug(tokens);
 }
 
-export function checkNext(): string {
-  const tokens = getTokens();
+export function checkNextToken(): string {
+  const tokens = getTokensFromLocalStorage();
   return tokens.length > 0 ? tokens[0] : "no more tokens to check";
 }
 
-export function getNext(): string {
-  const tokens = getTokens();
+export function getNextToken(): string {
+  const tokens = getTokensFromLocalStorage();
   let retToken = tokens.length > 0 ? tokens[0] : "no more tokens to get";
   tokens.shift();
-  setTokens(tokens);
+  setTokensInLocalStorage(tokens);
   return retToken;
 }
 
-export function checkToken(regexp: string): boolean {
-  const nextToken = checkNext();
+export function nextTokenMatchesRegex(regexp: string): boolean {
+  const nextToken = checkNextToken();
   const re = new RegExp(regexp);
   debug(
     `Check token is now comparing: the token |${nextToken}|  to  the regexp |${regexp}|`
@@ -60,17 +60,17 @@ export function checkToken(regexp: string): boolean {
 }
 
 export function getAndCheckToken(regexp: string): string {
-  const token = getNext();
+  const nextToken = getNextToken();
   const re = new RegExp(regexp);
 
-  if (!token.match(re)) {
-    throw Error(`Expected the regexp ${regexp} but got the token ${token}`);
+  if (!nextToken.match(re)) {
+    throw Error(`Expected the regexp ${regexp} but got the token ${nextToken}`);
   }
-  debug(`matched the token ${token}  to  the regexp ${regexp}`);
-  return token;
+  debug(`matched the token ${nextToken}  to  the regexp ${regexp}`);
+  return nextToken;
 }
 
-export function moreTokens(): boolean {
-  const tokens = getTokens();
+export function isMoreTokens(): boolean {
+  const tokens = getTokensFromLocalStorage();
   return tokens.length > 0;
 }

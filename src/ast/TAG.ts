@@ -1,9 +1,9 @@
 import NODE from "./NODE";
-import { getNext } from "../lib/tokenizer";
+import { getNextToken } from "../lib/tokenizer";
 
 export default class TAG extends NODE {
   tagName: string = "";
   parse() {
-    this.tagName = getNext();
+    this.tagName = getNextToken();
   }
 }
