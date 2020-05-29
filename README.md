@@ -2,13 +2,15 @@
 
 ## Deck Creation DSL
 
+## Note: the Tokenizer used in this project has been adapted from the in-class example
+
 ### Example
 
 ```
 Create Deck Practice Final:
-add Tags: example, tag2, tag3
-add Color: red
-add Alignment: center
+add tags: example, tag2, tag3
+add color: red
+add alignment: center
 (1) Front : Back
 (2) Front : Back
 (3) Front : Back
@@ -87,10 +89,10 @@ QUIT_TO_HOME ::= ("Quit" | "Back to home")
 To create the deck:
 
 Create Deck [enter a deck name]:
-add Tags: [enter one or more tags]
-add Color: [enter one of ‘red’ or ‘blue’ or ‘green’ or ‘purple’]
-add Alignment: [enter one of ‘center’ or ‘right’, or ‘left’]
-add Direction: [enter one of ‘horizontal’ or ‘vertical’]
+add tags: [enter one or more tags]
+add color: [enter one of ‘red’ or ‘blue’ or ‘green’ or ‘purple’]
+add alignment: [enter one of ‘center’ or ‘right’, or ‘left’]
+add direction: [enter one of ‘horizontal’ or ‘vertical’]
 (1) [enter front of card] : [enter back of card]
 (1) [enter front of card] : [enter back of card]
 
