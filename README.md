@@ -23,7 +23,7 @@ add Alignment: center
 PROGRAM ::= CREATE_DECK+
 CREATE_DECK ::= “Create Deck” NAME”:” MODIFIERS? DECK
 MODIFIERS ::= (“add” MODIFIER)*
-MODIFIER ::= "Tags: " TAGS | "Color: " COLOR | "Alignment: " ALIGNMENT | "Direction: " DIRECTION
+MODIFIER ::= "tags: " TAGS | "color: " COLOR | "alignment: " ALIGNMENT | "direction: " DIRECTION
 ALIGNMENT ::= “center” | “right” | “left”
 COLOR ::= ‘red’ | ‘blue’ | ‘green’ | ‘purple’ | ‘yellow’ | ‘grey’ | ‘brown’
 DIRECTION ::= ‘horizontal’ | ‘vertical’
