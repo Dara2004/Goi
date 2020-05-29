@@ -16,13 +16,13 @@ export function tokenize(program: string, literals: string[]): void {
   tokenizedProgram = tokenizedProgram.replace(/\n/g, "RESERVEDWORD");
   debug(program);
 
-  literals.forEach((s) => {
-    debug("string: ", s);
-    const re = new RegExp(s, "ig");
+  literals.forEach((lit) => {
+    debug("string: ", lit);
+    const re = new RegExp(lit, "ig");
     debug("regexp: ", re);
     tokenizedProgram = tokenizedProgram.replace(
       re,
-      `RESERVEDWORD${s}RESERVEDWORD`
+      `RESERVEDWORD${lit}RESERVEDWORD`
     );
     debug(tokenizedProgram);
   });
@@ -56,7 +56,7 @@ export function nextTokenMatchesRegex(regexp: string): boolean {
   const nextToken = checkNextToken();
   const re = new RegExp(regexp);
   debug(
-    `nextTokenMatchesRegex is now comparing: the token |${nextToken}|  to  the regexp |${regexp}|`
+    `nextTokenMatchesRegex is now comparing: the token |${nextToken}| to the regexp |${regexp}|`
   );
   return !!nextToken.match(re);
 }
@@ -70,7 +70,7 @@ export function getAndCheckToken(regexp: string): string {
       `getAndCheckToken expected the regexp ${regexp} but got the token ${nextToken}`
     );
   }
-  debug(`matched the token ${nextToken}  to  the regexp ${regexp}`);
+  debug(`matched the token ${nextToken} to the regexp ${regexp}`);
   return nextToken;
 }
 
