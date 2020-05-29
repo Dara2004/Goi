@@ -1,5 +1,6 @@
 import { debug } from "./utils";
 
+// file based on functions and steps for tokenization shown in class
 export function setTokensInLocalStorage(tokens: string[]) {
   const stringifiedTokens = JSON.stringify(tokens);
   localStorage.setItem("tokens", stringifiedTokens);
