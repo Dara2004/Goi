@@ -1,5 +1,6 @@
 import { debug } from "./utils";
 
+// Tokenizer is modified from in-class example
 class Tokenizer {
   private static program: string;
   private static literals: Array<string>;
