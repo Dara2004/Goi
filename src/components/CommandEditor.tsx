@@ -251,7 +251,7 @@ export default function CommandEditor(props: Props) {
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "center",
+          horizontal: "right",
         }}
         open={openHelp}
         autoHideDuration={180000}
