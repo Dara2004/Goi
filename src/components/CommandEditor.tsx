@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { highlight } from "../lib/highlighter";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/yonce.css";
@@ -59,8 +59,47 @@ function isStartSessionOrShowStats(command: COMMAND): boolean {
   return false;
 }
 
+function userMadeInvalidChange(
+  oldLines: string[],
+  newLines: string[]
+): boolean {
+  if (
+    newLines.length < oldLines.length ||
+    newLines.length > oldLines.length + 1
+  ) {
+    // User changed something they're not supposed to
+    return true;
+  }
+  for (let i = 0; i < oldLines.length - 1; ++i) {
+    if (oldLines[i] !== newLines[i]) {
+      return true;
+    }
+  }
+  // Ensure latest line starts with indicator "> "
+  if (newLines.length > oldLines.length) {
+    return newLines[newLines.length - 1] !== "";
+  } else {
+    return !newLines[newLines.length - 1].startsWith("> ");
+  }
+}
+
+function revertChange(
+  editor: CodeMirror.Editor,
+  oldValue: string,
+  position: CodeMirror.Position
+) {
+  console.log("reverting change");
+  // Set the lines in the editor
+  editor.getDoc().setValue(oldValue);
+  editor.getDoc().setCursor(position);
+}
+
 export default function CommandEditor(props: Props) {
-  const [openHelp, setOpenHelp] = React.useState(false);
+  const [openHelp, setOpenHelp] = useState(false);
+  const [{ text, lines }, setEditorState] = useState({
+    text: "> ",
+    lines: ["> "],
+  });
 
   const handleCloseHelp = (
     event: React.SyntheticEvent | React.MouseEvent,
@@ -73,20 +112,46 @@ export default function CommandEditor(props: Props) {
     setOpenHelp(false);
   };
 
-  const handleCommandChange = (editor: CodeMirror.Editor, data, value) => {
-    highlight(editor, literals);
-    if (!value.startsWith("> ")) {
-      //reset the cursor if user tries to delete
-      editor.getDoc().setValue("> ");
-      editor.getDoc().setCursor(2);
+  const handleCommandChange = (
+    editor: CodeMirror.Editor,
+    data,
+    value: string
+  ) => {
+    const newLines = value.split("\n");
+
+    if (userMadeInvalidChange(lines, newLines)) {
+      console.log("invalid.");
+      // Revert the user's change in the editor
+      revertChange(editor, text, {
+        line: lines.length - 1,
+        ch: lines[lines.length - 1].length,
+      });
+      return;
     }
 
-    if (value.includes("\n")) {
+    highlight(editor, literals);
+
+    console.log(value);
+    console.table(newLines);
+
+    if (value.endsWith("\n")) {
+      console.log("last line ended with newline");
+      const newValue = value + "> ";
+      setEditorState({
+        text: newValue,
+        lines: newValue.split("\n"),
+      });
+      editor.getDoc().setValue(newValue);
+      editor.getDoc().setCursor({ line: newLines.length - 1, ch: 2 });
+
+      const valueToParse = newLines[newLines.length - 2].substr(2);
+      console.log("value to parse: ", valueToParse);
+
       let isHelpCommand = false;
       //after user hits enter, reset the cursor
       // Parse the value
       try {
-        Tokenizer.makeTokenizer(value, literals);
+        Tokenizer.makeTokenizer(valueToParse, literals);
         const command = new COMMAND();
         command.parse(); //commands = COMPLEX_COMMAND | HELP | LIST
         console.log(command.command);
@@ -159,8 +224,8 @@ export default function CommandEditor(props: Props) {
       if (isHelpCommand) {
         setOpenHelp(true);
       }
-      editor.getDoc().setValue("> ");
-      editor.getDoc().setCursor(2);
+      // editor.getDoc().setValue("> ");
+      // editor.getDoc().setCursor(2);
     }
   };
 
