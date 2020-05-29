@@ -46,11 +46,9 @@ Show stats for random Decks: deck1, deck2, deck3, deck4, deck5, deck6 (We can ha
 Show stats for cards from Decks: deck1
 Show stats for Past Sessions (Default number of 5)
 Show stats for 5 oldest Past Sessions
-Show stats for random Tags: tag1, tag2
 Start Session from Decks: deck1, deck2
 Start Session from 5 worst Decks: deck1, deck2, deck3, deck4, deck5, deck6 (Start session from all cards from 5 of the listed decks)
 Start Session from 10 worst cards from Decks: deck1, deck2 (Start session with 10 worst cards from the listed decks)
-Start Session from 2 Past Sessions
 ```
 
 ### EBNF
@@ -112,4 +110,14 @@ Start Session from [choose ‘random card’, ect ] from Tags: [choose 1 or more
 
 To show stats:
 Show stats for [choose one or more ‘best scores for’, ‘average time spent on’, ‘worst scores for’] Decks: [choose 1 or more deck names]
+
+To download your decks:
+Enter 'export decks'
+
+To load decks from your computer:
+Enter 'load decks'
+
+To go back to Home:
+Enter 'quit' or 'back to home'
+
 ```
