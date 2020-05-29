@@ -2,8 +2,6 @@
 
 ## Deck Creation DSL
 
-## Note: the Tokenizer used in this project has been adapted functions and steps for tokenization shown in class
-
 ### Example
 
 ```
