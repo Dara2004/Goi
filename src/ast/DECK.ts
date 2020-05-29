@@ -1,16 +1,17 @@
 import NODE from "./NODE";
 import CARD from "./CARD";
+import { checkToken, moreTokens } from "../lib/tokenizer";
 
 export default class DECK extends NODE {
   cards: CARD[] = [];
   parse() {
     while (
-      this.tokenizer.moreTokens() &&
-      !this.tokenizer.checkToken("add color") &&
-      !this.tokenizer.checkToken("add direction") &&
-      !this.tokenizer.checkToken("add alignment") &&
-      !this.tokenizer.checkToken("add tags") &&
-      !this.tokenizer.checkToken("create deck")
+      moreTokens() &&
+      !checkToken("add color") &&
+      !checkToken("add direction") &&
+      !checkToken("add alignment") &&
+      !checkToken("add tags") &&
+      !checkToken("create deck")
     ) {
       let card = new CARD();
       card.parse();

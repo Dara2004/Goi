@@ -1,7 +1,8 @@
 import NODE from "./NODE";
+import { getAndCheckToken } from "../lib/tokenizer";
 
 export default class LOAD_DECKS extends NODE {
   parse() {
-    this.tokenizer.getAndCheckToken("load decks");
+    getAndCheckToken("load decks");
   }
 }

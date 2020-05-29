@@ -4,7 +4,7 @@ import "codemirror/theme/ayu-mirage.css";
 import "codemirror/mode/xml/xml";
 import { UnControlled as CodeMirror } from "react-codemirror2";
 import PROGRAM from "../ast/PROGRAM";
-import Tokenizer from "../lib/tokenizer";
+import { tokenize } from "../lib/tokenizer";
 import { deckCreationLiterals } from "../lib/constants";
 import { highlight } from "../lib/highlighter";
 import { useDatabase } from "@nozbe/watermelondb/hooks";
@@ -99,7 +99,7 @@ export default function CardEditor(props: Props) {
     localStorage.setItem(cardEditorStrKey, value);
     // Parse it
     try {
-      Tokenizer.makeTokenizer(value, deckCreationLiterals);
+      tokenize(value, deckCreationLiterals);
       const program = new PROGRAM();
       program.parse();
       // Check if the last deck in the program is null

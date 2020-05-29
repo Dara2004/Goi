@@ -5,6 +5,7 @@ import LIST from "./LIST";
 import EXPORT_DECKS from "./EXPORT_DECKS";
 import LOAD_DECKS from "./LOAD_DECKS";
 import QUIT_TO_HOME from "./QUIT_TO_HOME";
+import { checkNext } from "../lib/tokenizer";
 
 export default class COMMAND extends NODE {
   type: string = "";
@@ -18,7 +19,7 @@ export default class COMMAND extends NODE {
     | null = null;
 
   parse() {
-    const nextToken = this.tokenizer.checkNext();
+    const nextToken = checkNext();
     if (nextToken === "help") {
       this.command = new HELP();
       this.type = "help";

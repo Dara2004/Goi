@@ -2,6 +2,13 @@ import NODE from "./NODE";
 import DECK from "./DECK";
 import TAGS from "./TAGS";
 import ATTRIBUTES, { isNextTokenIsAttribute } from "./ATTRIBUTES";
+import {
+  checkNext,
+  checkToken,
+  getAndCheckToken,
+  getNext,
+  moreTokens,
+} from "../lib/tokenizer";
 
 const invalidNameTokens = [":", "(", ")", ",", "NULLTOKEN"];
 
@@ -12,7 +19,7 @@ export default class CREATE_DECK extends NODE {
   name: string = "";
 
   checkForAndParseTags() {
-    const nextToken = this.tokenizer.checkNext().toLowerCase();
+    const nextToken = checkNext().toLowerCase();
     if (nextToken === "add tags") {
       this.tags = new TAGS();
       this.tags.parse();
@@ -27,7 +34,7 @@ export default class CREATE_DECK extends NODE {
   }
 
   checkForAndParseDeck() {
-    if (this.tokenizer.checkToken("\\(")) {
+    if (checkToken("\\(")) {
       this.deck = new DECK();
       this.deck.parse();
     }
@@ -35,22 +42,21 @@ export default class CREATE_DECK extends NODE {
 
   parse() {
     //parse deck
-    this.tokenizer.getAndCheckToken("create deck");
-    const name = this.tokenizer.getNext();
+    getAndCheckToken("create deck");
+    const name = getNext();
     if (invalidNameTokens.includes(name)) {
       throw new Error("invalid deck name");
     }
     this.name = name;
-    this.tokenizer.getAndCheckToken(":");
+    getAndCheckToken(":");
     let nextAttributeOrTag = true;
-    while (this.tokenizer.moreTokens() && nextAttributeOrTag) {
+    while (moreTokens() && nextAttributeOrTag) {
       this.checkForAndParseTags();
       this.checkForAndParseAttributes();
       nextAttributeOrTag =
-        isNextTokenIsAttribute() ||
-        this.tokenizer.checkNext().toLowerCase() === "add tags";
+        isNextTokenIsAttribute() || checkNext().toLowerCase() === "add tags";
     }
-    if (this.tokenizer.moreTokens()) {
+    if (moreTokens()) {
       this.checkForAndParseDeck();
     }
   }

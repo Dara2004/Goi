@@ -1,37 +1,44 @@
 import NODE from "./NODE";
 import TAG from "./TAG";
+import {
+  checkNext,
+  checkToken,
+  getAndCheckToken,
+  getNext,
+  moreTokens,
+} from "../lib/tokenizer";
 
 export default class TAGS extends NODE {
   tags: TAG[] = [];
   type = "tags";
 
   parseInteractivePrompt() {
-    this.tokenizer.getAndCheckToken("tags:");
-    while (this.tokenizer.moreTokens()) {
+    getAndCheckToken("tags:");
+    while (moreTokens()) {
       let tag = new TAG();
       tag.parse();
       this.tags.push(tag);
-      if (this.tokenizer.checkNext() === ",") {
-        this.tokenizer.getNext();
+      if (checkNext() === ",") {
+        getNext();
       }
     }
   }
 
   parse() {
-    const nextToken = this.tokenizer.checkNext().toLowerCase();
+    const nextToken = checkNext().toLowerCase();
     if (nextToken === "add tags") {
-      this.tokenizer.getNext();
+      getNext();
     }
-    this.tokenizer.getAndCheckToken(":");
+    getAndCheckToken(":");
     while (
-      this.tokenizer.moreTokens() &&
-      !this.tokenizer.checkToken("add color") &&
-      !this.tokenizer.checkToken("add direction") &&
-      !this.tokenizer.checkToken("add alignment") &&
-      !this.tokenizer.checkToken("\\(")
+      moreTokens() &&
+      !checkToken("add color") &&
+      !checkToken("add direction") &&
+      !checkToken("add alignment") &&
+      !checkToken("\\(")
     ) {
-      if (this.tokenizer.checkNext() === ",") {
-        this.tokenizer.getNext();
+      if (checkNext() === ",") {
+        getNext();
       }
       let tag = new TAG();
       tag.parse();

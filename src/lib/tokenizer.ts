@@ -1,97 +1,76 @@
 import { debug } from "./utils";
 
-class Tokenizer {
-  private static program: string;
-  private static literals: Array<string>;
-  private tokens: Array<string>;
-  private currentToken: number;
-  private static theTokenizer: Tokenizer;
-
-  private constructor(content: string, literalsList: Array<string>) {
-    Tokenizer.program = content;
-    Tokenizer.literals = literalsList;
-    this.tokens = [];
-    this.currentToken = 0;
-
-    this.tokenize();
-  }
-
-  tokenize(): void {
-    let tokenizedProgram = Tokenizer.program;
-    tokenizedProgram = tokenizedProgram.replace(/\n/g, "_");
-    debug(Tokenizer.program);
-
-    Tokenizer.literals.forEach((s) => {
-      debug("string: ", s);
-      const re = new RegExp(s, "ig");
-      debug("regexp: ", re);
-      tokenizedProgram = tokenizedProgram.replace(re, `_${s}_`);
-      debug(tokenizedProgram);
-    });
-    tokenizedProgram = tokenizedProgram.replace(/__/g, "_");
-    debug(tokenizedProgram);
-    const temparray = tokenizedProgram.split("_");
-    const slicedArray = temparray.slice(1);
-    this.tokens = slicedArray.map((t) => t.trim()).filter((t) => t !== "");
-    debug(this.tokens);
-  }
-
-  checkNext(): string {
-    let token = "";
-
-    if (this.currentToken < this.tokens.length) {
-      token = this.tokens[this.currentToken];
-    } else {
-      token = "NO_MORE_TOKENS";
-    }
-
-    return token;
-  }
-
-  getNext(): string {
-    let token = "";
-
-    if (this.currentToken < this.tokens.length) {
-      token = this.tokens[this.currentToken];
-      this.currentToken++;
-    } else {
-      token = "NULLTOKEN";
-    }
-
-    return token;
-  }
-
-  checkToken(regexp: string): boolean {
-    const s = this.checkNext();
-    const re = new RegExp(regexp);
-    debug(`comparing: |${s}|  to  |${regexp}|`);
-    return !!s.match(re);
-  }
-
-  getAndCheckToken(regexp: string): string {
-    const s = this.getNext();
-    const re = new RegExp(regexp);
-
-    if (!s.match(re)) {
-      throw Error(
-        `Unexpected next token for Parsing! Expected something matching: ${regexp} but got: ${s}`
-      );
-    }
-    debug(`matched: ${s}  to  ${regexp}`);
-    return s;
-  }
-
-  moreTokens(): boolean {
-    return this.currentToken < this.tokens.length;
-  }
-
-  static makeTokenizer(content: string, literals: Array<string>): void {
-    this.theTokenizer = new Tokenizer(content, literals);
-  }
-
-  static getTokenizer(): Tokenizer {
-    return this.theTokenizer;
-  }
+export function setTokens(tokens: string[]) {
+  const stringifiedTokens = JSON.stringify(tokens);
+  localStorage.setItem("tokens", stringifiedTokens);
 }
 
-export default Tokenizer;
+export function getTokens(): string[] {
+  const stringifiedTokens = localStorage.getItem("tokens");
+  return JSON.parse(stringifiedTokens);
+}
+
+export function tokenize(program: string, literals: string[]): void {
+  let tokenizedProgram = program;
+  tokenizedProgram = tokenizedProgram.replace(/\n/g, "RESERVEDWORD");
+  debug(program);
+
+  literals.forEach((s) => {
+    debug("string: ", s);
+    const re = new RegExp(s, "ig");
+    debug("regexp: ", re);
+    tokenizedProgram = tokenizedProgram.replace(
+      re,
+      `RESERVEDWORD${s}RESERVEDWORD`
+    );
+    debug(tokenizedProgram);
+  });
+  tokenizedProgram = tokenizedProgram.replace(
+    /RESERVEDWORDRESERVEDWORD/g,
+    "RESERVEDWORD"
+  );
+  debug(tokenizedProgram);
+  const temparray = tokenizedProgram.split("RESERVEDWORD");
+  const slicedArray = temparray.slice(1);
+  const tokens = slicedArray.map((t) => t.trim()).filter((t) => t !== "");
+  setTokens(tokens);
+  debug(tokens);
+}
+
+export function checkNext(): string {
+  const tokens = getTokens();
+  return tokens.length > 0 ? tokens[0] : "no more tokens to check";
+}
+
+export function getNext(): string {
+  const tokens = getTokens();
+  let retToken = tokens.length > 0 ? tokens[0] : "no more tokens to get";
+  tokens.shift();
+  setTokens(tokens);
+  return retToken;
+}
+
+export function checkToken(regexp: string): boolean {
+  const nextToken = checkNext();
+  const re = new RegExp(regexp);
+  debug(
+    `Check token is now comparing: the token |${nextToken}|  to  the regexp |${regexp}|`
+  );
+  return !!nextToken.match(re);
+}
+
+export function getAndCheckToken(regexp: string): string {
+  const token = getNext();
+  const re = new RegExp(regexp);
+
+  if (!token.match(re)) {
+    throw Error(`Expected the regexp ${regexp} but got the token ${token}`);
+  }
+  debug(`matched the token ${token}  to  the regexp ${regexp}`);
+  return token;
+}
+
+export function moreTokens(): boolean {
+  const tokens = getTokens();
+  return tokens.length > 0;
+}
