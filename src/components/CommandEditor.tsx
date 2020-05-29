@@ -21,18 +21,21 @@ const helpMsg = (
   <div
     style={{
       fontSize: "13px",
-      lineHeight: "3px",
+      lineHeight: "15px",
     }}
   >
-    <h4>To start a session from decks:</h4>
-    Start Session from [choose ‘random card’, ect ] from Decks: [choose 1 or
-    more deck names]
-    <h4>To start a session from tags:</h4>
-    Start Session from [choose ‘random card’, ect ] from Tags: [choose 1 or more
-    tag names]
-    <h4>To show stats:</h4> Show stats for [choose one or more ‘best scores
-    for’, ‘average time spent on’, ‘worst scores for’] Decks: [choose 1 or more
-    deck names]
+    <h4>To start a session from decks, tags or past sessions:</h4>
+    Enter “start session from [enter a number][choose one of ”best" | "worst" |
+    "random" | "oldest" | "newest" ] cards from [“decks” | “tags” | “past
+    sessions”]: [enter a list of deck or tag names]” <br></br>Or “start session
+    from [enter a number][choose one of ”best" | "worst" | "random" | "oldest" |
+    "newest" ] decks: [enter a list of deck names]”
+    <h4>To show stats from decks, tags or past sessions:</h4>
+    Enter “show stats for [enter a number][choose one of ”best" | "worst" |
+    "random" | "oldest" | "newest" ] cards from [“decks” | “tags” | “past
+    sessions”]: [enter a list of deck or tag names]” <br></br>Or “show stats for
+    [enter a number][choose one of ”best" | "worst" | "random" | "oldest" |
+    "newest" ] decks: [enter a list of deck names]”
     <h4>To download your decks:</h4> Enter 'export decks'
     <h4>To load decks from your computer:</h4> Enter 'load decks'
     <h4>To go back to Home:</h4> Enter 'quit' or 'back to home'
