@@ -15,6 +15,9 @@ import { Action, ActionType } from "../App";
 import ErrorMessage from "./ErrorMessage";
 import { Color } from "@material-ui/lab/Alert";
 
+const inputProcessLocalStorageKey = "CARD_EDITOR_LAST_UPDATED";
+const inputProcessDelayMillis = 2000;
+
 // for syntax highlighting
 const literals = [
   "create deck",
@@ -34,7 +37,7 @@ type Props = {
   program: PROGRAM;
 };
 
-const debounceMillis = 5000;
+const debounceMillis = 5000; // for snackbar message
 
 function enoughTimeHasPassedSince(thenUnix: number): boolean {
   return Date.now() - thenUnix > debounceMillis;
@@ -93,9 +96,7 @@ export default function CardEditor(props: Props) {
 
   const { initialText, isInSession } = props;
 
-  const handleChange = (editor: CodeMirror.Editor, data, value) => {
-    highlight(editor, literals);
-
+  function processInput(value: string) {
     localStorage.setItem(cardEditorStrKey, value);
     // Parse it
     try {
@@ -147,6 +148,22 @@ export default function CardEditor(props: Props) {
         "info"
       );
     }
+  }
+
+  const handleChange = (editor: CodeMirror.Editor, data, value) => {
+    highlight(editor, literals);
+
+    // Change it after a delay, but cancel previously queued changes
+    const nowUnix = Date.now();
+    localStorage.setItem(inputProcessLocalStorageKey, nowUnix.toString());
+    setTimeout(() => {
+      console.log("marco");
+      const lastChange = localStorage.getItem(inputProcessLocalStorageKey);
+      if (nowUnix.toString() === lastChange) {
+        console.log("polo");
+        processInput(value);
+      }
+    }, inputProcessDelayMillis);
   };
 
   return (
